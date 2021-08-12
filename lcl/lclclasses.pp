@@ -19,12 +19,14 @@ unit LCLClasses;
 
 {$mode objfpc}{$H+}
 
+{$define WSINTF}
+
 { Add -dVerboseWSBrunoK switch to compile with $DEFINE VerboseWSBrunoK }
 
 interface
 
 uses
-  Classes, WSLCLClasses, WSReferences, LCLType, LCLProc;
+  Classes, {$ifdef WSINTF}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSReferences, LCLType, LCLProc;
 
 type
 
@@ -95,7 +97,9 @@ type
 
 function WSRegisterLCLComponent: boolean;
 begin
+  {$ifndef WSINTF}
   RegisterWSComponent(TLCLComponent, TWSLCLComponent);
+  {$endif}
   Result := True;
 end;
 
@@ -123,7 +127,9 @@ begin
 
   WSRegisterClass;
   { If required, force creation of intermediate nodes for Self and a leaf node for Self }
+  {$ifndef WSINTF}
   Result := RegisterNewWSComp(Self);
+  {$endif}
 end;
 
 {$IFDEF DebugLCLComponents}

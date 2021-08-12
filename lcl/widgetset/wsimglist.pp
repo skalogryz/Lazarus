@@ -36,13 +36,30 @@ interface
 ////////////////////////////////////////////////////
 uses
   Classes, GraphType, Graphics, IntfGraphics, ImgList, LCLType, LCLIntf,
-  WSLCLClasses, WSProc, WSReferences, WSFactory;
+  {$ifdef WSINTF}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSProc, WSReferences, WSFactory;
 
 type
   { TWSCustomImageListResolution }
 
-  TWSCustomImageListResolution = class(TWSLCLReferenceComponent)
-  published
+  {$ifdef WSINTF}TWSCustomImageListResolutionClass = interface (TWSLCLReferenceComponentClass)
+    procedure Clear(AList: TCustomImageListResolution); virtual;
+    function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
+    AHeight: Integer; AData: PRGBAQuad): TWSCustomImageListReference; virtual;
+
+    procedure Delete(AList: TCustomImageListResolution; AIndex: Integer); virtual;
+    //procedure DestroyReference(AComponent: TComponent); override;
+    procedure Draw(AList: TCustomImageListResolution; AIndex: Integer; ACanvas: TCanvas;
+    ABounds: TRect; ABkColor, ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect; AStyle: TDrawingStyle; AImageType: TImageType); virtual;
+
+    procedure Insert(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
+
+    procedure Move(AList: TCustomImageListResolution; ACurIndex, ANewIndex: Integer); virtual;
+
+    procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
+  end;{$endif}
+
+  TWSCustomImageListResolution = class(TWSLCLReferenceComponent, TWSLCLReferenceComponentClass)
+  {$ifdef WSINTF}public{$else}published{$endif}
     class procedure Clear(AList: TCustomImageListResolution); virtual;
     class function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
       AHeight: Integer; AData: PRGBAQuad): TWSCustomImageListReference; virtual;
@@ -58,7 +75,7 @@ type
 
     class procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
   end;
-  TWSCustomImageListResolutionClass = class of TWSCustomImageListResolution;
+  {$ifndef WSINTF}TWSCustomImageListResolutionClass = class of TWSCustomImageListResolution;{$endif}
 
   procedure RegisterCustomImageListResolution;
 
@@ -262,8 +279,10 @@ const
   Done: Boolean = False;
 begin
   if Done then exit;
+  {$ifndef WSINTF}
   if not WSRegisterCustomImageListResolution then
     RegisterWSComponent(TCustomImageListResolution, TWSCustomImageListResolution);
+  {$endif}
   Done := True;
 end;
 

@@ -84,11 +84,8 @@ type
   { TWSLCLReferenceComponent }
 
   TWSLCLReferenceComponent = class(TWSLCLComponent, TWSLCLReferenceComponentClass)
-  protected
-    procedure _DestroyReference(AComponent: TComponent);
-    procedure TWSLCLReferenceComponentClass.DestroyReference = _DestroyReference;
-  public
-    class procedure DestroyReference(AComponent: TComponent); virtual;
+  impsection
+    imptype procedure DestroyReference(AComponent: TComponent); virtual;
   end;
 
 
@@ -772,12 +769,7 @@ end;
 
 { TWSLCLHandleComponent }
 
-procedure TWSLCLReferenceComponent._DestroyReference(AComponent: TComponent);
-begin
-  TWSLCLReferenceComponent.DestroyReference(AComponent);
-end;
-
-class procedure TWSLCLReferenceComponent.DestroyReference(AComponent: TComponent);
+imptype procedure TWSLCLReferenceComponent.DestroyReference(AComponent: TComponent);
 begin
 end;
 

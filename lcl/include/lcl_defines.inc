@@ -9,3 +9,12 @@
 {$ENDIF}
 
 {$define WSINTF}
+
+{$macro on}
+{$ifdef wsintf}
+{$define imptype:=}
+{$define impsection:=public}
+{$else}
+{$define imptype:=class}
+{$define impsection:=published}
+{$endif}

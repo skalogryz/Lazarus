@@ -52,38 +52,25 @@ const
   );
 type
   {$ifdef WSINTF}TWSDragImageListResolutionClass = interface (TWSCustomImageListResolutionClass)
-    function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer): Boolean; virtual;
-    function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; virtual;
-    procedure EndDrag(const ADragImageList: TDragImageListResolution); virtual;
+    function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer): Boolean;
+    function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean;
+    procedure EndDrag(const ADragImageList: TDragImageListResolution);
     function HideDragImage(const ADragImageList: TDragImageListResolution;
-    ALockedWindow: HWND; DoUnLock: Boolean): Boolean; virtual;
+    ALockedWindow: HWND; DoUnLock: Boolean): Boolean;
     function ShowDragImage(const ADragImageList: TDragImageListResolution;
-      ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean; virtual;
+      ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean;
   end;{$endif}
 
   { TWSDragImageListResolution }
 
   TWSDragImageListResolution = class(TWSCustomImageListResolution {$ifdef WSINTF},TWSDragImageListResolutionClass{$endif})
-  protected
-    function _BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer): Boolean; virtual;
-    function _DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; virtual;
-    procedure _EndDrag(const ADragImageList: TDragImageListResolution); virtual;
-    function _HideDragImage(const ADragImageList: TDragImageListResolution;
-    ALockedWindow: HWND; DoUnLock: Boolean): Boolean; virtual;
-    function _ShowDragImage(const ADragImageList: TDragImageListResolution;
-      ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean; virtual;
-    function TWSDragImageListResolutionClass.BeginDrag     = _BeginDrag;
-    function TWSDragImageListResolutionClass.DragMove      = _DragMove;
-    procedure TWSDragImageListResolutionClass.EndDrag      = _EndDrag;
-    function TWSDragImageListResolutionClass.HideDragImage = _HideDragImage;
-    function TWSDragImageListResolutionClass.ShowDragImage = _ShowDragImage;
-  {$ifndef WSINTF}published{$else}public{$endif}
-    class function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer): Boolean; virtual;
-    class function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; virtual;
-    class procedure EndDrag(const ADragImageList: TDragImageListResolution); virtual;
-    class function HideDragImage(const ADragImageList: TDragImageListResolution;
+  impsection
+    imptype function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer): Boolean; virtual;
+    imptype function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; virtual;
+    imptype procedure EndDrag(const ADragImageList: TDragImageListResolution); virtual;
+    imptype function HideDragImage(const ADragImageList: TDragImageListResolution;
       ALockedWindow: HWND; DoUnLock: Boolean): Boolean; virtual;
-    class function ShowDragImage(const ADragImageList: TDragImageListResolution;
+    imptype function ShowDragImage(const ADragImageList: TDragImageListResolution;
       ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean; virtual;
   end;
 
@@ -105,15 +92,25 @@ type
   TWSLazAccessibleObjectClass = class of TWSLazAccessibleObject;
 
   { TWSControl }
+  {$ifdef WSINTF}
+  TWSControlClass = interface(TWSLCLComponentClass)
+    procedure AddControl(const AControl: TControl);
+    function GetConstraints(const AControl: TControl; const AConstraints: TObject): Boolean;
+    function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
+    procedure ConstraintWidth(const AControl: TControl; const AConstraints: TObject; var aWidth: integer);
+    procedure ConstraintHeight(const AControl: TControl; const AConstraints: TObject; var aHeight: integer);
+    function GetCanvasScaleFactor(const AControl: TControl): Double;
+  end;
+  {$endif}
 
-  TWSControl = class(TWSLCLComponent)
-  {$ifndwf WSINTF}published{$else}public{$endif}
-    class procedure AddControl(const AControl: TControl); virtual;
-    class function GetConstraints(const AControl: TControl; const AConstraints: TObject): Boolean; virtual;
-    class function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; virtual;
-    class procedure ConstraintWidth(const AControl: TControl; const AConstraints: TObject; var aWidth: integer); virtual;
-    class procedure ConstraintHeight(const AControl: TControl; const AConstraints: TObject; var aHeight: integer); virtual;
-    class function GetCanvasScaleFactor(const AControl: TControl): Double; virtual;
+  TWSControl = class(TWSLCLComponent{$ifdef WSINTF}, TWSControlClass{$endif})
+  impsection
+    imptype procedure AddControl(const AControl: TControl); virtual;
+    imptype function GetConstraints(const AControl: TControl; const AConstraints: TObject): Boolean; virtual;
+    imptype function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; virtual;
+    imptype procedure ConstraintWidth(const AControl: TControl; const AConstraints: TObject; var aWidth: integer); virtual;
+    imptype procedure ConstraintHeight(const AControl: TControl; const AConstraints: TObject; var aHeight: integer); virtual;
+    imptype function GetCanvasScaleFactor(const AControl: TControl): Double; virtual;
   end;
 
   {$ifndef WSINTF}TWSControlClass = class of TWSControl;{$endif}
@@ -123,65 +120,104 @@ type
   TWSZPosition = (wszpBack, wszpFront);
   
   { TWSWinControl }
+  {$ifdef WSINTF}
+  TWSWinControlClass = interface(TWSControlClass)
+    function  CanFocus(const AWincontrol: TWinControl): Boolean;
+    function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
+    function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
+    procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
+    function  GetDefaultClientRect(const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect): boolean;
+    function GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean;
+    function GetDoubleBuffered(const AWinControl: TWinControl): Boolean;
+    function  GetText(const AWinControl: TWinControl; var AText: String): Boolean;
+    function  GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean;
 
-  TWSWinControl = {$ifndef WSINTF}class(TWSControl)
-  published{$else}interface(TWSControl){$endif}
-    {$ifndef WSINTF}class{$endif} function  CanFocus(const AWincontrol: TWinControl): Boolean; virtual;
-    
-    {$ifndef WSINTF}class{$endif} function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; virtual;
-    {$ifndef WSINTF}class{$endif} function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; virtual;
-    {$ifndef WSINTF}class{$endif} procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); virtual;
-    {$ifndef WSINTF}class{$endif} function  GetDefaultClientRect(const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect): boolean; virtual;
-    {$ifndef WSINTF}class{$endif} function GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean; virtual;
-    {$ifndef WSINTF}class{$endif} function GetDoubleBuffered(const AWinControl: TWinControl): Boolean; virtual;
-    {$ifndef WSINTF}class{$endif} function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; virtual;
-    {$ifndef WSINTF}class{$endif} function  GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; virtual;
-
-    {$ifndef WSINTF}class{$endif} procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetColor(const AWinControl: TWinControl); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer; const AChildren: TFPList); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetText(const AWinControl: TWinControl; const AText: String); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); virtual;
-    {$ifndef WSINTF}class{$endif} procedure SetShape(const AWinControl: TWinControl; const AShape: HBITMAP); virtual;
+    procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean);
+    procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
+    procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer);
+    procedure SetColor(const AWinControl: TWinControl);
+    procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer; const AChildren: TFPList);
+    procedure SetFont(const AWinControl: TWinControl; const AFont: TFont);
+    procedure SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer);
+    procedure SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer);
+    procedure SetText(const AWinControl: TWinControl; const AText: String);
+    procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor);
+    procedure SetShape(const AWinControl: TWinControl; const AShape: HBITMAP);
 
     { TODO: move AdaptBounds: it is only used in winapi interfaces }
-    {$ifndef WSINTF}class{$endif} procedure AdaptBounds(const AWinControl: TWinControl;
+    procedure AdaptBounds(const AWinControl: TWinControl;
+          var Left, Top, Width, Height: integer; var SuppressMove: boolean);
+
+    procedure ConstraintsChange(const AWinControl: TWinControl);
+    function  CreateHandle(const AWinControl: TWinControl;
+      const AParams: TCreateParams): TLCLIntfHandle;
+    procedure DestroyHandle(const AWinControl: TWinControl);
+    procedure DefaultWndHandler(const AWinControl: TWinControl; var AMessage);
+    procedure Invalidate(const AWinControl: TWinControl);
+    procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer);
+    procedure Repaint(const AWinControl: TWinControl);
+    procedure ShowHide(const AWinControl: TWinControl);
+    procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer);
+  end;
+  {$endif}
+
+  TWSWinControl = class(TWSControl{$ifdef WSINTF},TWSWinControlClass{$endif})
+  impsection
+    imptype function  CanFocus(const AWincontrol: TWinControl): Boolean; virtual;
+    imptype function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; virtual;
+    imptype function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; virtual;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); virtual;
+    imptype function  GetDefaultClientRect(const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect): boolean; virtual;
+    imptype function GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean; virtual;
+    imptype function GetDoubleBuffered(const AWinControl: TWinControl): Boolean; virtual;
+    imptype function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; virtual;
+    imptype function  GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; virtual;
+
+    imptype procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean); virtual;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); virtual;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); virtual;
+    imptype procedure SetColor(const AWinControl: TWinControl); virtual;
+    imptype procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer; const AChildren: TFPList); virtual;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); virtual;
+    imptype procedure SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer); virtual;
+    imptype procedure SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer); virtual;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); virtual;
+    imptype procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); virtual;
+    imptype procedure SetShape(const AWinControl: TWinControl; const AShape: HBITMAP); virtual;
+
+    { TODO: move AdaptBounds: it is only used in winapi interfaces }
+    imptype procedure AdaptBounds(const AWinControl: TWinControl;
           var Left, Top, Width, Height: integer; var SuppressMove: boolean); virtual;
           
-    {$ifndef WSINTF}class{$endif} procedure ConstraintsChange(const AWinControl: TWinControl); virtual;
-    {$ifndef WSINTF}class{$endif} function  CreateHandle(const AWinControl: TWinControl;
+    imptype procedure ConstraintsChange(const AWinControl: TWinControl); virtual;
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; virtual;
-    {$ifndef WSINTF}class{$endif} procedure DestroyHandle(const AWinControl: TWinControl); virtual;
-    {$ifndef WSINTF}class{$endif} procedure DefaultWndHandler(const AWinControl: TWinControl; var AMessage); virtual;
-    {$ifndef WSINTF}class{$endif} procedure Invalidate(const AWinControl: TWinControl); virtual;
-    {$ifndef WSINTF}class{$endif} procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); virtual;
-    {$ifndef WSINTF}class{$endif} procedure Repaint(const AWinControl: TWinControl); virtual;
-    {$ifndef WSINTF}class{$endif} procedure ShowHide(const AWinControl: TWinControl); virtual; //TODO: rename to SetVisible(control, visible)
-    {$ifndef WSINTF}class{$endif} procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); virtual;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); virtual;
+    imptype procedure DefaultWndHandler(const AWinControl: TWinControl; var AMessage); virtual;
+    imptype procedure Invalidate(const AWinControl: TWinControl); virtual;
+    imptype procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); virtual;
+    imptype procedure Repaint(const AWinControl: TWinControl); virtual;
+    imptype procedure ShowHide(const AWinControl: TWinControl); virtual; //TODO: rename to SetVisible(control, visible)
+    imptype procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); virtual;
   end;
-  TWSWinControlClass = {$ifndef WSINTF}class of{$endif} TWSWinControl;
+  {$ifndef WSINTF}TWSWinControlClass = class of TWSWinControl;{$endif}
 
   { TWSGraphicControl }
 
-  TWSGraphicControl = {$ifndef WSINTF}class (TWSControl)
-  published{$else}interface(TWSControl)
-  end;{$endif}
+  TWSGraphicControl = class (TWSControl)
+  published
+  end;
 
   { TWSCustomControl }
 
-  TWSCustomControl = {$ifndef WSINTF}class(TWSWinControl)
-  published{$else}interface(TWSWinControl){$endif}
+  TWSCustomControl = class(TWSWinControl)
+  published
   end;
 
   { TWSImageList }
 
-  TWSImageList = {$ifndef WSINTF}class(TWSDragImageListResolution)
-  published{$else}interface(TWSDragImageListResolution){$endif}
+  TWSImageList = class(TWSDragImageListResolution)
+  published
   end;
 
 procedure RegisterDragImageListResolution;
@@ -241,77 +277,77 @@ end;
 
 { TWSControl }
 
-class procedure TWSControl.AddControl(const AControl: TControl);
+imptype procedure TWSControl.AddControl(const AControl: TControl);
 begin
 end;
 
-class function TWSControl.GetConstraints(const AControl: TControl; const AConstraints: TObject): Boolean;
+imptype function TWSControl.GetConstraints(const AControl: TControl; const AConstraints: TObject): Boolean;
 begin
   Result := WidgetSet.GetControlConstraints(AConstraints);
 end;
 
-class function TWSControl.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
+imptype function TWSControl.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
 begin
   Result := clDefault;
 end;
 
-class procedure TWSControl.ConstraintWidth(const AControl: TControl;
+imptype procedure TWSControl.ConstraintWidth(const AControl: TControl;
   const AConstraints: TObject; var aWidth: integer);
 begin
 
 end;
 
-class procedure TWSControl.ConstraintHeight(const AControl: TControl;
+imptype procedure TWSControl.ConstraintHeight(const AControl: TControl;
   const AConstraints: TObject; var aHeight: integer);
 begin
 
 end;
 
-class function TWSControl.GetCanvasScaleFactor(const AControl: TControl): Double;
+imptype function TWSControl.GetCanvasScaleFactor(const AControl: TControl): Double;
 begin
   Result := 1;
 end;
 
 { TWSWinControl }
 
-class procedure TWSWinControl.AdaptBounds(const AWinControl: TWinControl;
+imptype procedure TWSWinControl.AdaptBounds(const AWinControl: TWinControl;
   var Left, Top, Width, Height: integer; var SuppressMove: boolean);
 begin
 end;
 
-class procedure TWSWinControl.ConstraintsChange(const AWinControl: TWinControl);
+imptype procedure TWSWinControl.ConstraintsChange(const AWinControl: TWinControl);
 begin
 end;
 
-class function TWSWinControl.CreateHandle(const AWinControl: TWinControl;
+imptype function TWSWinControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 begin
   // For now default to the old creation routines
   Result := 0;
 end;
 
-class procedure TWSWinControl.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TWSWinControl.DestroyHandle(const AWinControl: TWinControl);
 begin
 end;
 
-class procedure TWSWinControl.DefaultWndHandler(const AWinControl: TWinControl; var AMessage);
+imptype procedure TWSWinControl.DefaultWndHandler(const AWinControl: TWinControl; var AMessage);
 begin
   WidgetSet.CallDefaultWndHandler(AWinControl, AMessage);
 end;
 
-class function TWSWinControl.CanFocus(const AWincontrol: TWinControl): Boolean;
+imptype function TWSWinControl.CanFocus(const AWincontrol: TWinControl): Boolean;
 begin
   // lets consider that by deafult all WinControls can be focused
   Result := True;
 end;
 
-class function TWSWinControl.GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
+imptype function TWSWinControl.GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
 begin
   // for now default to the WinAPI version
   Result := WidgetSet.GetClientBounds(AWincontrol.Handle, ARect);
 end;
 
-class function TWSWinControl.GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
+imptype function TWSWinControl.GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
 begin
   // for now default to the WinAPI version
   Result := WidgetSet.GetClientRect(AWincontrol.Handle, ARect);
@@ -324,12 +360,12 @@ end;
 
   Retrieves the text from a control. 
  ------------------------------------------------------------------------------}
-class function TWSWinControl.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
+imptype function TWSWinControl.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
 begin
   Result := false;
 end;
   
-class function TWSWinControl.GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean;
+imptype function TWSWinControl.GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean;
 var
   S: String;
 begin
@@ -338,88 +374,88 @@ begin
   then ALength := Length(S);
 end;
 
-class procedure TWSWinControl.SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean);
+imptype procedure TWSWinControl.SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean);
 begin
 end;
 
-class procedure TWSWinControl.GetPreferredSize(const AWinControl: TWinControl;
+imptype procedure TWSWinControl.GetPreferredSize(const AWinControl: TWinControl;
   var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
 begin
   PreferredWidth := 0;
   PreferredHeight := 0;
 end;
 
-class function TWSWinControl.GetDefaultClientRect(
+imptype function TWSWinControl.GetDefaultClientRect(
   const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer;
   var aClientRect: TRect): boolean;
 begin
   Result:=false;
 end;
 
-class function TWSWinControl.GetDesignInteractive(
+imptype function TWSWinControl.GetDesignInteractive(
   const AWinControl: TWinControl; AClientPos: TPoint): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSWinControl.GetDoubleBuffered(
+imptype function TWSWinControl.GetDoubleBuffered(
   const AWinControl: TWinControl): Boolean;
 begin
   Result := AWinControl.DoubleBuffered;
 end;
 
-class procedure TWSWinControl.Invalidate(const AWinControl: TWinControl);
+imptype procedure TWSWinControl.Invalidate(const AWinControl: TWinControl);
 begin
 end;
 
-class procedure TWSWinControl.PaintTo(const AWinControl: TWinControl; ADC: HDC;
+imptype procedure TWSWinControl.PaintTo(const AWinControl: TWinControl; ADC: HDC;
   X, Y: Integer);
 begin
 
 end;
 
-class procedure TWSWinControl.Repaint(const AWinControl: TWinControl);
+imptype procedure TWSWinControl.Repaint(const AWinControl: TWinControl);
 begin
   AWinControl.Invalidate;
   AWinControl.Update;
 end;
 
-class procedure TWSWinControl.SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer);
+imptype procedure TWSWinControl.SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer);
 begin
 end;
     
-class procedure TWSWinControl.SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
+imptype procedure TWSWinControl.SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 begin
 end;
 
-class procedure TWSWinControl.SetChildZPosition(
+imptype procedure TWSWinControl.SetChildZPosition(
   const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer;
   const AChildren: TFPList);
 begin
 end;
 
-class procedure TWSWinControl.SetColor(const AWinControl: TWinControl);
+imptype procedure TWSWinControl.SetColor(const AWinControl: TWinControl);
 begin
 end;
 
-class procedure TWSWinControl.SetCursor(const AWinControl: TWinControl; const ACursor: HCursor);
+imptype procedure TWSWinControl.SetCursor(const AWinControl: TWinControl; const ACursor: HCursor);
 begin
 end;
 
-class procedure TWSWinControl.SetShape(const AWinControl: TWinControl;
+imptype procedure TWSWinControl.SetShape(const AWinControl: TWinControl;
   const AShape: HBITMAP);
 begin
 end;
 
-class procedure TWSWinControl.SetFont(const AWinControl: TWinControl; const AFont: TFont);
+imptype procedure TWSWinControl.SetFont(const AWinControl: TWinControl; const AFont: TFont);
 begin
 end;
 
-class procedure TWSWinControl.SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer);
+imptype procedure TWSWinControl.SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer);
 begin
 end;
 
-class procedure TWSWinControl.SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer);
+imptype procedure TWSWinControl.SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer);
 begin
 end;
 
@@ -431,50 +467,49 @@ end;
 
   Sets the label text on a widget
  ------------------------------------------------------------------------------}
-class procedure TWSWinControl.SetText(const AWinControl: TWinControl; const AText: String);
+imptype procedure TWSWinControl.SetText(const AWinControl: TWinControl; const AText: String);
 begin
 end;
 
-class procedure TWSWinControl.ShowHide(const AWinControl: TWinControl);
+imptype procedure TWSWinControl.ShowHide(const AWinControl: TWinControl);
 begin
 end;
 
-class procedure TWSWinControl.ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer);
+imptype procedure TWSWinControl.ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer);
 begin
   AWinControl.Invalidate;
 end;
 
 { TWSDragImageListResolution }
 
-class function TWSDragImageListResolution.BeginDrag(
+imptype function TWSDragImageListResolution.BeginDrag(
   const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X,
   Y: Integer): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSDragImageListResolution.DragMove(const ADragImageList: TDragImageListResolution;
+imptype function TWSDragImageListResolution.DragMove(const ADragImageList: TDragImageListResolution;
   X, Y: Integer): Boolean;
 begin
   Result := False;
 end;
 
-class procedure TWSDragImageListResolution.EndDrag(const ADragImageList: TDragImageListResolution);
+imptype procedure TWSDragImageListResolution.EndDrag(const ADragImageList: TDragImageListResolution);
 begin
 end;
 
-class function TWSDragImageListResolution.HideDragImage(const ADragImageList: TDragImageListResolution;
+imptype function TWSDragImageListResolution.HideDragImage(const ADragImageList: TDragImageListResolution;
   ALockedWindow: HWND; DoUnLock: Boolean): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSDragImageListResolution.ShowDragImage(const ADragImageList: TDragImageListResolution;
+imptype function TWSDragImageListResolution.ShowDragImage(const ADragImageList: TDragImageListResolution;
   ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean;
 begin
   Result := False;
 end;
-{$ENDIF}
 
 { WidgetSetRegistration }
 
@@ -484,7 +519,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterDragImageListResolution then
-    RegisterWSComponent(TDragImageListResolution, TWSDragImageListResolution);
+    RegisterWSComponent(TDragImageListResolution, TWSDragImageListResolution.Create);
   Done := True;
 end;
 

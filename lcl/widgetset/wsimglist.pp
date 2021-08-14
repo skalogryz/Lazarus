@@ -42,38 +42,38 @@ type
   { TWSCustomImageListResolution }
 
   {$ifdef WSINTF}TWSCustomImageListResolutionClass = interface (TWSLCLReferenceComponentClass)
-    procedure Clear(AList: TCustomImageListResolution); virtual;
+    procedure Clear(AList: TCustomImageListResolution);
     function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
-    AHeight: Integer; AData: PRGBAQuad): TWSCustomImageListReference; virtual;
+    AHeight: Integer; AData: PRGBAQuad): TWSCustomImageListReference;
 
-    procedure Delete(AList: TCustomImageListResolution; AIndex: Integer); virtual;
+    procedure Delete(AList: TCustomImageListResolution; AIndex: Integer);
     //procedure DestroyReference(AComponent: TComponent); override;
     procedure Draw(AList: TCustomImageListResolution; AIndex: Integer; ACanvas: TCanvas;
-    ABounds: TRect; ABkColor, ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect; AStyle: TDrawingStyle; AImageType: TImageType); virtual;
+    ABounds: TRect; ABkColor, ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect; AStyle: TDrawingStyle; AImageType: TImageType);
 
-    procedure Insert(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
+    procedure Insert(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad);
 
-    procedure Move(AList: TCustomImageListResolution; ACurIndex, ANewIndex: Integer); virtual;
+    procedure Move(AList: TCustomImageListResolution; ACurIndex, ANewIndex: Integer);
 
-    procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
+    procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad);
   end;{$endif}
 
   TWSCustomImageListResolution = class(TWSLCLReferenceComponent, TWSLCLReferenceComponentClass)
-  {$ifdef WSINTF}public{$else}published{$endif}
-    class procedure Clear(AList: TCustomImageListResolution); virtual;
-    class function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
+  impsection
+    imptype procedure Clear(AList: TCustomImageListResolution); virtual;
+    imptype function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
       AHeight: Integer; AData: PRGBAQuad): TWSCustomImageListReference; virtual;
 
-    class procedure Delete(AList: TCustomImageListResolution; AIndex: Integer); virtual;
-    class procedure DestroyReference(AComponent: TComponent); override;
-    class procedure Draw(AList: TCustomImageListResolution; AIndex: Integer; ACanvas: TCanvas;
+    imptype procedure Delete(AList: TCustomImageListResolution; AIndex: Integer); virtual;
+    imptype procedure DestroyReference(AComponent: TComponent); override;
+    imptype procedure Draw(AList: TCustomImageListResolution; AIndex: Integer; ACanvas: TCanvas;
       ABounds: TRect; ABkColor, ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect; AStyle: TDrawingStyle; AImageType: TImageType); virtual;
 
-    class procedure Insert(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
+    imptype procedure Insert(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
 
-    class procedure Move(AList: TCustomImageListResolution; ACurIndex, ANewIndex: Integer); virtual;
+    imptype procedure Move(AList: TCustomImageListResolution; ACurIndex, ANewIndex: Integer); virtual;
 
-    class procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
+    imptype procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); virtual;
   end;
   {$ifndef WSINTF}TWSCustomImageListResolutionClass = class of TWSCustomImageListResolution;{$endif}
 
@@ -170,14 +170,14 @@ end;
 
 { TWSCustomImageListResolution }
 
-class procedure TWSCustomImageListResolution.Clear(AList: TCustomImageListResolution);
+imptype procedure TWSCustomImageListResolution.Clear(AList: TCustomImageListResolution);
 begin
   if not WSCheckReferenceAllocated(AList, 'Clear')
   then Exit;
   TDefaultImageListImplementor(AList.Reference.Ptr).Clear;
 end;
 
-class function TWSCustomImageListResolution.CreateReference(
+imptype function TWSCustomImageListResolution.CreateReference(
   AList: TCustomImageListResolution; ACount, AGrow, AWidth, AHeight: Integer;
   AData: PRGBAQuad): TWSCustomImageListReference;
 var
@@ -200,7 +200,7 @@ begin
   end;
 end;
 
-class procedure TWSCustomImageListResolution.Delete(AList: TCustomImageListResolution;
+imptype procedure TWSCustomImageListResolution.Delete(AList: TCustomImageListResolution;
   AIndex: Integer);
 begin
   if not WSCheckReferenceAllocated(AList, 'Delete')
@@ -208,14 +208,14 @@ begin
   TDefaultImageListImplementor(AList.Reference.Ptr).Delete(AIndex);
 end;
 
-class procedure TWSCustomImageListResolution.DestroyReference(AComponent: TComponent);
+imptype procedure TWSCustomImageListResolution.DestroyReference(AComponent: TComponent);
 begin
   if not WSCheckReferenceAllocated(TCustomImageListResolution(AComponent), 'DestroyReference')
   then Exit;
   TObject(TCustomImageListResolution(AComponent).Reference.Ptr).Free;
 end;
 
-class procedure TWSCustomImageListResolution.Draw(AList: TCustomImageListResolution;
+imptype procedure TWSCustomImageListResolution.Draw(AList: TCustomImageListResolution;
   AIndex: Integer; ACanvas: TCanvas; ABounds: TRect; ABkColor,
   ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect; AStyle: TDrawingStyle;
   AImageType: TImageType);
@@ -226,7 +226,7 @@ begin
   TDefaultImageListImplementor(AList.Reference.Ptr).Draw(AIndex, ACanvas, ABounds, ADrawEffect, AStyle);
 end;
 
-class procedure TWSCustomImageListResolution.Insert(AList: TCustomImageListResolution;
+imptype procedure TWSCustomImageListResolution.Insert(AList: TCustomImageListResolution;
   AIndex: Integer; AData: PRGBAQuad);
 var
   AImageList: TDefaultImageListImplementor;
@@ -248,7 +248,7 @@ begin
   end;
 end;
 
-class procedure TWSCustomImageListResolution.Move(AList: TCustomImageListResolution;
+imptype procedure TWSCustomImageListResolution.Move(AList: TCustomImageListResolution;
   ACurIndex, ANewIndex: Integer);
 begin
   if not WSCheckReferenceAllocated(AList, 'Move')
@@ -260,7 +260,7 @@ begin
   TDefaultImageListImplementor(AList.Reference.Ptr).Move(ACurIndex, ANewIndex);
 end;
 
-class procedure TWSCustomImageListResolution.Replace(AList: TCustomImageListResolution;
+imptype procedure TWSCustomImageListResolution.Replace(AList: TCustomImageListResolution;
   AIndex: Integer; AData: PRGBAQuad);
 var
   ABitmap: TBitmap;

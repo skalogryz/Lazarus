@@ -40,23 +40,34 @@ uses
 ////////////////////////////////////////////////////
   Types, Calendar,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSFactory;
 
 type
   { TWSCustomCalendar }
-
-  TWSCustomCalendar = class(TWSWinControl)
-  published
-    class function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; virtual;
-    class function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; virtual;
-    class function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView; virtual;
-    class procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); virtual;
-    class procedure SetDisplaySettings(const ACalendar: TCustomCalendar; 
+  {$ifdef wsintf}
+  TWSCustomCalendarClass = interface(TWSWinControlClass)
+    function GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
+    function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart;
+    function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView;
+    procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
+    procedure SetDisplaySettings(const ACalendar: TCustomCalendar;
+      const ADisplaySettings: TDisplaySettings);
+    procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
+      const ADayOfWeek: TCalDayOfWeek);
+  end;
+  {$endif}
+  TWSCustomCalendar = class(TWSWinControl{$ifdef wsintf},TWSCustomCalendarClass{$endif})
+  impsection
+    imptype function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; virtual;
+    imptype function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; virtual;
+    imptype function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView; virtual;
+    imptype procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); virtual;
+    imptype procedure SetDisplaySettings(const ACalendar: TCustomCalendar;
       const ADisplaySettings: TDisplaySettings); virtual;
-    class procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
+    imptype procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
       const ADayOfWeek: TCalDayOfWeek); virtual;
   end;
-  TWSCustomCalendarClass = class of TWSCustomCalendar;
+  {$ifndef wsintf}TWSCustomCalendarClass = class of TWSCustomCalendar;{$endif}
 
   { WidgetSetRegistration }
 
@@ -67,32 +78,32 @@ implementation
 uses
   LResources;
 
-class function  TWSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
+imptype function  TWSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
 begin
   Result := 0.0;
 end;
 
-class function TWSCustomCalendar.HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart;
+imptype function TWSCustomCalendar.HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart;
 begin
   Result := cpNoWhere;
 end;
 
-class function TWSCustomCalendar.GetCurrentView(const ACalendar: TCustomCalendar
+imptype function TWSCustomCalendar.GetCurrentView(const ACalendar: TCustomCalendar
   ): TCalendarView;
 begin
   Result := cvMonth;
 end;
 
-class procedure TWSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
+imptype procedure TWSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
 begin
 end;
 
-class procedure TWSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar;
+imptype procedure TWSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar;
   const ADisplaySettings: TDisplaySettings);
 begin
 end;
 
-class procedure TWSCustomCalendar.SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
+imptype procedure TWSCustomCalendar.SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
   const ADayOfWeek: TCalDayOfWeek);
 begin
 end;

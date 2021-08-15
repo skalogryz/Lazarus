@@ -19,6 +19,7 @@
 unit RubberBand;
 
 {$mode objfpc}{$H+}
+{$I lcl_defines.inc}
 
 interface
 

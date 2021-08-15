@@ -25,7 +25,11 @@ begin
     Exit;
   FShape := AValue;
   if HandleAllocated then
+    {$ifdef wsintf}
+    TWsCustomRubberBandClass(WidgetsetClass).SetShapeRubberBand(Self, FShape);
+    {$else}
     TWsCustomRubberBandClass(WidgetsetClass).SetShape(Self, FShape);
+    {$endif}
 end;
 
 class procedure TCustomRubberBand.WSRegisterClass;

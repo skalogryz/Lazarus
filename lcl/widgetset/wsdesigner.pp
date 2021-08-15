@@ -39,12 +39,20 @@ uses
 
 type
   { TWsCustomRubberBand }
-
-  TWsCustomRubberBand = class(TWsWinControl)
-  published
-    class procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); virtual; overload;
+  {$ifdef wsintf}
+  TWsCustomRubberBandClass = interface(TWsWinControlclass)
+    procedure SetShapeRubberBand(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape);
   end;
-  TWsCustomRubberBandClass = class of TWsCustomRubberBand;
+  {$endif}
+  TWsCustomRubberBand = class(TWsWinControl)
+  impsection
+    {$ifndef wsintf}
+    imptype procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); virtual; overload;
+    {$else}
+    imptype procedure SetShapeRubberBand(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); virtual;
+    {$endif}
+  end;
+  {$ifndef wsintf}TWsCustomRubberBandClass = class of TWsCustomRubberBand;{$endif}
 
   { WidgetSetRegistration }
 
@@ -53,9 +61,12 @@ type
 implementation
 
 { TWsCustomRubberBand }
-
-class procedure TWsCustomRubberBand.SetShape(ARubberBand: TCustomRubberBand;
+{$ifdef wsintf}
+imptype procedure TWsCustomRubberBand.SetShapeRubberBand(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape);
+{$else}
+imptype procedure TWsCustomRubberBand.SetShape(ARubberBand: TCustomRubberBand;
   AShape: TRubberBandShape);
+{$endif}
 begin
 end;
 

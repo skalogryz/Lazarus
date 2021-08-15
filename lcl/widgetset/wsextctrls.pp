@@ -40,106 +40,106 @@ uses
 ////////////////////////////////////////////////////
   LCLProc, Controls, ExtCtrls, Classes, ImgList, Graphics, LResources,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSStdCtrls, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSStdCtrls, WSFactory;
 
 type
   { TWSPage }
 
   TWSPage = class(TWSCustomControl)
-  published
+  impsection
   end;
 
   { TWSNotebook }
 
   TWSNotebook = class(TWSCustomControl)
-  published
-    class function GetDefaultColor(const AControl: TControl;
+  impsection
+    imptype function GetDefaultColor(const AControl: TControl;
       const ADefaultColorType: TDefaultColorType): TColor; override;
   end;
 
   { TWSShape }
 
   TWSShape = class(TWSGraphicControl)
-  published
+  impsection
   end;
 
   { TWSCustomSplitter }
 
   TWSCustomSplitter = class(TWSCustomControl)
-  published
+  impsection
   end;
 
   { TWSSplitter }
 
   TWSSplitter = class(TWSCustomSplitter)
-  published
+  impsection
   end;
 
   { TWSPaintBox }
 
   TWSPaintBox = class(TWSGraphicControl)
-  published
+  impsection
   end;
 
   { TWSCustomImage }
 
   TWSCustomImage = class(TWSGraphicControl)
-  published
+  impsection
   end;
 
   { TWSImage }
 
   TWSImage = class(TWSCustomImage)
-  published
+  impsection
   end;
 
   { TWSBevel }
 
   TWSBevel = class(TWSGraphicControl)
-  published
+  impsection
   end;
 
   { TWSCustomRadioGroup }
 
   TWSCustomRadioGroup = class(TWSCustomGroupBox)
-  published
+  impsection
   end;
 
   { TWSRadioGroup }
 
   TWSRadioGroup = class(TWSCustomRadioGroup)
-  published
+  impsection
   end;
 
   { TWSCustomCheckGroup }
 
   TWSCustomCheckGroup = class(TWSCustomGroupBox)
-  published
+  impsection
   end;
 
   { TWSCheckGroup }
 
   TWSCheckGroup = class(TWSCustomCheckGroup)
-  published
+  impsection
   end;
 
   { TWSCustomLabeledEdit }
 
   TWSCustomLabeledEdit = class(TWSCustomEdit)
-  published
+  impsection
   end;
 
   { TWSLabeledEdit }
 
   TWSLabeledEdit = class(TWSCustomLabeledEdit)
-  published
+  impsection
   end;
 
   { TWSCustomPanel }
 
   TWSCustomPanel = class(TWSCustomControl)
-  published
-    class function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
+  impsection
+    imptype function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
   end;
 
   { TWSPanel }
@@ -148,17 +148,29 @@ type
   end;
 
   { TWSCustomTrayIcon }
+  {$ifdef wsintf}
+  TWSCustomTrayIconClass = interface(TWSLCLComponentClass)
+    function Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
+    function Show(const ATrayIcon: TCustomTrayIcon): Boolean;
+    procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon);
+    function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean;
+    function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
+    function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
+  end;
+  {$endif}
 
   TWSCustomTrayIcon = class(TWSLCLComponent)
-  published
-    class function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; virtual;
-    class function Show(const ATrayIcon: TCustomTrayIcon): Boolean; virtual;
-    class procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); virtual;
-    class function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; virtual;
-    class function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; virtual;
-    class function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas; virtual;
+  impsection
+    imptype function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; virtual;
+    imptype function Show(const ATrayIcon: TCustomTrayIcon): Boolean; virtual;
+    imptype procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); virtual;
+    imptype function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; virtual;
+    imptype function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; virtual;
+    imptype function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas; virtual;
   end;
+  {$ifndef wsintf}
   TWSCustomTrayIconClass = class of TWSCustomTrayIcon;
+  {$endif}
 
   { WidgetSetRegistration }
 
@@ -177,7 +189,7 @@ implementation
 
 { TWSNotebook }
 
-class function TWSNotebook.GetDefaultColor(const AControl: TControl;
+imptype function TWSNotebook.GetDefaultColor(const AControl: TControl;
   const ADefaultColorType: TDefaultColorType): TColor;
 begin
   Result:=DefBtnColors[ADefaultColorType];
@@ -185,17 +197,17 @@ end;
 
 { TWSCustomTrayIcon }
 
-class function TWSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TWSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TWSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
 begin
   Result := False;
 end;
 
-class procedure TWSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
+imptype procedure TWSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
 begin
 
 end;
@@ -207,17 +219,17 @@ end;
 *                  True if a platform-specific baloon is implemented
 *
 *******************************************************************}
-class function TWSCustomTrayIcon.ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TWSCustomTrayIcon.ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
+imptype function TWSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
 begin
   Result := Point(0, 0);
 end;
 
-class function TWSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
+imptype function TWSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
 begin
   Result := ATrayIcon.Icon.Canvas;
 end;
@@ -335,13 +347,13 @@ const
 begin
   if Done then exit;
   if not WSRegisterCustomTrayIcon then
-    RegisterWSComponent(TCustomTrayIcon, TWSCustomTrayIcon);
+    RegisterWSComponent(TCustomTrayIcon, TWSCustomTrayIcon{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 
 { TWSCustomPanel }
 
-class function TWSCustomPanel.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
+imptype function TWSCustomPanel.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
 begin
   Result := DefBtnColors[ADefaultColorType];
 end;

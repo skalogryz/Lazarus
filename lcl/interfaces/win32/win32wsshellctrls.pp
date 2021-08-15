@@ -28,24 +28,24 @@ uses
 ////////////////////////////////////////////////////
 //  Graphics, ImgList, Controls, ShellCtrls,
 ////////////////////////////////////////////////////
-  WSShellCtrls;
+  WSShellCtrls{$ifdef wsintf},Win32WSControls,Win32WSComCtrls{$endif};
 
 type
 
   { TWin32WSCustomShellTreeView }
 
-  TWin32WSCustomShellTreeView = class(TWSCustomShellTreeView)
-  published
-    class function DrawBuiltInIcon(ATreeView: TCustomShellTreeView; ANode: TTreeNode;
-      ARect: TRect): TSize; override;
-    class function GetBuiltinIconSize: TSize; override;
+  TWin32WSCustomShellTreeView = class({$ifndef wsintf}TWSCustomShellTreeView{$else}TWin32WSWinControl, TWSCustomShellTreeViewClass{$endif})
+  impsection
+    imptype function DrawBuiltInIcon(ATreeView: TCustomShellTreeView; ANode: TTreeNode;
+      ARect: TRect): TSize; rootoverride;
+    imptype function GetBuiltinIconSize: TSize; rootoverride;
   end;
 
   { TWin32WSCustomShellListView }
-  TWin32WSCustomShellListView = class(TWSCustomShellListView)
-  published
-    class function GetBuiltInImageIndex(AListView: TCustomShellListView;
-      const AFileName: String; ALargeImage: Boolean): Integer; override;
+  TWin32WSCustomShellListView = class({$ifndef wsintf}TWSCustomShellListView{$else}TWin32WSCustomListView, TWSCustomShellListViewClass{$endif})
+  impsection
+    imptype function GetBuiltInImageIndex(AListView: TCustomShellListView;
+      const AFileName: String; ALargeImage: Boolean): Integer; rootoverride;
   end;
 
 implementation
@@ -74,7 +74,7 @@ end;
 
 { TWin32WSCustomShellTreeView }
 
-class function TWin32WSCustomShellTreeView.DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
+imptype function TWin32WSCustomShellTreeView.DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
   ANode: TTreeNode; ARect: TRect): TSize;
 var
   filename: WideString;
@@ -90,7 +90,7 @@ begin
   end;
 end;
 
-class function TWin32WSCustomShellTreeView.GetBuiltinIconSize: TSize;
+imptype function TWin32WSCustomShellTreeView.GetBuiltinIconSize: TSize;
 var
   ico: TIcon;
 begin
@@ -110,7 +110,7 @@ end;
 
 { TWin32WSCustomShellListView }
 
-class function TWin32WSCustomShellListView.GetBuiltInImageIndex(
+imptype function TWin32WSCustomShellListView.GetBuiltInImageIndex(
   AListView: TCustomShellListView; const AFileName: String;
   ALargeImage: Boolean): Integer;
 var

@@ -31,23 +31,26 @@ uses
 ////////////////////////////////////////////////////
   Windows, LCLType, LazUTF8, Types, Controls, Grids, Win32Proc, Graphics,
 ////////////////////////////////////////////////////
-  WSGrids;
+  WSGrids{$ifdef wsintf},Win32WSControls{$endif};
 
 type
   { TWin32WSCustomGrid }
 
-  TWin32WSCustomGrid = class(TWSCustomGrid)
-  published
-    class procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char); override;
-    class function GetEditorBoundsFromCellRect(ACanvas: TCanvas;
-      const ACellRect: TRect; const AColumnLayout: TTextLayout): TRect; override;
+  TWin32WSCustomGrid = class({$ifndef wsintf}TWSCustomGrid{$else}TWin32WSWinControl, TWSCustomGridClass{$endif})
+  impsection
+    imptype procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char); rootoverride;
+    imptype function GetEditorBoundsFromCellRect(ACanvas: TCanvas;
+      const ACellRect: TRect; const AColumnLayout: TTextLayout): TRect; rootoverride;
+    {$ifdef wsintf}
+    imptype function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer; rootoverride;
+    {$endif}
   end;
 
 implementation
 
 { TWin32WSCustomGrid }
 
-class function TWin32WSCustomGrid.GetEditorBoundsFromCellRect(ACanvas: TCanvas;
+imptype function TWin32WSCustomGrid.GetEditorBoundsFromCellRect(ACanvas: TCanvas;
   const ACellRect: TRect; const AColumnLayout: TTextLayout): TRect;
 var
   EditorTop: LongInt;
@@ -68,7 +71,7 @@ begin
   Result.Bottom:=Result.Top+TextHeight;
 end;
 
-class procedure TWin32WSCustomGrid.SendCharToEditor(AEditor: TWinControl;
+imptype procedure TWin32WSCustomGrid.SendCharToEditor(AEditor: TWinControl;
   Ch: TUTF8Char);
 var
   S: widestring;
@@ -82,5 +85,11 @@ begin
   end;
   PostMessageW(AEditor.Handle, WM_CHAR, WChar, 0);
 end;
+{$ifdef wsintf}
+imptype function TWin32WSCustomGrid.InvalidateStartY(const FixedHeight, RowOffset: Integer): integer;
+begin
+  Result := FixedHeight;
+end;
+{$endif}
 
 end.

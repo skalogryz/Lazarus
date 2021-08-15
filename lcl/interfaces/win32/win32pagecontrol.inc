@@ -107,7 +107,7 @@ end;
 
 { TWin32WSCustomPage }
 
-class function TWin32WSCustomPage.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSCustomPage.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -127,7 +127,7 @@ begin
   ThemeChange(Result);
 end;
 
-class procedure TWin32WSCustomPage.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TWin32WSCustomPage.DestroyHandle(const AWinControl: TWinControl);
 var
   PageIndex, RealIndex: integer;
 begin
@@ -162,7 +162,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomPage.SetText(const AWinControl: TWinControl; const AText: string);
+imptype procedure TWin32WSCustomPage.SetText(const AWinControl: TWinControl; const AText: string);
 var
   TCI: TC_ITEM;
   TabControl: TCustomTabControl;
@@ -190,7 +190,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
+imptype procedure TWin32WSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
 var
   TCI: TC_ITEM;
   PageIndex, RealIndex: integer;
@@ -340,7 +340,7 @@ begin
   Result := WindowProc(Window, Msg, WParam, LParam);
 end;
 
-class function TWin32WSCustomTabControl.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSCustomTabControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 const
   TabPositionFlags: array[TTabPosition, Boolean] of DWord = (
@@ -411,7 +411,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomTabControl.AddPage(const ATabControl: TCustomTabControl;
+imptype procedure TWin32WSCustomTabControl.AddPage(const ATabControl: TCustomTabControl;
   const AChild: TCustomPage; const AIndex: integer);
 var
   TCI: TC_ITEM;
@@ -444,7 +444,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;
+imptype procedure TWin32WSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;
   const AChild: TCustomPage; const NewIndex: integer);
 var
   Index: Integer;
@@ -467,7 +467,7 @@ begin
     AdjustSizeTabControlPages(ATabControl);
 end;
 
-class procedure TWin32WSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl;
+imptype procedure TWin32WSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl;
   const AIndex: integer);
 begin
   if ATabControl is TTabControl then
@@ -478,7 +478,7 @@ begin
     AdjustSizeTabControlPages(ATabControl);
 end;
 
-class function TWin32WSCustomTabControl.GetNotebookMinTabHeight(const AWinControl: TWinControl): integer;
+imptype function TWin32WSCustomTabControl.GetNotebookMinTabHeight(const AWinControl: TWinControl): integer;
 var
   R: TRect;
 begin
@@ -488,7 +488,11 @@ begin
   end;
 
   if (not GetLCLClientBoundsOffset(AWinControl, R)) then begin
+    {$ifndef wsintf}
     Result := inherited GetNotebookMinTabHeight(AWinControl);
+    {$else}
+    Result := 30; // hard-coded default
+    {$endif}
     exit;
   end;
   // The bigger offset is the height of the tab
@@ -497,7 +501,7 @@ begin
           - 1;
 end;
 
-class function TWin32WSCustomTabControl.GetNotebookMinTabWidth(const AWinControl: TWinControl): integer;
+imptype function TWin32WSCustomTabControl.GetNotebookMinTabWidth(const AWinControl: TWinControl): integer;
 var
   R: TRect;
 begin
@@ -507,7 +511,11 @@ begin
   end;
 
   if (not GetLCLClientBoundsOffset(AWinControl, R)) then begin
+    {$ifndef wsintf}
     Result := inherited GetNotebookMinTabHeight(AWinControl);
+    {$else}
+    Result := 30;
+    {$endif}
     exit;
   end;
   Result := Max(R.Left, -R.Right)
@@ -518,7 +526,7 @@ end;
   Method: AddAllNBPages
   Adds all pages to tab control (showtabs becomes true)
  ------------------------------------------------------------------------------}
-class procedure TWin32WSCustomTabControl.AddAllNBPages(const ATabControl: TCustomTabControl);
+imptype procedure TWin32WSCustomTabControl.AddAllNBPages(const ATabControl: TCustomTabControl);
 var
   TCI: TC_ITEM;
   I, Res, RealIndex: Integer;
@@ -552,7 +560,7 @@ begin
   AdjustSizeTabControlPages(ATabControl);
 end;
 
-class procedure TWin32WSCustomTabControl.AdjustSizeTabControlPages(const ATabControl: TCustomTabControl);
+imptype procedure TWin32WSCustomTabControl.AdjustSizeTabControlPages(const ATabControl: TCustomTabControl);
 var
   I: Integer;
   R: TRect;
@@ -579,7 +587,7 @@ end;
 
   Removes all pages from a tab control (showtabs becomes false)
  ------------------------------------------------------------------------------}
-class procedure TWin32WSCustomTabControl.RemoveAllNBPages(const ATabControl: TCustomTabControl);
+imptype procedure TWin32WSCustomTabControl.RemoveAllNBPages(const ATabControl: TCustomTabControl);
 var
   I: Integer;
   WinHandle: HWND;
@@ -609,7 +617,7 @@ begin
   DeliverMessage(ATabControl, TLMessage(Mess));
 end;
 
-class function TWin32WSCustomTabControl.GetTabIndexAtPos(const ATabControl: TCustomTabControl;
+imptype function TWin32WSCustomTabControl.GetTabIndexAtPos(const ATabControl: TCustomTabControl;
   const AClientPos: TPoint): integer;
 var
   hittestInfo: TC_HITTESTINFO;
@@ -626,7 +634,7 @@ begin
   Result := Windows.SendMessage(ATabControl.Handle, TCM_HITTEST, 0, LPARAM(@hittestInfo));
 end;
 
-class function TWin32WSCustomTabControl.GetTabRect(const ATabControl: TCustomTabControl;
+imptype function TWin32WSCustomTabControl.GetTabRect(const ATabControl: TCustomTabControl;
   const AIndex: Integer): TRect;
 var
   Orect: TRect;
@@ -648,15 +656,19 @@ begin
     Result.Right := Result.Right - Orect.Left;
   end
   else
+    {$ifndef wsintf}
     Result := inherited GetTabRect(ATabControl, AIndex);
+    {$else}
+    Result := Rect(-1,-1,-1,-1);
+    {$endif}
 end;
 
-class function TWin32WSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
+imptype function TWin32WSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
 begin
   Result:=[nbcMultiLine, nbcTabsSizeable];
 end;
 
-class function TWin32WSCustomTabControl.GetDesignInteractive(
+imptype function TWin32WSCustomTabControl.GetDesignInteractive(
   const AWinControl: TWinControl; AClientPos: TPoint): Boolean;
 var
   hittestInfo: TC_HITTESTINFO;
@@ -674,7 +686,7 @@ begin
   Result := (AIndex <> -1) and (AIndex <> ACurIndex);
 end;
 
-class procedure TWin32WSCustomTabControl.SetTabSize(
+imptype procedure TWin32WSCustomTabControl.SetTabSize(
   const ATabControl: TCustomTabControl;
   const ATabWidth, ATabHeight: integer);
 begin
@@ -685,7 +697,7 @@ begin
     0, MakeLParam(ATabWidth, ATabHeight));
 end;
 
-class procedure TWin32WSCustomTabControl.SetImageList(
+imptype procedure TWin32WSCustomTabControl.SetImageList(
   const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution);
 begin
   if ATabControl is TTabControl then
@@ -703,7 +715,7 @@ begin
   AdjustSizeTabControlPages(ATabControl);
 end;
 
-class procedure TWin32WSCustomTabControl.SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer);
+imptype procedure TWin32WSCustomTabControl.SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer);
 var
   TabControlHandle, OldPageHandle, NewPageHandle: HWND;
   NewRealIndex: Integer;
@@ -743,7 +755,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomTabControl.SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition);
+imptype procedure TWin32WSCustomTabControl.SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition);
 begin
   if ATabControl is TTabControl then
     exit;
@@ -752,7 +764,7 @@ begin
     RecreateWnd(ATabControl);
 end;
 
-class procedure TWin32WSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean);
+imptype procedure TWin32WSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean);
 begin
   if ATabControl is TTabControl then
     exit;
@@ -763,7 +775,7 @@ begin
     RemoveAllNBPages(ATabControl);
 end;
 
-class procedure TWin32WSCustomTabControl.UpdateProperties(const ATabControl: TCustomTabControl);
+imptype procedure TWin32WSCustomTabControl.UpdateProperties(const ATabControl: TCustomTabControl);
 var
   CurrentStyle, NewStyle: cardinal;
 begin
@@ -784,3 +796,8 @@ begin
   end;
 end;
 
+{$ifdef wsintf}
+imptype procedure TWin32WSCustomTabControl.SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string);
+begin
+end;
+{$endif}

@@ -17,6 +17,7 @@
 unit Win32WSForms;
 
 {$mode objfpc}{$H+}
+{$I win32defines.inc}
 
 interface
 
@@ -29,85 +30,90 @@ uses
 ////////////////////////////////////////////////////
   Forms, Controls, LCLType, Classes,
 ////////////////////////////////////////////////////
-  WSForms, WSProc, WSLCLClasses, Windows, SysUtils, Win32Extra,
+  WSForms, WSProc, {$ifdef wsintf}WSControls, WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, Windows, SysUtils, Win32Extra,
   InterfaceBase, Win32Int, Win32Proc, Win32WSControls;
 
 type
 
   { TWin32WSScrollingWinControl }
 
-  TWin32WSScrollingWinControl = class(TWSScrollingWinControl)
-  published
+  TWin32WSScrollingWinControl = class({$ifndef wsintf}TWSScrollingWinControl{$else}TWin32WSWinControl{$endif})
+  impsection
   end;
 
   { TWin32WSScrollBox }
 
-  TWin32WSScrollBox = class(TWSScrollBox)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TWin32WSScrollBox = class({$ifndef wsintf}TWSScrollBox{$else}TWin32WSScrollingWinControl{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
   end;
 
   { TWin32WSCustomFrame }
 
-  TWin32WSCustomFrame = class(TWSCustomFrame)
-  published
+  TWin32WSCustomFrame = class({$ifndef wsintf}TWSCustomFrame{$else}TWin32WSScrollingWinControl{$endif})
+  impsection
   end;
 
   { TWin32WSFrame }
 
-  TWin32WSFrame = class(TWSFrame)
-  published
+  TWin32WSFrame = class({$ifndef wsintf}TWSFrame{$else}TWin32WSCustomFrame{$endif})
+  impsection
   end;
 
   { TWin32WSCustomForm }
 
-  TWin32WSCustomForm = class(TWSCustomForm)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TWin32WSCustomForm = class({$ifndef wsintf}TWSCustomForm{$else}TWin32WSScrollingWinControl, TWSCustomFormClass{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
-    class function GetDefaultDoubleBuffered: Boolean; override;
-    class procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); override;
-    class procedure SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean;
-      const Alpha: Byte); override;
-    class procedure SetBorderIcons(const AForm: TCustomForm;
-          const ABorderIcons: TBorderIcons); override;
-    class procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop,
+    imptype function GetDefaultDoubleBuffered: Boolean; rootoverride;
+    imptype procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); rootoverride;
+    imptype procedure SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean;
+      const Alpha: Byte); rootoverride;
+    imptype procedure SetBorderIcons(const AForm: TCustomForm;
+          const ABorderIcons: TBorderIcons); rootoverride;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop,
           AWidth, AHeight: Integer); override;
-    class procedure SetFormBorderStyle(const AForm: TCustomForm;
-                             const AFormBorderStyle: TFormBorderStyle); override;
-    class procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle); override;
-    class procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); override;
-    class procedure ShowModal(const ACustomForm: TCustomForm); override;
-    class procedure SetRealPopupParent(const ACustomForm: TCustomForm;
-       const APopupParent: TCustomForm); override;
-    class procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype procedure SetFormBorderStyle(const AForm: TCustomForm;
+                             const AFormBorderStyle: TFormBorderStyle); rootoverride;
+    imptype procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle); rootoverride;
+    imptype procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); rootoverride;
+    imptype procedure ShowModal(const ACustomForm: TCustomForm); rootoverride;
+    imptype procedure SetRealPopupParent(const ACustomForm: TCustomForm;
+       const APopupParent: TCustomForm); rootoverride;
+    imptype procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
     {mdi support}
-    class function ActiveMDIChild(const AForm: TCustomForm): TCustomForm; override;
-    class function Cascade(const AForm: TCustomForm): Boolean; override;
-    class function GetClientHandle(const AForm: TCustomForm): HWND; override;
-    class function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm; override;
-    class function Next(const AForm: TCustomForm): Boolean; override;
-    class function Previous(const AForm: TCustomForm): Boolean; override;
-    class function Tile(const AForm: TCustomForm): Boolean; override;
-    class function ArrangeIcons(const AForm: TCustomForm): Boolean; override;
-    class function MDIChildCount(const AForm: TCustomForm): Integer; override;
+    imptype function ActiveMDIChild(const AForm: TCustomForm): TCustomForm; rootoverride;
+    imptype function Cascade(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function GetClientHandle(const AForm: TCustomForm): HWND; rootoverride;
+    imptype function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm; rootoverride;
+    imptype function Next(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function Previous(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function Tile(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function ArrangeIcons(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function MDIChildCount(const AForm: TCustomForm): Integer; rootoverride;
+    {$ifdef wsintf}
+    imptype procedure CloseModal(const ACustomForm: TCustomForm); rootoverride;
+    imptype procedure SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult); rootoverride;
+    imptype procedure SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition); rootoverride;
+    {$endif}
   end;
 
   { TWin32WSForm }
 
-  TWin32WSForm = class(TWSForm)
+  TWin32WSForm = class({$ifndef wsintf}TWSForm{$else}TWin32WSCustomForm{$endif})
   published
   end;
 
   { TWin32WSHintWindow }
 
-  TWin32WSHintWindow = class(TWSHintWindow)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TWin32WSHintWindow = class({$ifndef wsintf}TWSHintWindow{$else}TWin32WSCustomForm{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
   end;
 
   { TWin32WSScreen }
@@ -131,7 +137,7 @@ type
 
 { TWin32WSScrollBox }
 
-class function TWin32WSScrollBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSScrollBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 
   {$IFDEF NewScrollingLayer}
@@ -397,7 +403,7 @@ begin
   Result := WindowProc(Window, Msg, WParam, LParam);
 end;
 
-class function TWin32WSCustomForm.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSCustomForm.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -525,18 +531,18 @@ begin
       MakeWParam(UIS_INITIALIZE, UISF_HIDEFOCUS or UISF_HIDEACCEL), 0)
 end;
 
-class function TWin32WSCustomForm.GetDefaultDoubleBuffered: Boolean;
+imptype function TWin32WSCustomForm.GetDefaultDoubleBuffered: Boolean;
 begin
   Result := GetSystemMetrics(SM_REMOTESESSION)=0;
 end;
 
-class procedure TWin32WSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
+imptype procedure TWin32WSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
   AValue: Boolean);
 begin
   DragAcceptFiles(AForm.Handle, AValue);
 end;
 
-class procedure TWin32WSCustomForm.SetBorderIcons(const AForm: TCustomForm;
+imptype procedure TWin32WSCustomForm.SetBorderIcons(const AForm: TCustomForm;
           const ABorderIcons: TBorderIcons);
 var
   ExStyle, NewStyle: DWORD;
@@ -552,7 +558,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
+imptype procedure TWin32WSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
           const AFormBorderStyle: TFormBorderStyle);
 begin
   RecreateWnd(AForm);
@@ -583,7 +589,7 @@ begin
     @EnumStayOnTopProc, LPARAM(dstlist));
 end;
 
-class procedure TWin32WSCustomForm.SetFormStyle(const AForm: TCustomform;
+imptype procedure TWin32WSCustomForm.SetFormStyle(const AForm: TCustomform;
   const AFormStyle, AOldFormStyle: TFormStyle);
 const
   WindowPosFlags = SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE or SWP_NOOWNERZORDER;
@@ -622,7 +628,7 @@ begin
     RecreateWnd(AForm);
 end;
                             
-class procedure TWin32WSCustomForm.SetBounds(const AWinControl: TWinControl;
+imptype procedure TWin32WSCustomForm.SetBounds(const AWinControl: TWinControl;
     const ALeft, ATop, AWidth, AHeight: Integer);
 var
   AForm: TCustomForm absolute AWinControl;
@@ -663,10 +669,14 @@ begin
   end;
       
   // rect adjusted, pass to inherited to do real work
+  {$ifndef wsintf}
   TWin32WSWinControl.SetBounds(AWinControl, L, T, W, H);
+  {$else}
+  inherited SetBounds(AWinControl, L, T, W, H);
+  {$endif}
 end;
 
-class procedure TWin32WSCustomForm.SetIcon(const AForm: TCustomForm; const Small, Big: HICON);
+imptype procedure TWin32WSCustomForm.SetIcon(const AForm: TCustomForm; const Small, Big: HICON);
 var
   Wnd: HWND;
 begin
@@ -683,14 +693,14 @@ begin
     RDW_INVALIDATE or RDW_FRAME or RDW_NOCHILDREN or RDW_ERASE);
 end;
 
-class procedure TWin32WSCustomForm.SetRealPopupParent(
+imptype procedure TWin32WSCustomForm.SetRealPopupParent(
   const ACustomForm: TCustomForm; const APopupParent: TCustomForm);
 begin
   // changing parent is not possible without handle recreation
   RecreateWnd(ACustomForm);
 end;
 
-class procedure TWin32WSCustomForm.SetShowInTaskbar(const AForm: TCustomForm;
+imptype procedure TWin32WSCustomForm.SetShowInTaskbar(const AForm: TCustomForm;
   const AValue: TShowInTaskbar);
 var
   OldStyle, NewStyle: DWord;
@@ -725,7 +735,7 @@ begin
       ShowWindow(AForm.Handle, SW_SHOWNA);
 end;
 
-class procedure TWin32WSCustomForm.ShowHide(const AWinControl: TWinControl);
+imptype procedure TWin32WSCustomForm.ShowHide(const AWinControl: TWinControl);
 const
   WindowStateToFlags: array[TWindowState] of DWord = (
  { wsNormal     } SW_SHOWNORMAL, // to restore from minimzed/maximized we need to use SW_SHOWNORMAL instead of SW_SHOW
@@ -753,7 +763,7 @@ begin
     Windows.ShowWindow(AWinControl.Handle, SW_HIDE);
 end;
 
-class function TWin32WSCustomForm.ActiveMDIChild(const AForm: TCustomForm): TCustomForm;
+imptype function TWin32WSCustomForm.ActiveMDIChild(const AForm: TCustomForm): TCustomForm;
 var
   ActiveChildHWND: HWND;
   PInfo: PWin32WindowInfo;
@@ -769,7 +779,7 @@ begin
     Result := nil;
 end;
 
-class function TWin32WSCustomForm.Cascade(const AForm: TCustomForm): Boolean;
+imptype function TWin32WSCustomForm.Cascade(const AForm: TCustomForm): Boolean;
 begin
   if (AForm.FormStyle=fsMDIForm) and (Application.MainForm=AForm) then
   begin
@@ -779,7 +789,7 @@ begin
     Result := False;
 end;
 
-class function TWin32WSCustomForm.GetClientHandle(const AForm: TCustomForm): HWND;
+imptype function TWin32WSCustomForm.GetClientHandle(const AForm: TCustomForm): HWND;
 begin
   if AForm.FormStyle=fsMDIForm then
     Result := Win32WidgetSet.MDIClientHandle
@@ -787,7 +797,7 @@ begin
     Result := 0;
 end;
 
-class function TWin32WSCustomForm.GetMDIChildren(const AForm: TCustomForm;
+imptype function TWin32WSCustomForm.GetMDIChildren(const AForm: TCustomForm;
   AIndex: Integer): TCustomForm;
 var
   ChildHWND: HWND;
@@ -815,7 +825,7 @@ begin
   end;
 end;
 
-class function TWin32WSCustomForm.Next(const AForm: TCustomForm): Boolean;
+imptype function TWin32WSCustomForm.Next(const AForm: TCustomForm): Boolean;
 begin
   if (AForm.FormStyle=fsMDIForm) and (Application.MainForm=AForm) then
   begin
@@ -825,7 +835,7 @@ begin
     Result := False;
 end;
 
-class function TWin32WSCustomForm.Previous(const AForm: TCustomForm): Boolean;
+imptype function TWin32WSCustomForm.Previous(const AForm: TCustomForm): Boolean;
 begin
   if (AForm.FormStyle=fsMDIForm) and (Application.MainForm=AForm) then
   begin
@@ -835,7 +845,7 @@ begin
     Result := False;
 end;
 
-class function TWin32WSCustomForm.Tile(const AForm: TCustomForm): Boolean;
+imptype function TWin32WSCustomForm.Tile(const AForm: TCustomForm): Boolean;
 begin
   if (AForm.FormStyle=fsMDIForm) and (Application.MainForm=AForm) then
   begin
@@ -845,7 +855,7 @@ begin
     Result := False;
 end;
 
-class function TWin32WSCustomForm.ArrangeIcons(const AForm: TCustomForm): Boolean;
+imptype function TWin32WSCustomForm.ArrangeIcons(const AForm: TCustomForm): Boolean;
 begin
   if (AForm.FormStyle=fsMDIForm) and (Application.MainForm=AForm) then
   begin
@@ -855,7 +865,7 @@ begin
     Result := False;
 end;
 
-class function TWin32WSCustomForm.MDIChildCount(const AForm: TCustomForm): Integer;
+imptype function TWin32WSCustomForm.MDIChildCount(const AForm: TCustomForm): Integer;
 var
   ChildHWND: HWND;
   PInfo: PWin32WindowInfo;
@@ -877,7 +887,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomForm.ShowModal(const ACustomForm: TCustomForm);
+imptype procedure TWin32WSCustomForm.ShowModal(const ACustomForm: TCustomForm);
 var
   Parent: HWND;
 begin
@@ -888,7 +898,7 @@ begin
     BringWindowToTop(ACustomForm.Handle);
 end;
 
-class procedure TWin32WSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm;
+imptype procedure TWin32WSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm;
   const AlphaBlend: Boolean; const Alpha: Byte);
 var
   Style: DWord;
@@ -912,9 +922,24 @@ begin
   end;
 end;
 
+{$ifdef wsintf}
+imptype procedure TWin32WSCustomForm.CloseModal(const ACustomForm: TCustomForm);
+begin
+end;
+
+imptype procedure TWin32WSCustomForm.SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult);
+begin
+end;
+
+imptype procedure TWin32WSCustomForm.SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition);
+begin
+end;
+{$endif}
+
+
 { TWin32WSHintWindow }
 
-class function TWin32WSHintWindow.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSHintWindow.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -938,7 +963,7 @@ begin
   Result := Params.Window;
 end;
 
-class procedure TWin32WSHintWindow.ShowHide(const AWinControl: TWinControl);
+imptype procedure TWin32WSHintWindow.ShowHide(const AWinControl: TWinControl);
 begin
   if AWinControl.HandleObjectShouldBeVisible then
     Windows.SetWindowPos(AWinControl.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE or SWP_NOOWNERZORDER)

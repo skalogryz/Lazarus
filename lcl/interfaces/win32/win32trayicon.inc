@@ -192,7 +192,7 @@ end;
 *
 *******************************************************************}
 
-class function TWin32WSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TWin32WSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   tnid: TNotifyIconData;
 begin
@@ -220,7 +220,7 @@ end;
 *  RETURNS:        True if sucessfull, otherwise False
 *
 *******************************************************************}
-class function TWin32WSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TWin32WSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   Window: Windows.TWndClassEx;
 begin
@@ -264,7 +264,8 @@ end;
 *                  i.e. without hiding it and showing again
 *
 *******************************************************************}
-class procedure TWin32WSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
+imptype procedure TWin32WSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon
+  );
 var
   tnidw: TNotifyIconDataW2;
   WideBuffer: widestring;
@@ -298,7 +299,8 @@ end;
 *                  True if a platform-specific hint will be used
 *
 *******************************************************************}
-class function TWin32WSCustomTrayIcon.ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TWin32WSCustomTrayIcon.ShowBalloonHint(const ATrayIcon: TCustomTrayIcon
+  ): Boolean;
 const
   FlagsMap: array[TBalloonFlags] of dword = (NIIF_NONE, NIIF_INFO, NIIF_WARNING, NIIF_ERROR);
 var
@@ -338,7 +340,8 @@ begin
     Result := True;
 end;
 
-class function TWin32WSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
+imptype function TWin32WSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon
+  ): TPoint;
 var
   hWndTaskbar, hWndTray: HWND;
   TaskbarRect, TrayRect: TRect;
@@ -386,6 +389,12 @@ begin
     Result.Y := TaskbarRect.Bottom;
     { Taskbar is on the right side of the monitor area }
   end;
+end;
+
+imptype function TWin32WSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon
+  ): TCanvas;
+begin
+  Result := ATrayIcon.Icon.Canvas;
 end;
 
 

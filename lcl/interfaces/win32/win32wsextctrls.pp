@@ -32,7 +32,7 @@ uses
 // lcl
   ExtCtrls, Controls, ImgList, LCLType, LCLIntf, LazUTF8, Themes, LCLMessageGlue, ComCtrls, WSComCtrls,
 // ws
-  WSControls, WSExtCtrls, WSLCLClasses, WSProc, Win32Extra, Win32Int, Win32Proc,
+  WSControls, WSExtCtrls, {$ifdef wsintf}Graphics, WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSProc, Win32Extra, Win32Int, Win32Proc,
   InterfaceBase, Win32WSControls;
 
 type
@@ -140,15 +140,18 @@ type
 
   { TWin32WSCustomTrayIcon }
 
-  TWin32WSCustomTrayIcon = class(TWSCustomTrayIcon)
+  TWin32WSCustomTrayIcon = class({$ifndef wsintf}TWSCustomTrayIcon{$else}TInterfacedObject, TWSCustomTrayIconClass{$endif})
   protected
     class function AddIcon(ATrayIcon: TCustomTrayIcon): Boolean;
-  published
-    class function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class function Show(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); override;
-    class function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; override;
+  impsection
+    imptype function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype function Show(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); rootoverride;
+    imptype function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas; rootoverride;
+    {$endif}
   end;
 
 implementation

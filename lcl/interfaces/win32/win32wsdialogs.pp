@@ -38,7 +38,7 @@ uses
   {$endif}
   LazFileUtils, LazUTF8,
 // ws
-  WSDialogs, WSLCLClasses, Win32Extra, Win32Int, InterfaceBase,
+  WSDialogs, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, Win32Extra, Win32Int, InterfaceBase,
   Win32Proc;
 
 type
@@ -59,21 +59,25 @@ type
 
   { TWin32WSCommonDialog }
 
-  TWin32WSCommonDialog = class(TWSCommonDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
+  TWin32WSCommonDialog = class({$ifndef wsintf}TWSCommonDialog{$else}TWSLCLComponent, TWSCommonDialogClass{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; rootoverride;
+    imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); rootoverride;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; rootoverride;
+    {$endif}
   end;
 
   { TWin32WSFileDialog }
 
-  TWin32WSFileDialog = class(TWSFileDialog)
+  TWin32WSFileDialog = class({$ifndef wsintf}TWSFileDialog{$else}TWin32WSCommonDialog{$endif})
   published
   end;
 
   { TWin32WSOpenDialog }
 
-  TWin32WSOpenDialog = class(TWSOpenDialog)
+  TWin32WSOpenDialog = class({$ifndef wsintf}TWSOpenDialog{$else}TWin32WSCommonDialog{$endif})
   public
     class function GetVistaOptions(Options: TOpenOptions; SelectFolder: Boolean): FileOpenDialogOptions;
 
@@ -82,55 +86,55 @@ type
     class procedure VistaDialogShowModal(ADialog: IFileDialog; const AOpenDialog: TOpenDialog);
     class function GetFileName(ShellItem: IShellItem): String;
     class function GetParentWnd: HWND;
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TWin32WSSaveDialog }
 
-  TWin32WSSaveDialog = class(TWSSaveDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TWin32WSSaveDialog = class({$ifndef wsintf}TWSSaveDialog{$else}TWin32WSCommonDialog{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TWin32WSSelectDirectoryDialog }
 
-  TWin32WSSelectDirectoryDialog = class(TWSSelectDirectoryDialog)
+  TWin32WSSelectDirectoryDialog = class({$ifndef wsintf}TWSSelectDirectoryDialog{$else}TWin32WSCommonDialog{$endif})
   public
     class function CreateOldHandle(const ACommonDialog: TCommonDialog): THandle;
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TWin32WSColorDialog }
 
-  TWin32WSColorDialog = class(TWSColorDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
-    class procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TWin32WSColorDialog = class({$ifndef wsintf}TWSColorDialog{$else}TWin32WSCommonDialog{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+    imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TWin32WSColorButton }
 
-  TWin32WSColorButton = class(TWSColorButton)
-  published
+  TWin32WSColorButton = class({$ifndef wsintf}TWSColorButton{$else}TWin32WSCommonDialog{$endif})
+  impsection
   end;
 
   { TWin32WSFontDialog }
 
-  TWin32WSFontDialog = class(TWSFontDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TWin32WSFontDialog = class({$ifndef wsintf}TWSFontDialog{$else}TWin32WSCommonDialog{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
 
@@ -357,7 +361,7 @@ begin
   Result := 0;
 end;
 
-class function TWin32WSColorDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TWin32WSColorDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   CC: PChooseColor;
   ColorDialog: TColorDialog absolute ACommonDialog;
@@ -391,7 +395,7 @@ begin
   Result := THandle(CC);
 end;
 
-class procedure TWin32WSColorDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TWin32WSColorDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   CC: PChooseColor;
   UserResult: WINBOOL;
@@ -421,7 +425,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSColorDialog.DestroyHandle(
+imptype procedure TWin32WSColorDialog.DestroyHandle(
   const ACommonDialog: TCommonDialog);
 var
   CC: PChooseColor;
@@ -434,7 +438,7 @@ begin
   end;
 end;
 
-class function TWin32WSColorDialog.QueryWSEventCapabilities(
+imptype function TWin32WSColorDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSNoCanCloseSupport];
@@ -955,7 +959,7 @@ begin
     Result := WidgetSet.AppHandle;
 end;
 
-class function TWin32WSOpenDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TWin32WSOpenDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   Dialog: IFileOpenDialog;
 begin
@@ -974,7 +978,7 @@ begin
     Result := CreateFileDialogHandle(TOpenDialog(ACommonDialog));
 end;
 
-class procedure TWin32WSOpenDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
+imptype procedure TWin32WSOpenDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
 var
   Dialog: IFileDialog;
 begin
@@ -989,7 +993,7 @@ begin
       DestroyFileDialogHandle(ACommonDialog.Handle)
 end;
 
-class procedure TWin32WSOpenDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TWin32WSOpenDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   State: TApplicationState;
   lOldWorkingDir, lInitialDir: string;
@@ -1026,7 +1030,7 @@ begin
   end;
 end;
 
-class function TWin32WSOpenDialog.QueryWSEventCapabilities(
+imptype function TWin32WSOpenDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoShow,cdecWSPerformsDoCanClose];
@@ -1034,7 +1038,7 @@ end;
 
 { TWin32WSSaveDialog }
 
-class function TWin32WSSaveDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TWin32WSSaveDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   Dialog: IFileSaveDialog;
 begin
@@ -1054,7 +1058,7 @@ begin
     Result := CreateFileDialogHandle(TOpenDialog(ACommonDialog));
 end;
 
-class procedure TWin32WSSaveDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
+imptype procedure TWin32WSSaveDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
 var
   Dialog: IFileDialog;
 begin
@@ -1069,7 +1073,7 @@ begin
       DestroyFileDialogHandle(ACommonDialog.Handle)
 end;
 
-class procedure TWin32WSSaveDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TWin32WSSaveDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   State: TApplicationState;
   lOldWorkingDir, lInitialDir: string;
@@ -1100,7 +1104,7 @@ begin
   end;
 end;
 
-class function TWin32WSSaveDialog.QueryWSEventCapabilities(
+imptype function TWin32WSSaveDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoShow,cdecWSPerformsDoCanClose];
@@ -1172,7 +1176,7 @@ begin
   end;
 end;
 
-class function TWin32WSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TWin32WSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 
   function GetFlagsFromOptions(Options : TFontDialogOptions): dword;
   begin
@@ -1290,7 +1294,7 @@ begin
   Result := 0;
 end;
 
-class function TWin32WSFontDialog.QueryWSEventCapabilities(
+imptype function TWin32WSFontDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoShow, cdecWSPerformsDoClose, cdecWSNoCanCloseSupport];
@@ -1298,16 +1302,26 @@ end;
 
 { TWin32WSCommonDialog }
 
-class function TWin32WSCommonDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TWin32WSCommonDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 begin
   Result := 0;
 end;
 
-class procedure TWin32WSCommonDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
+imptype procedure TWin32WSCommonDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
 begin
   DestroyWindow(ACommonDialog.Handle);
 end;
+{$ifdef wsintf}
+imptype procedure TWin32WSCommonDialog.ShowModal(const ACommonDialog: TCommonDialog);
+begin
 
+end;
+
+imptype function TWin32WSCommonDialog.QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
+begin
+  Result := [];
+end;
+{$endif}
 { TWin32WSSelectDirectoryDialog }
 
 {------------------------------------------------------------------------------
@@ -1335,7 +1349,7 @@ begin
   Result := 0;
 end;
 
-class function TWin32WSSelectDirectoryDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TWin32WSSelectDirectoryDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   Dialog: IFileOpenDialog;
 begin
@@ -1354,7 +1368,7 @@ begin
     Result := CreateOldHandle(ACommonDialog);
 end;
 
-class function TWin32WSSelectDirectoryDialog.QueryWSEventCapabilities(
+imptype function TWin32WSSelectDirectoryDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   if CanUseVistaDialogs(TSelectDirectoryDialog(ACommonDialog)) then

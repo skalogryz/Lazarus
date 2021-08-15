@@ -55,7 +55,7 @@ type
   {$else}
   TWin32WSControl = class(TWSControl)
   {$endif}
-  published
+  impsection
   end;
 
   { TWin32WSWinControl }

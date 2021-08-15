@@ -37,54 +37,54 @@ type
 
   { TWin32WSPreviewFileControl }
 
-  TWin32WSPreviewFileControl = class(TWSPreviewFileControl)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TWin32WSPreviewFileControl = class({$ifndef wsintf}TWSPreviewFileControl{$else}TWin32WSWinControl{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
   end;
 
   { TWin32WSPreviewFileDialog }
 
-  TWin32WSPreviewFileDialog = class(TWSPreviewFileDialog)
-  published
+  TWin32WSPreviewFileDialog = class({$ifndef wsintf}TWSPreviewFileDialog{$else}TWin32WSOpenDialog{$endif})
+  impsection
   end;
 
   { TWin32WSOpenPictureDialog }
 
-  TWin32WSOpenPictureDialog = class(TWin32WSOpenDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+  TWin32WSOpenPictureDialog = class({$ifndef wsintf}TWin32WSOpenDialog{$else}TWin32WSOpenDialog{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
   end;
 
   { TWin32WSSavePictureDialog }
 
-  TWin32WSSavePictureDialog = class(TWin32WSSaveDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+  TWin32WSSavePictureDialog = class({$ifndef wsintf}TWin32WSSaveDialog{$else}TWin32WSSaveDialog{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
   end;
 
   { TWin32WSCalculatorDialog }
 
-  TWin32WSCalculatorDialog = class(TWSCalculatorDialog)
-  published
+  TWin32WSCalculatorDialog = class({$ifndef wsintf}TWSCalculatorDialog{$else}TWin32WSCommonDialog{$endif})
+  impsection
   end;
 
   { TWin32WSCalculatorForm }
 
-  TWin32WSCalculatorForm = class(TWSCalculatorForm)
-  published
+  TWin32WSCalculatorForm = class({$ifndef wsintf}TWSCalculatorForm{$else}TWin32WSWinControl{$endif})
+  impsection
   end;
 
   { TWin32WSCalendarDialogForm }
 
-  TWin32WSCalendarDialogForm = class(TWSCalendarDialogForm)
-  published
+  TWin32WSCalendarDialogForm = class({$ifndef wsintf}TWSCalendarDialogForm{$else}TWin32WSWinControl{$endif})
+  impsection
   end;
 
   { TWin32WSCalendarDialog }
 
-  TWin32WSCalendarDialog = class(TWSCalendarDialog)
-  published
+  TWin32WSCalendarDialog = class({$ifndef wsintf}TWSCalendarDialog{$else}TWin32WSCommonDialog{$endif})
+  impsection
   end;
 
 
@@ -152,7 +152,7 @@ end;
 
 { TWin32WSOpenPictureDialog }
 
-class function TWin32WSOpenPictureDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TWin32WSOpenPictureDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   Dialog: IFileOpenDialog;
   fos: FILEOPENDIALOGOPTIONS;
@@ -173,7 +173,7 @@ end;
 
 { TWin32WSPreviewFileControl }
 
-class function TWin32WSPreviewFileControl.CreateHandle(
+imptype function TWin32WSPreviewFileControl.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -193,7 +193,7 @@ end;
 
 { TWin32WSSavePictureDialog }
 
-class function TWin32WSSavePictureDialog.CreateHandle(
+imptype function TWin32WSSavePictureDialog.CreateHandle(
   const ACommonDialog: TCommonDialog): THandle;
 var
   Dialog: IFileSaveDialog;

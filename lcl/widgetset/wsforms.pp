@@ -46,11 +46,16 @@ uses
 type
   { TWSScrollingWinControl }
 
-  TWSScrollingWinControlClass = class of TWSScrollingWinControl;
-  TWSScrollingWinControl = class(TWSWinControl)
-  published
+  TWSScrollingWinControlClass = {$ifdef wsintf}
+  interface(TWSWinControlClass)
+  end;
+  {$else}
+  class of TWSScrollingWinControl;
+  {$endif}
+  TWSScrollingWinControl = class(TWSWinControl{$ifdef wnintf},TWSScrollingWinControlClass{$endif})
+  impsection
     // procedure ScrollBy is moved to TWSWinControl.
-    class function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
+    imptype function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
   end;
 
   { TWSScrollBox }
@@ -73,39 +78,74 @@ type
 
   { TWSCustomForm }
 
-  TWSCustomForm = class(TWSScrollingWinControl)
-  published
-    class procedure CloseModal(const ACustomForm: TCustomForm); virtual;
-    class procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); virtual;
-    class procedure SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean;
-      const Alpha: Byte); virtual;
-    class procedure SetBorderIcons(const AForm: TCustomForm;
-        const ABorderIcons: TBorderIcons); virtual;
-    class procedure SetFormBorderStyle(const AForm: TCustomForm;
-                             const AFormBorderStyle: TFormBorderStyle); virtual;
-    class procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle); virtual;
-    class procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); virtual;
-    class procedure ShowModal(const ACustomForm: TCustomForm); virtual;
-    class procedure SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult); virtual;
-    class procedure SetRealPopupParent(const ACustomForm: TCustomForm;
-      const APopupParent: TCustomForm); virtual;
-    class procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); virtual;
-    class procedure SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition); virtual;
-    class function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
-    class function GetDefaultDoubleBuffered: Boolean; virtual;
+  {$ifdef wsintf}
+  TWSCustomFormClass = interface(TWSScrollingWinControlClass)
+    procedure CloseModal(const ACustomForm: TCustomForm);
+    procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean);
+    procedure SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean;
+      const Alpha: Byte);
+    procedure SetBorderIcons(const AForm: TCustomForm;
+        const ABorderIcons: TBorderIcons);
+    procedure SetFormBorderStyle(const AForm: TCustomForm;
+                             const AFormBorderStyle: TFormBorderStyle);
+    procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle);
+    procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON);
+    procedure ShowModal(const ACustomForm: TCustomForm);
+    procedure SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult);
+    procedure SetRealPopupParent(const ACustomForm: TCustomForm;
+      const APopupParent: TCustomForm);
+    procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar);
+    procedure SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition);
+    function GetDefaultDoubleBuffered: Boolean;
 
     {mdi support}
-    class function ActiveMDIChild(const AForm: TCustomForm): TCustomForm; virtual;
-    class function Cascade(const AForm: TCustomForm): Boolean; virtual;
-    class function GetClientHandle(const AForm: TCustomForm): HWND; virtual;
-    class function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm; virtual;
-    class function Next(const AForm: TCustomForm): Boolean; virtual;
-    class function Previous(const AForm: TCustomForm): Boolean; virtual;
-    class function Tile(const AForm: TCustomForm): Boolean; virtual;
-    class function ArrangeIcons(const AForm: TCustomForm): Boolean; virtual;
-    class function MDIChildCount(const AForm: TCustomForm): Integer; virtual;
+    function ActiveMDIChild(const AForm: TCustomForm): TCustomForm;
+    function Cascade(const AForm: TCustomForm): Boolean;
+    function GetClientHandle(const AForm: TCustomForm): HWND;
+    function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm;
+    function Next(const AForm: TCustomForm): Boolean;
+    function Previous(const AForm: TCustomForm): Boolean;
+    function Tile(const AForm: TCustomForm): Boolean;
+    function ArrangeIcons(const AForm: TCustomForm): Boolean;
+    function MDIChildCount(const AForm: TCustomForm): Integer;
   end;
+  {$endif}
+
+  TWSCustomForm = class(TWSScrollingWinControl{$ifdef wsintf},TWSCustomFormClass{$endif})
+  impsection
+    imptype procedure CloseModal(const ACustomForm: TCustomForm); virtual;
+    imptype procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); virtual;
+    imptype procedure SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean;
+      const Alpha: Byte); virtual;
+    imptype procedure SetBorderIcons(const AForm: TCustomForm;
+        const ABorderIcons: TBorderIcons); virtual;
+    imptype procedure SetFormBorderStyle(const AForm: TCustomForm;
+                             const AFormBorderStyle: TFormBorderStyle); virtual;
+    imptype procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle); virtual;
+    imptype procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); virtual;
+    imptype procedure ShowModal(const ACustomForm: TCustomForm); virtual;
+    imptype procedure SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult); virtual;
+    imptype procedure SetRealPopupParent(const ACustomForm: TCustomForm;
+      const APopupParent: TCustomForm); virtual;
+    imptype procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); virtual;
+    imptype procedure SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition); virtual;
+    imptype function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
+    imptype function GetDefaultDoubleBuffered: Boolean; virtual;
+
+    {mdi support}
+    imptype function ActiveMDIChild(const AForm: TCustomForm): TCustomForm; virtual;
+    imptype function Cascade(const AForm: TCustomForm): Boolean; virtual;
+    imptype function GetClientHandle(const AForm: TCustomForm): HWND; virtual;
+    imptype function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm; virtual;
+    imptype function Next(const AForm: TCustomForm): Boolean; virtual;
+    imptype function Previous(const AForm: TCustomForm): Boolean; virtual;
+    imptype function Tile(const AForm: TCustomForm): Boolean; virtual;
+    imptype function ArrangeIcons(const AForm: TCustomForm): Boolean; virtual;
+    imptype function MDIChildCount(const AForm: TCustomForm): Integer; virtual;
+  end;
+  {$ifndef wsintf}
   TWSCustomFormClass = class of TWSCustomForm;
+  {$endif}
 
   { TWSForm }
 
@@ -143,7 +183,7 @@ implementation
 
 { TWSScrollingWinControl }
 
-class function TWSScrollingWinControl.GetDefaultColor(const AControl: TControl;
+imptype function TWSScrollingWinControl.GetDefaultColor(const AControl: TControl;
   const ADefaultColorType: TDefaultColorType): TColor;
 const
   DefColors: array[TDefaultColorType] of TColor = (
@@ -156,45 +196,45 @@ end;
 
 { TWSCustomForm }
 
-class procedure TWSCustomForm.CloseModal(const ACustomForm: TCustomForm);
+imptype procedure TWSCustomForm.CloseModal(const ACustomForm: TCustomForm);
 begin
 end;
 
-class procedure TWSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
+imptype procedure TWSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
   AValue: Boolean);
 begin
 end;
 
-class procedure TWSCustomForm.SetBorderIcons(const AForm: TCustomForm;
+imptype procedure TWSCustomForm.SetBorderIcons(const AForm: TCustomForm;
         const ABorderIcons: TBorderIcons);
 begin
 end;
 
-class procedure TWSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
+imptype procedure TWSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
   const AFormBorderStyle: TFormBorderStyle);
 begin
   // will be done in interface override
 end;
 
-class procedure TWSCustomForm.SetFormStyle(const AForm: TCustomform;
+imptype procedure TWSCustomForm.SetFormStyle(const AForm: TCustomform;
   const AFormStyle, AOldFormStyle: TFormStyle);
 begin
 end;
     
-class procedure TWSCustomForm.SetIcon(const AForm: TCustomForm; const Small, Big: HICON);
+imptype procedure TWSCustomForm.SetIcon(const AForm: TCustomForm; const Small, Big: HICON);
 begin
 end;
 
-class procedure TWSCustomForm.SetShowInTaskbar(const AForm: TCustomForm;
+imptype procedure TWSCustomForm.SetShowInTaskbar(const AForm: TCustomForm;
   const AValue: TShowInTaskbar);
 begin
 end;
 
-class procedure TWSCustomForm.SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition);
+imptype procedure TWSCustomForm.SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition);
 begin
 end;
 
-class function TWSCustomForm.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
+imptype function TWSCustomForm.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
 const
   DefColors: array[TDefaultColorType] of TColor = (
  { dctBrush } clForm,
@@ -204,77 +244,77 @@ begin
   Result := DefColors[ADefaultColorType];
 end;
 
-class function TWSCustomForm.GetDefaultDoubleBuffered: Boolean;
+imptype function TWSCustomForm.GetDefaultDoubleBuffered: Boolean;
 begin
   Result := False;
 end;
 
-class procedure TWSCustomForm.ShowModal(const ACustomForm: TCustomForm);
+imptype procedure TWSCustomForm.ShowModal(const ACustomForm: TCustomForm);
 begin
 end;
 
 // This needs implementing only if the TWSCustomForm.ShowModal implementation
 // is fully blocking (which it shouldn't be ideally)
-class procedure TWSCustomForm.SetModalResult(const ACustomForm: TCustomForm;
+imptype procedure TWSCustomForm.SetModalResult(const ACustomForm: TCustomForm;
   ANewValue: TModalResult);
 begin
 end;
 
-class procedure TWSCustomForm.SetRealPopupParent(
+imptype procedure TWSCustomForm.SetRealPopupParent(
   const ACustomForm: TCustomForm; const APopupParent: TCustomForm);
 begin
 end;
 
-class procedure TWSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm;
+imptype procedure TWSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm;
   const AlphaBlend: Boolean; const Alpha: Byte);
 begin
 end;
 
 { mdi support }
 
-class function TWSCustomForm.ActiveMDIChild(const AForm: TCustomForm
+imptype function TWSCustomForm.ActiveMDIChild(const AForm: TCustomForm
   ): TCustomForm;
 begin
   Result := nil;
 end;
 
-class function TWSCustomForm.Cascade(const AForm: TCustomForm): Boolean;
+imptype function TWSCustomForm.Cascade(const AForm: TCustomForm): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomForm.GetClientHandle(const AForm: TCustomForm): HWND;
+imptype function TWSCustomForm.GetClientHandle(const AForm: TCustomForm): HWND;
 begin
   Result := 0;
 end;
 
-class function TWSCustomForm.GetMDIChildren(const AForm: TCustomForm;
+imptype function TWSCustomForm.GetMDIChildren(const AForm: TCustomForm;
   AIndex: Integer): TCustomForm;
 begin
   Result := nil;
 end;
 
-class function TWSCustomForm.MDIChildCount(const AForm: TCustomForm): Integer;
+imptype function TWSCustomForm.MDIChildCount(const AForm: TCustomForm): Integer;
 begin
   Result := 0;
 end;
 
-class function TWSCustomForm.Next(const AForm: TCustomForm): Boolean;
+imptype function TWSCustomForm.Next(const AForm: TCustomForm): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomForm.Previous(const AForm: TCustomForm): Boolean;
+imptype function TWSCustomForm.Previous(const AForm: TCustomForm): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomForm.ArrangeIcons(const AForm: TCustomForm): Boolean;
+imptype function TWSCustomForm.ArrangeIcons(const AForm: TCustomForm): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomForm.Tile(const AForm: TCustomForm): Boolean;
+imptype function TWSCustomForm.Tile(const AForm: TCustomForm): Boolean;
 begin
   Result := False;
 end;

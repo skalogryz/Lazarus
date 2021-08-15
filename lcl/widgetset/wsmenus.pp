@@ -42,38 +42,60 @@ uses
 ////////////////////////////////////////////////////
   Menus, Graphics,
 ////////////////////////////////////////////////////
-  WSLCLClasses, LCLType, WSFactory,
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, LCLType, WSFactory,
   LazUtilities, LazLogger;
 
 type
   { TWSMenuItem }
-
-  TWSMenuItem = class(TWSLCLComponent)
-  published
-    class function  OpenCommand: LongInt; virtual;
-    class procedure CloseCommand(ACommand: LongInt); virtual;
-    class procedure AttachMenu(const AMenuItem: TMenuItem); virtual;
-    class function  CreateHandle(const AMenuItem: TMenuItem): HMENU; virtual;
-    class procedure DestroyHandle(const AMenuItem: TMenuItem); virtual;
-    class procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); virtual;
-    class procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); virtual;
-    class procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); virtual;
-    class function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; virtual;
-    class function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; virtual;
-    class function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean; virtual;
-    class function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; virtual;
-    class procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap); virtual;
+  {$ifdef wsintf}
+  TWSMenuItemClass = interface(TWSLCLComponentClass)
+    imptype function  OpenCommand: LongInt;
+    imptype procedure CloseCommand(ACommand: LongInt);
+    imptype procedure AttachMenu(const AMenuItem: TMenuItem);
+    imptype function  CreateHandle(const AMenuItem: TMenuItem): HMENU;
+    imptype procedure DestroyHandle(const AMenuItem: TMenuItem);
+    imptype procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
+    imptype procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut);
+    imptype procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);
+    imptype function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
+    imptype function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
+    imptype function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean;
+    imptype function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
+    imptype procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap);
   end;
-  TWSMenuItemClass = class of TWSMenuItem;
+  {$endif}
+  TWSMenuItem = class(TWSLCLComponent{$ifdef wsintf},TWSMenuItemClass{$endif})
+  impsection
+    imptype function  OpenCommand: LongInt; virtual;
+    imptype procedure CloseCommand(ACommand: LongInt); virtual;
+    imptype procedure AttachMenu(const AMenuItem: TMenuItem); virtual;
+    imptype function  CreateHandle(const AMenuItem: TMenuItem): HMENU; virtual;
+    imptype procedure DestroyHandle(const AMenuItem: TMenuItem); virtual;
+    imptype procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); virtual;
+    imptype procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); virtual;
+    imptype procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); virtual;
+    imptype function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; virtual;
+    imptype function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; virtual;
+    imptype function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean; virtual;
+    imptype function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; virtual;
+    imptype procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap); virtual;
+  end;
+  {$ifndef wsintf}TWSMenuItemClass = class of TWSMenuItem;{$endif}
 
   { TWSMenu }
 
-  TWSMenuClass = class of TWSMenu;
-  TWSMenu = class(TWSLCLComponent)
-  published
-    class function CreateHandle(const AMenu: TMenu): HMENU; virtual;
+  {$ifndef wsintf}TWSMenuClass = class of TWSMenu;{$endif}
+  {$ifdef wsintf}
+  TWSMenuClass = interface(TWSLCLComponentClass)
+    function CreateHandle(const AMenu: TMenu): HMENU;
+    procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean);
+  end;
+  {$endif}
+  TWSMenu = class(TWSLCLComponent{$ifdef wsintf},TWSMenuClass{$endif})
+  impsection
+    imptype function CreateHandle(const AMenu: TMenu): HMENU; virtual;
     
-    class procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); virtual;
+    imptype procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); virtual;
   end;
 
   { TWSMainMenu }
@@ -83,12 +105,16 @@ type
   end;
 
   { TWSPopupMenu }
-
-  TWSPopupMenu = class(TWSMenu)
-  published
-    class procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); virtual;
+  {$ifdef wsintf}
+  TWSPopupMenuClass = interface(TWSMenuClass)
+    procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
   end;
-  TWSPopupMenuClass = class of TWSPopupMenu;
+  {$endif}
+  TWSPopupMenu = class(TWSMenu)
+  impsection
+    imptype procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); virtual;
+  end;
+  {$ifndef wsintf}TWSPopupMenuClass = class of TWSPopupMenu;{$endif}
 
 function WSCheckMenuItem(const AMenuItem: TMenuItem;
   const AProcName: String): Boolean;
@@ -117,62 +143,62 @@ end;
 
 { TWSMenuItem }
 
-class function TWSMenuItem.OpenCommand: LongInt;
+imptype function TWSMenuItem.OpenCommand: LongInt;
 begin
   Result := UniqueCommand;
 end;
 
-class procedure TWSMenuItem.CloseCommand(ACommand: LongInt);
+imptype procedure TWSMenuItem.CloseCommand(ACommand: LongInt);
 begin
   CommandPool[ACommand] := False;
 end;
 
-class procedure TWSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
+imptype procedure TWSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
 begin
 end;
 
-class function  TWSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
+imptype function  TWSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
 begin
   Result := 0;
 end;
 
-class procedure TWSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
+imptype procedure TWSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
 begin
 end;
 
-class procedure TWSMenuItem.SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
+imptype procedure TWSMenuItem.SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
 begin
 end;
 
-class procedure TWSMenuItem.SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut);
+imptype procedure TWSMenuItem.SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut);
 begin
 end;
 
-class procedure TWSMenuItem.SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);
+imptype procedure TWSMenuItem.SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);
 begin
 end;
 
-class function TWSMenuItem.SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
-begin
-  Result := false;
-end;
-
-class function TWSMenuItem.SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
+imptype function TWSMenuItem.SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
 begin
   Result := false;
 end;
 
-class function TWSMenuItem.SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean;
+imptype function TWSMenuItem.SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
 begin
   Result := false;
 end;
 
-class function TWSMenuItem.SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
+imptype function TWSMenuItem.SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean;
 begin
   Result := false;
 end;
 
-class procedure TWSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap);
+imptype function TWSMenuItem.SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
+begin
+  Result := false;
+end;
+
+imptype procedure TWSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap);
 begin
   // emulate old behaviour
   AMenuItem.RecreateHandle;
@@ -182,12 +208,12 @@ end;
           
 { TWSMenu }
 
-class function  TWSMenu.CreateHandle(const AMenu: TMenu): HMENU;
+imptype function  TWSMenu.CreateHandle(const AMenu: TMenu): HMENU;
 begin
   Result := 0;
 end;
 
-class procedure TWSMenu.SetBiDiMode(const AMenu : TMenu; UseRightToLeftAlign,
+imptype procedure TWSMenu.SetBiDiMode(const AMenu : TMenu; UseRightToLeftAlign,
   UseRightToLeftReading : Boolean);
 begin
 end;
@@ -195,7 +221,7 @@ end;
 
 { TWSPopupMenu }
 
-class procedure TWSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
+imptype procedure TWSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
 begin
 end;
 

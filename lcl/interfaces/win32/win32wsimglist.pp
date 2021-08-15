@@ -17,6 +17,7 @@
 unit Win32WSImgList;
 
 {$mode objfpc}{$H+}
+{$I win32defines.inc}
 
 interface
 
@@ -39,25 +40,32 @@ type
 
   { TWin32WSCustomImageList }
 
+  { TWin32WSCustomImageListResolution }
+
   TWin32WSCustomImageListResolution = class(TWSCustomImageListResolution)
   protected
-    class procedure AddData(AListHandle: TLCLIntfHandle;
+    imptype procedure AddData(AListHandle: TLCLIntfHandle;
       ACount, AReplaceIndex, AWidth, AHeight: Integer; AData: PRGBAQuad);
-  published
-    class procedure Clear(AList: TCustomImageListResolution); override;
-    class function CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
+  impsection
+    imptype procedure Clear(AList: TCustomImageListResolution); override;
+    imptype function CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
       AHeight: Integer; AData: PRGBAQuad): TWSCustomImageListReference; override;
-    class procedure Delete(AList: TCustomImageListResolution; AIndex: Integer); override;
-    class procedure DestroyReference(AComponent: TComponent); override;
-    class procedure Draw(AList: TCustomImageListResolution; AIndex: Integer; ACanvas: TCanvas;
+    imptype procedure Delete(AList: TCustomImageListResolution; AIndex: Integer); override;
+    imptype procedure DestroyReference(AComponent: TComponent); override;
+    imptype procedure Draw(AList: TCustomImageListResolution; AIndex: Integer; ACanvas: TCanvas;
       ABounds: TRect; ABkColor, ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect;
       AStyle: TDrawingStyle; AImageType: TImageType); override;
-    class procedure DrawToDC(AList: TCustomImageListResolution; AIndex: Integer; ADC: HDC;
+    imptype procedure DrawToDC(AList: TCustomImageListResolution; AIndex: Integer; ADC: HDC;
       ABounds: TRect; ABkColor, ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect;
       AStyle: TDrawingStyle; AImageType: TImageType);
-    class procedure Insert(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); override;
-    class procedure Move(AList: TCustomImageListResolution; ACurIndex, ANewIndex: Integer); override;
-    class procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); override;
+    imptype procedure Insert(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); override;
+    imptype procedure Move(AList: TCustomImageListResolution; ACurIndex, ANewIndex: Integer); override;
+    imptype procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad); override;
+
+    class procedure _DrawToDC(AList: TCustomImageListResolution; AIndex: Integer; ADC: HDC;
+      ABounds: TRect; ABkColor, ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect;
+      AStyle: TDrawingStyle; AImageType: TImageType);
+
   end;
 
 
@@ -103,7 +111,7 @@ begin
   ReleaseDC(0, DC);
 end;
 
-class procedure TWin32WSCustomImageListResolution.AddData(AListHandle: TLCLIntfHandle;
+imptype procedure TWin32WSCustomImageListResolution.AddData(AListHandle: TLCLIntfHandle;
   ACount, AReplaceIndex, AWidth, AHeight: Integer; AData: PRGBAQuad);
 
   procedure DoAddAlpha;
@@ -224,7 +232,7 @@ begin
   else DoAdd;
 end;
 
-class procedure TWin32WSCustomImageListResolution.Clear(
+imptype procedure TWin32WSCustomImageListResolution.Clear(
   AList: TCustomImageListResolution);
 begin
   if not WSCheckReferenceAllocated(AList, 'Clear')
@@ -232,7 +240,7 @@ begin
   ImageList_SetImageCount(AList.Reference._Handle, 0);
 end;
 
-class function TWin32WSCustomImageListResolution.CreateReference(
+imptype function TWin32WSCustomImageListResolution.CreateReference(
   AList: TCustomImageListResolution; ACount, AGrow, AWidth, AHeight: Integer;
   AData: PRGBAQuad): TWSCustomImageListReference;
 var
@@ -261,7 +269,7 @@ begin
   {$POP}
 end;
 
-class procedure TWin32WSCustomImageListResolution.Delete(
+imptype procedure TWin32WSCustomImageListResolution.Delete(
   AList: TCustomImageListResolution; AIndex: Integer);
 begin
   if not WSCheckReferenceAllocated(AList, 'Delete')
@@ -269,14 +277,14 @@ begin
   ImageList_Remove(AList.Reference._Handle, AIndex);
 end;
 
-class procedure TWin32WSCustomImageListResolution.DestroyReference(AComponent: TComponent);
+imptype procedure TWin32WSCustomImageListResolution.DestroyReference(AComponent: TComponent);
 begin
   if not WSCheckReferenceAllocated(TCustomImageListResolution(AComponent), 'DestroyReference')
   then Exit;
   ImageList_Destroy(TCustomImageListResolution(AComponent).Reference._Handle);
 end;
 
-class procedure TWin32WSCustomImageListResolution.Draw(AList: TCustomImageListResolution;
+imptype procedure TWin32WSCustomImageListResolution.Draw(AList: TCustomImageListResolution;
   AIndex: Integer; ACanvas: TCanvas; ABounds: TRect; ABkColor,
   ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect; AStyle: TDrawingStyle;
   AImageType: TImageType);
@@ -286,10 +294,23 @@ begin
   DrawToDC(AList, AIndex, ACanvas.Handle, ABounds, ABkColor, ABlendColor, ADrawEffect, AStyle, AImageType);
 end;
 
-class procedure TWin32WSCustomImageListResolution.DrawToDC(
+imptype procedure TWin32WSCustomImageListResolution.DrawToDC(
   AList: TCustomImageListResolution; AIndex: Integer; ADC: HDC; ABounds: TRect;
   ABkColor, ABlendColor: TColor; ADrawEffect: TGraphicsDrawEffect;
   AStyle: TDrawingStyle; AImageType: TImageType);
+begin
+  TWin32WSCustomImageListResolution._DrawToDC(
+    AList, AIndex, ADC,
+    ABounds, ABkColor, ABlendColor,
+    ADrawEffect, AStyle,
+    AImageType);
+end;
+
+class procedure TWin32WSCustomImageListResolution._DrawToDC(
+  AList: TCustomImageListResolution; AIndex: Integer; ADC: HDC;
+  ABounds: TRect; ABkColor, ABlendColor: TColor;
+  ADrawEffect: TGraphicsDrawEffect; AStyle: TDrawingStyle;
+  AImageType: TImageType);
 var
   DrawParams: TImageListDrawParams;
   RawImg: TRawImage;
@@ -353,7 +374,7 @@ begin
       DeviceImg.Free;
       ListImg.Free;
     end;
-    
+
     ImgDC := CreateCompatibleDC(ADC);
     OldBmp := SelectObject(ImgDC, ImgHandle);
     WidgetSet.StretchMaskBlt(ADC, ABounds.Left, ABounds.Top, ABounds.Right, ABounds.Bottom,
@@ -366,7 +387,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomImageListResolution.Insert(
+imptype procedure TWin32WSCustomImageListResolution.Insert(
   AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad);
 var
   ImageList: HImageList;
@@ -386,7 +407,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomImageListResolution.Move(AList: TCustomImageListResolution;
+imptype procedure TWin32WSCustomImageListResolution.Move(AList: TCustomImageListResolution;
   ACurIndex, ANewIndex: Integer);
 var
   n: integer;
@@ -410,7 +431,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomImageListResolution.Replace(
+imptype procedure TWin32WSCustomImageListResolution.Replace(
   AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad);
 var
   ImageList: HImageList;

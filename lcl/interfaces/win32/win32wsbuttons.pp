@@ -31,30 +31,30 @@ uses
   Windows, CommCtrl, Classes, Buttons, Graphics, GraphType, Controls,
   LCLType, LCLMessageGlue, LMessages, LazUTF8, Themes, ImgList,
 ////////////////////////////////////////////////////
-  WSProc, WSButtons, Win32WSControls, Win32WSImgList,
+  WSProc, WSButtons, Win32WSControls, Win32WSImgList, {$ifdef wsintf}Win32WSStdCtrls,{$endif}
   UxTheme, Win32Themes;
 
 type
 
   { TWin32WSBitBtn }
 
-  TWin32WSBitBtn = class(TWSBitBtn)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TWin32WSBitBtn = class({$ifndef wsintf}TWSBitBtn{$else}TWin32WSButton, TWSBitBtnClass{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
           var PreferredWidth, PreferredHeight: integer;
           WithThemeSpace: Boolean); override;
-    class procedure SetBounds(const AWinControl: TWinControl;
+    imptype procedure SetBounds(const AWinControl: TWinControl;
           const ALeft, ATop, AWidth, AHeight: integer); override;
-    class procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); override;
-    class procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); override;
-    class procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); override;
-    class procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: string); override;
+    imptype procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); rootoverride;
+    imptype procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); rootoverride;
+    imptype procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); rootoverride;
+    imptype procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); rootoverride;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: string); override;
   end;
 
   { TWin32WSSpeedButton }
@@ -204,7 +204,7 @@ var
       begin
         TBitBtnAceess(BitBtn).FButtonGlyph.GetImageIndexAndEffect(AState, BitBtn.Font.PixelsPerInch, 1,
           AImageRes, AIndex, AEffect);
-        TWin32WSCustomImageListResolution.DrawToDC(
+        TWin32WSCustomImageListResolution._DrawToDC(
           AImageRes.Resolution,
           AIndex, TmpDC, Rect(XDestBitmap, YDestBitmap, glyphWidth, glyphHeight),
           AImageRes.Resolution.ImageList.BkColor,
@@ -233,7 +233,7 @@ var
         if (AEffect = gdeDisabled) and not AlphaDraw then
           AEffect := gde1Bit;
 
-        TWin32WSCustomImageListResolution.DrawToDC(
+        TWin32WSCustomImageListResolution._DrawToDC(
           AImageRes.Resolution,
           AIndex, TmpDC, Rect(XDestBitmap, YDestBitmap, glyphWidth, glyphHeight),
           AImageRes.Resolution.ImageList.BkColor,
@@ -558,7 +558,7 @@ begin
 end;
 
 
-class function TWin32WSBitBtn.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSBitBtn.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -578,7 +578,7 @@ begin
   Result := Params.Window;
 end;
 
-class procedure TWin32WSBitBtn.GetPreferredSize(const AWinControl: TWinControl;
+imptype procedure TWin32WSBitBtn.GetPreferredSize(const AWinControl: TWinControl;
   var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
 var
   BitBtn: TBitBtn absolute AWinControl;
@@ -618,65 +618,65 @@ begin
   end;
 end;
 
-class procedure TWin32WSBitBtn.SetBounds(const AWinControl: TWinControl;
+imptype procedure TWin32WSBitBtn.SetBounds(const AWinControl: TWinControl;
   const ALeft, ATop, AWidth, AHeight: integer);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetBounds') then Exit;
-  TWin32WSWinControl.SetBounds(AWinControl, ALeft, ATop, AWidth, AHeight);
+  {$ifndef wsintf}TWin32WSWinControl.{$else} inherited {$endif}SetBounds(AWinControl, ALeft, ATop, AWidth, AHeight);
   if TCustomBitBtn(AWinControl).Spacing = -1 then
     DrawBitBtnImage(TCustomBitBtn(AWinControl), AWinControl.Caption);
 end;
 
-class procedure TWin32WSBitBtn.SetBiDiMode(const AWinControl: TWinControl;
+imptype procedure TWin32WSBitBtn.SetBiDiMode(const AWinControl: TWinControl;
   UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar: Boolean);
 begin
   DrawBitBtnImage(TCustomBitBtn(AWinControl), AWinControl.Caption);
 end;
 
-class procedure TWin32WSBitBtn.SetColor(const AWinControl: TWinControl);
+imptype procedure TWin32WSBitBtn.SetColor(const AWinControl: TWinControl);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetColor') then Exit;
-  TWin32WSWinControl.SetColor(AWinControl);
+  {$ifndef wsintf}TWin32WSWinControl.{$else} inherited {$endif}SetColor(AWinControl);
   DrawBitBtnImage(TCustomBitBtn(AWinControl), AWinControl.Caption);
 end;
 
-class procedure TWin32WSBitBtn.SetFont(const AWinControl: TWinControl;
+imptype procedure TWin32WSBitBtn.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetFont') then Exit;
-  TWin32WSWinControl.SetFont(AWinControl, AFont);
+  {$ifndef wsintf}TWin32WSWinControl.{$else} inherited {$endif}SetFont(AWinControl, AFont);
   DrawBitBtnImage(TCustomBitBtn(AWinControl), AWinControl.Caption);
 end;
 
-class procedure TWin32WSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn;
+imptype procedure TWin32WSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn;
   const AValue: TButtonGlyph);
 begin
   if not WSCheckHandleAllocated(ABitBtn, 'SetGlyph') then Exit;
   DrawBitBtnImage(ABitBtn, ABitBtn.Caption);
 end;
 
-class procedure TWin32WSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
+imptype procedure TWin32WSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
   const AValue: TButtonLayout);
 begin
   if not WSCheckHandleAllocated(ABitBtn, 'SetLayout') then Exit;
   DrawBitBtnImage(ABitBtn, ABitBtn.Caption);
 end;
 
-class procedure TWin32WSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn;
+imptype procedure TWin32WSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn;
   const AValue: Integer);
 begin
   if not WSCheckHandleAllocated(ABitBtn, 'SetMargin') then Exit;
   DrawBitBtnImage(ABitBtn, ABitBtn.Caption);
 end;
 
-class procedure TWin32WSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn;
+imptype procedure TWin32WSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn;
   const AValue: Integer);
 begin
   if not WSCheckHandleAllocated(ABitBtn, 'SetSpacing') then Exit;
   DrawBitBtnImage(ABitBtn, ABitBtn.Caption);
 end;
 
-class procedure TWin32WSBitBtn.SetText(const AWinControl: TWinControl; const AText: string);
+imptype procedure TWin32WSBitBtn.SetText(const AWinControl: TWinControl; const AText: string);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetText') then Exit;
 //  TWin32WSWinControl.SetText(AWinControl, AText);

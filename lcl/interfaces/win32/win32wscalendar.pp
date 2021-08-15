@@ -17,6 +17,7 @@
 unit Win32WSCalendar;
 
 {$mode objfpc}{$H+}
+{$I win32defines.inc}
 
 {.$define debug_win32calendar}
 
@@ -31,27 +32,27 @@ uses
 ////////////////////////////////////////////////////
   CommCtrl, SysUtils, Controls, LCLType, Calendar,
 ////////////////////////////////////////////////////
-  WSCalendar, WSLCLClasses, WSProc, Windows, Win32WSControls,
+  WSCalendar, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSProc, Windows, Win32WSControls,
   win32proc, win32extra;
 
 type
 
   { TWin32WSCustomCalendar }
 
-  TWin32WSCustomCalendar = class(TWSCustomCalendar)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TWin32WSCustomCalendar = class({$ifdef msintf}TWSCustomCalendar{$else}TWin32WSWinControl, TWSCustomCalendarClass{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
-    class procedure AdaptBounds(const AWinControl: TWinControl;
+    imptype procedure AdaptBounds(const AWinControl: TWinControl;
           var Left, Top, Width, Height: integer; var SuppressMove: boolean); override;
-    class function GetConstraints(const AControl: TControl;
+    imptype function GetConstraints(const AControl: TControl;
        const AConstraints: TObject): Boolean; override;
-    class function  GetDateTime(const ACalendar: TCustomCalendar): TDateTime; override;
-    class function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; override;
-    class function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView; override;
-    class procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); override;
-    class procedure SetDisplaySettings(const ACalendar: TCustomCalendar; const ASettings: TDisplaySettings); override;
-    class procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar; const ADayOfWeek: TCalDayOfWeek); override;
+    imptype function  GetDateTime(const ACalendar: TCustomCalendar): TDateTime; rootoverride;
+    imptype function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; rootoverride;
+    imptype function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView; rootoverride;
+    imptype procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); rootoverride;
+    imptype procedure SetDisplaySettings(const ACalendar: TCustomCalendar; const ASettings: TDisplaySettings); rootoverride;
+    imptype procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar; const ADayOfWeek: TCalDayOfWeek); rootoverride;
   end;
 
 
@@ -62,7 +63,7 @@ uses
 
 { TWin32WSCustomCalendar }
 
-class function TWin32WSCustomCalendar.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSCustomCalendar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -86,7 +87,7 @@ begin
   SetBounds(AWinControl, Params.Left, Params.Top, 0, 0);
 end;
 
-class procedure TWin32WSCustomCalendar.AdaptBounds(const AWinControl: TWinControl;
+imptype procedure TWin32WSCustomCalendar.AdaptBounds(const AWinControl: TWinControl;
   var Left, Top, Width, Height: integer; var SuppressMove: boolean);
 var
   WinHandle: HWND;
@@ -108,7 +109,7 @@ begin
   end;
 end;
 
-class function TWin32WSCustomCalendar.GetConstraints(const AControl: TControl;
+imptype function TWin32WSCustomCalendar.GetConstraints(const AControl: TControl;
   const AConstraints: TObject): Boolean;
 var
   SizeConstraints: TSizeConstraints absolute AConstraints;
@@ -126,7 +127,7 @@ begin
   end;
 end;
 
-class function  TWin32WSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
+imptype function  TWin32WSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
 var
   ST: SystemTime;
 begin
@@ -134,7 +135,7 @@ begin
   Result := EncodeDate(ST.WYear,ST.WMonth,ST.WDay);
 end;
 
-class function TWin32WSCustomCalendar.HitTest(const ACalendar: TCustomCalendar;
+imptype function TWin32WSCustomCalendar.HitTest(const ACalendar: TCustomCalendar;
   const APoint: TPoint): TCalendarPart;
 var
   HitTestInfo: MCHITTESTINFO;
@@ -181,12 +182,16 @@ begin
   end;
 end;
 
-class function TWin32WSCustomCalendar.GetCurrentView(
+imptype function TWin32WSCustomCalendar.GetCurrentView(
   const ACalendar: TCustomCalendar): TCalendarView;
 var
   CurrentView: LRESULT;
 begin
+  {$ifndef wsintf}
   Result := inherited GetCurrentView(ACalendar);
+  {$else}
+  Result := cvMonth;
+  {$endif}
   if WindowsVersion >= wvVista then begin
     if not WSCheckHandleAllocated(ACalendar, 'TWin32WSCustomCalendar.GetCurrentView') then
       Exit;
@@ -201,7 +206,7 @@ begin
   end;
 end;
 
-class procedure TWin32WSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
+imptype procedure TWin32WSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
 var
   ST: SystemTime;
 begin
@@ -209,7 +214,7 @@ begin
   SendMessage(ACalendar.Handle, MCM_SETCURSEL, 0, Windows.LParam(@ST));
 end;
 
-class procedure TWin32WSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar; const ASettings: TDisplaySettings);
+imptype procedure TWin32WSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar; const ASettings: TDisplaySettings);
 var
   Style: LongInt;
 begin
@@ -223,7 +228,7 @@ begin
   SetWindowLong(ACalendar.Handle, GWL_STYLE, Style);
 end;
 
-class procedure TWin32WSCustomCalendar.SetFirstDayOfWeek(const ACalendar: TCustomCalendar; const ADayOfWeek: TCalDayOfWeek);
+imptype procedure TWin32WSCustomCalendar.SetFirstDayOfWeek(const ACalendar: TCustomCalendar; const ADayOfWeek: TCalDayOfWeek);
 var
   dow: LongInt;
   tmp: array[0..1] of widechar;

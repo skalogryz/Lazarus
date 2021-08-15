@@ -30,27 +30,34 @@ uses
   Windows, Classes, Controls, CheckLst, StdCtrls, Themes, Graphics, LCLType,
   LazUTF8, LMessages, LCLMessageGlue,
 ////////////////////////////////////////////////////
-  WSCheckLst, WSLCLClasses, Win32Int, Win32Proc, Win32WSControls, Win32WSStdCtrls;
+  WSCheckLst, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, Win32Int, Win32Proc, Win32WSControls, Win32WSStdCtrls;
 
 type
 
   { TWin32WSCustomCheckListBox }
 
-  TWin32WSCustomCheckListBox = class(TWSCustomCheckListBox)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TWin32WSCustomCheckListBox = class({$ifndef wsintf}TWSCustomCheckListBox{$else}TWin32WSCustomListBox, TWSCustomCheckListBoxClass{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
        const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure DefaultWndHandler(const AWinControl: TWinControl;
+    imptype procedure DefaultWndHandler(const AWinControl: TWinControl;
        var AMessage); override;
-    class function GetStrings(const ACustomListBox: TCustomListBox): TStrings; override;
-    class function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer): Boolean; override;
-    class function GetState(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer): TCheckBoxState; override;
-    class procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer; const AEnabled: Boolean); override;
-    class procedure SetState(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer; const AState: TCheckBoxState); override;
+    imptype function GetStrings(const ACustomListBox: TCustomListBox): TStrings; override;
+    imptype function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean; rootoverride;
+    imptype function GetState(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): TCheckBoxState; rootoverride;
+    imptype procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AEnabled: Boolean); rootoverride;
+    imptype procedure SetState(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AState: TCheckBoxState); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer;
+    imptype function GetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean;
+    imptype procedure SetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AHeader: Boolean);
+    {$endif}
   end;
 
 
@@ -147,7 +154,7 @@ begin
   end;
 end;
 
-class function TWin32WSCustomCheckListBox.CreateHandle(
+imptype function TWin32WSCustomCheckListBox.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   Params: TCreateWindowExParams;
@@ -165,7 +172,7 @@ begin
   Result := Params.Window;
 end;
 
-class procedure TWin32WSCustomCheckListBox.DefaultWndHandler(
+imptype procedure TWin32WSCustomCheckListBox.DefaultWndHandler(
   const AWinControl: TWinControl; var AMessage);
 
   procedure DrawCheckListBoxItem(CheckListBox: TCheckListBox; Data: PDrawItemStruct);
@@ -284,7 +291,7 @@ begin
   inherited DefaultWndHandler(AWinControl, AMessage);
 end;
 
-class function  TWin32WSCustomCheckListBox.GetStrings(const ACustomListBox: TCustomListBox): TStrings;
+imptype function  TWin32WSCustomCheckListBox.GetStrings(const ACustomListBox: TCustomListBox): TStrings;
 var
   Handle: HWND;
 begin
@@ -293,20 +300,20 @@ begin
   GetWin32WindowInfo(Handle)^.List := Result;
 end;
 
-class function TWin32WSCustomCheckListBox.GetItemEnabled(
+imptype function TWin32WSCustomCheckListBox.GetItemEnabled(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer): Boolean;
 begin
   Result := TWin32CheckListBoxStrings(ACheckListBox.Items).Enabled[AIndex];
 end;
 
-class function TWin32WSCustomCheckListBox.GetState(
+imptype function TWin32WSCustomCheckListBox.GetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer
   ): TCheckBoxState;
 begin
   Result := TWin32CheckListBoxStrings(ACheckListBox.Items).State[AIndex];
 end;
 
-class procedure TWin32WSCustomCheckListBox.SetItemEnabled(
+imptype procedure TWin32WSCustomCheckListBox.SetItemEnabled(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AEnabled: Boolean);
 var
@@ -321,7 +328,7 @@ begin
   Windows.InvalidateRect(Handle, @SizeRect, False);
 end;
 
-class procedure TWin32WSCustomCheckListBox.SetState(
+imptype procedure TWin32WSCustomCheckListBox.SetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AState: TCheckBoxState);
 var
@@ -335,5 +342,23 @@ begin
   Windows.SendMessage(Handle, LB_GETITEMRECT, AIndex, LPARAM(@SizeRect));
   Windows.InvalidateRect(Handle, @SizeRect, False);
 end;
+{$ifdef wsintf}
+imptype function TWin32WSCustomCheckListBox.GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer;
+begin
+  Result := 0;
+end;
+
+imptype function TWin32WSCustomCheckListBox.GetHeader(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer): Boolean;
+begin
+  Result := false;
+end;
+
+imptype procedure TWin32WSCustomCheckListBox.SetHeader(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer; const AHeader: Boolean);
+begin
+end;
+
+{$endif}
 
 end.

@@ -30,7 +30,7 @@ uses
 ////////////////////////////////////////////////////
   CommCtrl, Windows, Classes, Controls, Graphics,
 ////////////////////////////////////////////////////
-  WSControls, WSLCLClasses, SysUtils, Win32Proc, Win32Extra, WSProc,
+  WSControls, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, SysUtils, Win32Proc, Win32Extra, WSProc,
   { LCL }
   InterfaceBase, LCLType, LCLIntf, LCLProc, LazUTF8, Themes, Forms;
 
@@ -38,50 +38,78 @@ type
   { TWin32WSDragImageListResolution }
 
   TWin32WSDragImageListResolution = class(TWSDragImageListResolution)
-  published
-    class function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND;
+  impsection
+    imptype function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND;
       AIndex, X, Y: Integer): Boolean; override;
-    class function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; override;
-    class procedure EndDrag(const ADragImageList: TDragImageListResolution); override;
-    class function HideDragImage(const ADragImageList: TDragImageListResolution;
+    imptype function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; override;
+    imptype procedure EndDrag(const ADragImageList: TDragImageListResolution); override;
+    imptype function HideDragImage(const {%H-}ADragImageList: TDragImageListResolution;
       ALockedWindow: HWND; DoUnLock: Boolean): Boolean; override;
-    class function ShowDragImage(const ADragImageList: TDragImageListResolution;
+    imptype function ShowDragImage(const ADragImageList: TDragImageListResolution;
       ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean; override;
   end;
 
   { TWin32WSControl }
-
+  {$ifndef wsintf}
   TWin32WSControl = class(TWSControl)
+  {$else}
+  TWin32WSControl = class(TWSControl)
+  {$endif}
   published
   end;
 
   { TWin32WSWinControl }
 
+  {$ifndef wsintf}
   TWin32WSWinControl = class(TWSWinControl)
-  published
-    class procedure AddControl(const AControl: TControl); override;
+  {$else}
+  TWin32WSWinControl = class(TWin32WSControl, TWSWinControlClass)
+  {$endif}
+  impsection
+    imptype procedure AddControl(const AControl: TControl); override;
 
-    class function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
-    class procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean); override;
-    class procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
-    class procedure SetChildZPosition(const AWinControl, AChild: TWinControl;
+    imptype function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; rootoverride;
+    imptype procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean);  rootoverride;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer);  rootoverride;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);  rootoverride;
+    imptype procedure SetChildZPosition(const AWinControl, AChild: TWinControl;
                                       const AOldPos, ANewPos: Integer;
-                                      const AChildren: TFPList); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: string); override;
-    class procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); override;
-    class procedure SetShape(const AWinControl: TWinControl; const AShape: HBITMAP); override;
+                                      const AChildren: TFPList); rootoverride;
+    imptype procedure SetColor(const AWinControl: TWinControl); rootoverride;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); rootoverride;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: string); rootoverride;
+    imptype procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); rootoverride;
+    imptype procedure SetShape(const AWinControl: TWinControl; const AShape: HBITMAP); rootoverride;
 
-    class procedure ConstraintsChange(const AWinControl: TWinControl); override;
-    class function  CreateHandle(const AWinControl: TWinControl;
-          const AParams: TCreateParams): HWND; override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
-    class procedure Invalidate(const AWinControl: TWinControl); override;
-    class procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
-    class procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); override;
+    imptype procedure ConstraintsChange(const AWinControl: TWinControl); rootoverride;
+    imptype function  CreateHandle(const AWinControl: TWinControl;
+          const AParams: TCreateParams): HWND;  rootoverride;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); rootoverride;
+    imptype procedure Invalidate(const AWinControl: TWinControl); rootoverride;
+    imptype procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); rootoverride;
+    imptype procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); rootoverride;
+
+    {$ifdef wsintf}
+    // with the oriignal implemenation those don't have to be implemented
+    imptype function  CanFocus(const AWincontrol: TWinControl): Boolean; rootoverride;
+    imptype function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; virtual;
+    imptype function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; virtual;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); virtual;
+    imptype function  GetDefaultClientRect(const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect): boolean; virtual;
+    imptype function GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean; virtual;
+    imptype function GetDoubleBuffered(const AWinControl: TWinControl): Boolean; virtual;
+    imptype function  GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; virtual;
+
+    imptype procedure SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer); virtual;
+    imptype procedure SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer); virtual;
+
+    { TODO: move AdaptBounds: it is only used in winapi interfaces }
+    imptype procedure AdaptBounds(const AWinControl: TWinControl;
+          var Left, Top, Width, Height: integer; var SuppressMove: boolean); virtual;
+    imptype procedure DefaultWndHandler(const AWinControl: TWinControl; var AMessage); virtual;
+    imptype procedure Repaint(const AWinControl: TWinControl); virtual;
+    {$endif}
   end;
 
   { TWin32WSGraphicControl }
@@ -91,8 +119,11 @@ type
   end;
 
   { TWin32WSCustomControl }
-
+  {$ifdef wsintf}
+  TWin32WSCustomControl = class(TWin32WSWinControl)
+  {$else}
   TWin32WSCustomControl = class(TWSCustomControl)
+  {$endif}
   published
   end;
 
@@ -299,7 +330,7 @@ end;
 
 { TWin32WSWinControl }
 
-class function TWin32WSWinControl.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSWinControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -317,7 +348,7 @@ begin
   Result := Params.Window;
 end;
 
-class procedure TWin32WSWinControl.AddControl(const AControl: TControl);
+imptype procedure TWin32WSWinControl.AddControl(const AControl: TControl);
 var
   ParentHandle, ChildHandle: HWND;
 begin
@@ -335,13 +366,13 @@ begin
   Windows.SetParent(ChildHandle, ParentHandle);
 end;
 
-class function  TWin32WSWinControl.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
+imptype function  TWin32WSWinControl.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
 begin
   AText := '';
   Result := false;
 end;
 
-class procedure TWin32WSWinControl.SetBiDiMode(const AWinControl : TWinControl;
+imptype procedure TWin32WSWinControl.SetBiDiMode(const AWinControl : TWinControl;
   UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean
   );
 var
@@ -361,14 +392,14 @@ begin
   SetWindowLong(AWinControl.Handle, GWL_EXSTYLE, FlagsEx);
 end;
 
-class procedure TWin32WSWinControl.SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
+imptype procedure TWin32WSWinControl.SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 begin
   RecreateWnd(AWinControl);
   if AWinControl.HandleObjectShouldBeVisible then
     AWinControl.HandleNeeded;
 end;
 
-class procedure TWin32WSWinControl.SetChildZPosition(
+imptype procedure TWin32WSWinControl.SetChildZPosition(
   const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer;
   const AChildren: TFPList);
 var
@@ -434,7 +465,7 @@ end;
 
   Resize a window
  ------------------------------------------------------------------------------}
-class procedure TWin32WSWinControl.SetBounds(const AWinControl: TWinControl;
+imptype procedure TWin32WSWinControl.SetBounds(const AWinControl: TWinControl;
   const ALeft, ATop, AWidth, AHeight: Integer);
 var
   IntfLeft, IntfTop, IntfWidth, IntfHeight: integer;
@@ -474,25 +505,25 @@ begin
     Win32WidgetSet.UpdateMDIClientBounds;
 end;
 
-class procedure TWin32WSWinControl.SetColor(const AWinControl: TWinControl);
+imptype procedure TWin32WSWinControl.SetColor(const AWinControl: TWinControl);
 begin
   // TODO: to be implemented, had no implementation in LM_SETCOLOR message
 end;
 
-class procedure TWin32WSWinControl.SetFont(const AWinControl: TWinControl; const AFont: TFont);
+imptype procedure TWin32WSWinControl.SetFont(const AWinControl: TWinControl; const AFont: TFont);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetFont')
   then Exit;
   Windows.SendMessage(AWinControl.Handle, WM_SETFONT, Windows.WParam(AFont.Reference.Handle), 1);
 end;
 
-class procedure TWin32WSWinControl.SetText(const AWinControl: TWinControl; const AText: string);
+imptype procedure TWin32WSWinControl.SetText(const AWinControl: TWinControl; const AText: string);
 begin
   if not WSCheckHandleAllocated(AWincontrol, 'SetText') then Exit;
   SendMessageW(AWinControl.Handle, WM_SETTEXT, 0, LPARAM(PWideChar(UTF8ToUTF16(AText))));
 end;
 
-class procedure TWin32WSWinControl.SetCursor(const AWinControl: TWinControl; const ACursor: HCursor);
+imptype procedure TWin32WSWinControl.SetCursor(const AWinControl: TWinControl; const ACursor: HCursor);
 var
   CursorPos, P: TPoint;
   h: HWND;
@@ -519,7 +550,7 @@ begin
   SendMessage(h, WM_SETCURSOR, WParam(h), Windows.MAKELONG(HitTestCode, WM_MOUSEMOVE));
 end;
 
-class procedure TWin32WSWinControl.SetShape(const AWinControl: TWinControl;
+imptype procedure TWin32WSWinControl.SetShape(const AWinControl: TWinControl;
   const AShape: HBITMAP);
 var
   Rgn: HRGN;
@@ -536,12 +567,12 @@ begin
     DeleteObject(Rgn);
 end;
 
-class procedure TWin32WSWinControl.ConstraintsChange(const AWinControl: TWinControl);
+imptype procedure TWin32WSWinControl.ConstraintsChange(const AWinControl: TWinControl);
 begin
   // TODO: implement me!
 end;
 
-class procedure TWin32WSWinControl.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TWin32WSWinControl.DestroyHandle(const AWinControl: TWinControl);
 var
   Handle: HWND;
 begin
@@ -557,13 +588,13 @@ begin
     DestroyWindow(Handle);
 end;
 
-class procedure TWin32WSWinControl.Invalidate(const AWinControl: TWinControl);
+imptype procedure TWin32WSWinControl.Invalidate(const AWinControl: TWinControl);
 begin
   // lpRect = nil updates entire client area of window
   InvalidateRect(AWinControl.Handle, nil, True);
 end;
 
-class procedure TWin32WSWinControl.PaintTo(const AWinControl: TWinControl;
+imptype procedure TWin32WSWinControl.PaintTo(const AWinControl: TWinControl;
   ADC: HDC; X, Y: Integer);
 var
   SavedDC: Integer;
@@ -575,7 +606,7 @@ begin
   RestoreDC(ADC, SavedDC);
 end;
 
-class procedure TWin32WSWinControl.ShowHide(const AWinControl: TWinControl);
+imptype procedure TWin32WSWinControl.ShowHide(const AWinControl: TWinControl);
 const
   VisibilityToFlag: array[Boolean] of UINT = (SWP_HIDEWINDOW, SWP_SHOWWINDOW);
 begin
@@ -587,17 +618,101 @@ begin
     Win32WidgetSet.UpdateMDIClientBounds;
 end;
 
-class procedure TWin32WSWinControl.ScrollBy(const AWinControl: TWinControl;
+imptype procedure TWin32WSWinControl.ScrollBy(const AWinControl: TWinControl;
   DeltaX, DeltaY: integer);
 begin
   if AWinControl.HandleAllocated then
     ScrollWindowEx(AWinControl.Handle, DeltaX, DeltaY, nil, nil, 0, nil,
       SW_INVALIDATE or SW_ERASE or SW_SCROLLCHILDREN);
 end;
+{$ifdef wsintf}
+imptype function TWin32WSWinControl.CanFocus(const AWincontrol: TWinControl): Boolean;
+begin
+  Result := True;
+end;
+
+imptype function TWin32WSWinControl.GetClientBounds(const AWincontrol: TWinControl;
+  var ARect: TRect): Boolean;
+begin
+  Result := WidgetSet.GetClientBounds(AWincontrol.Handle, ARect);
+end;
+
+function TWin32WSWinControl.GetClientRect(const AWincontrol: TWinControl;
+  var ARect: TRect): Boolean;
+begin
+  Result := WidgetSet.GetClientRect(AWincontrol.Handle, ARect);
+end;
+
+procedure TWin32WSWinControl.GetPreferredSize(const AWinControl: TWinControl;
+  var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
+begin
+  PreferredWidth := 0;
+  PreferredHeight := 0;
+end;
+
+function TWin32WSWinControl.GetDefaultClientRect(
+  const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer;
+  var aClientRect: TRect): boolean;
+begin
+  Result:=false;
+end;
+
+function TWin32WSWinControl.GetDesignInteractive(
+  const AWinControl: TWinControl; AClientPos: TPoint): Boolean;
+begin
+  Result := False;
+end;
+
+function TWin32WSWinControl.GetDoubleBuffered(const AWinControl: TWinControl
+  ): Boolean;
+begin
+  Result := AWinControl.DoubleBuffered;
+end;
+
+function TWin32WSWinControl.GetTextLen(const AWinControl: TWinControl;
+  var ALength: Integer): Boolean;
+var
+  S: String;
+begin
+  Result := GetText(AWinControl, S);
+  if Result
+  then ALength := Length(S);
+end;
+
+procedure TWin32WSWinControl.SetPos(const AWinControl: TWinControl;
+  const ALeft, ATop: Integer);
+begin
+
+end;
+
+procedure TWin32WSWinControl.SetSize(const AWinControl: TWinControl;
+  const AWidth, AHeight: Integer);
+begin
+
+end;
+
+procedure TWin32WSWinControl.AdaptBounds(const AWinControl: TWinControl;
+  var Left, Top, Width, Height: integer; var SuppressMove: boolean);
+begin
+
+end;
+
+procedure TWin32WSWinControl.DefaultWndHandler(const AWinControl: TWinControl;
+  var AMessage);
+begin
+  WidgetSet.CallDefaultWndHandler(AWinControl, AMessage);
+end;
+
+procedure TWin32WSWinControl.Repaint(const AWinControl: TWinControl);
+begin
+  AWinControl.Invalidate;
+  AWinControl.Update;
+end;
+{$endif}
 
 { TWin32WSDragImageListResolution }
 
-class function TWin32WSDragImageListResolution.BeginDrag(
+imptype function TWin32WSDragImageListResolution.BeginDrag(
   const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X,
   Y: Integer): Boolean;
 begin
@@ -606,18 +721,18 @@ begin
   Result := ImageList_BeginDrag(ADragImageList.Reference.Handle, AIndex, X, Y);
 end;
 
-class function TWin32WSDragImageListResolution.DragMove(const ADragImageList: TDragImageListResolution;
+imptype function TWin32WSDragImageListResolution.DragMove(const ADragImageList: TDragImageListResolution;
   X, Y: Integer): Boolean;
 begin
   Result := ImageList_DragMove(X, Y);
 end;
 
-class procedure TWin32WSDragImageListResolution.EndDrag(const ADragImageList: TDragImageListResolution);
+imptype procedure TWin32WSDragImageListResolution.EndDrag(const ADragImageList: TDragImageListResolution);
 begin
   ImageList_EndDrag;
 end;
 
-class function TWin32WSDragImageListResolution.HideDragImage(const ADragImageList: TDragImageListResolution;
+imptype function TWin32WSDragImageListResolution.HideDragImage(const ADragImageList: TDragImageListResolution;
   ALockedWindow: HWND; DoUnLock: Boolean): Boolean;
 begin
   if DoUnLock then
@@ -626,7 +741,7 @@ begin
     Result := ImageList_DragShowNolock(False);
 end;
 
-class function TWin32WSDragImageListResolution.ShowDragImage(const ADragImageList: TDragImageListResolution;
+imptype function TWin32WSDragImageListResolution.ShowDragImage(const ADragImageList: TDragImageListResolution;
   ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean;
 begin
   if DoLock then

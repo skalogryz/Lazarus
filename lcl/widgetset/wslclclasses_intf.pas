@@ -95,8 +95,8 @@ type
   end;
 
 
-{$ifndef WSINTF}
 function FindWSComponentClass(const AComponent: TComponentClass): TWSLCLComponentClass;
+{$ifndef WSINTF}
 function IsWSComponentInheritsFrom(const AComponent: TComponentClass;
   InheritFromClass: TWSLCLComponentClass): Boolean;
 procedure RegisterWSComponent(AComponent: TComponentClass;

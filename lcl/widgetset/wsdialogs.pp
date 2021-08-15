@@ -40,20 +40,29 @@ uses
 ////////////////////////////////////////////////////
   LCLType, Dialogs,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSFactory;
 
 type
   { TWSCommonDialog }
 
+  {$ifndef wsintf}
   TWSCommonDialogClass = class of TWSCommonDialog;
-  TWSCommonDialog = class(TWSLCLComponent)
+  {$else}
+  TWSCommonDialogClass = interface(TWSLCLComponentClass)
+    function  CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+    procedure ShowModal(const ACommonDialog: TCommonDialog);
+    procedure DestroyHandle(const ACommonDialog: TCommonDialog);
+    function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
+  end;
+  {$endif}
+  TWSCommonDialog = class(TWSLCLComponent{$ifdef wsintf},TWSCommonDialogClass{$endif})
   public class var
     WSCommonDialog_WSClass: TWSCommonDialogClass;
-  published
-    class function  CreateHandle(const ACommonDialog: TCommonDialog): THandle; virtual;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); virtual;
-    class procedure DestroyHandle(const ACommonDialog: TCommonDialog); virtual;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; virtual;
+  impsection
+    imptype function  CreateHandle(const ACommonDialog: TCommonDialog): THandle; virtual;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); virtual;
+    imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); virtual;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; virtual;
   end;
 
   { TWSFileDialog }
@@ -95,11 +104,11 @@ type
   { TWSFontDialog }
 
   TWSFontDialog = class(TWSCommonDialog)
-  published
-    class function  CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
-    class procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  impsection
+    imptype function  CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+    imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { WidgetSetRegistration }
@@ -118,28 +127,28 @@ implementation
 uses
   LResources;
 
-class function  TWSCommonDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function  TWSCommonDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 begin
   Result := 0;
 end;
 
-class procedure TWSCommonDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
+imptype procedure TWSCommonDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
 begin
 end;
 
-class function TWSCommonDialog.QueryWSEventCapabilities(
+imptype function TWSCommonDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [];
 end;
 
-class procedure TWSCommonDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TWSCommonDialog.ShowModal(const ACommonDialog: TCommonDialog);
 begin
 end;
 
 { TWSFontDialog }
 
-class function TWSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TWSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 begin
   if WSCommonDialog_WSClass = nil then
     WSCommonDialog_WSClass := TWSCommonDialogClass(FindWSComponentClass(TCommonDialog));
@@ -151,7 +160,7 @@ begin
   Result:=inherited CreateHandle(ACommonDialog)
 end;
 
-class procedure TWSFontDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TWSFontDialog.ShowModal(const ACommonDialog: TCommonDialog);
 begin
   if WSCommonDialog_WSClass = nil then
     WSCommonDialog_WSClass := TWSCommonDialogClass(FindWSComponentClass(TCommonDialog));
@@ -163,7 +172,7 @@ begin
   inherited ShowModal(ACommonDialog);
 end;
 
-class procedure TWSFontDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
+imptype procedure TWSFontDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
 begin
   if WSCommonDialog_WSClass = nil then
     WSCommonDialog_WSClass := TWSCommonDialogClass(FindWSComponentClass(TCommonDialog));
@@ -175,7 +184,7 @@ begin
   inherited DestroyHandle(ACommonDialog);
 end;
 
-class function TWSFontDialog.QueryWSEventCapabilities(
+imptype function TWSFontDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   if WSCommonDialog_WSClass = nil then
@@ -196,7 +205,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterCommonDialog then
-    RegisterWSComponent(TCommonDialog, TWSCommonDialog);
+    RegisterWSComponent(TCommonDialog, TWSCommonDialog{$ifdef wsintf}.Create{$endif});
   RegisterPropertyToSkip(TCommonDialog, 'Ctl3D', 'VCL compatibility property', '');
   Done := True;
 end;

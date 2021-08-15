@@ -42,28 +42,40 @@ uses
 ////////////////////////////////////////////////////
   ShellCtrls, ComCtrls,
 ////////////////////////////////////////////////////
-  WSControls, WSFactory, WSLCLClasses, WSComCtrls;
+  WSControls, WSFactory, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSComCtrls;
 
 type
 
   { TWSCustomShellTreeView }
-
-  TWSCustomShellTreeView = class(TWSCustomTreeView)
-  published
-    class function DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
-      ANode: TTreeNode; ARect: TRect): TSize; virtual;
-    class function GetBuiltinIconSize: TSize; virtual;
+  {$ifdef wsintf}
+  TWSCustomShellTreeViewClass = interface(TWSWinControlClass)
+    function DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
+      ANode: TTreeNode; ARect: TRect): TSize;
+    function GetBuiltinIconSize: TSize;
   end;
-  TWSCustomShellTreeViewClass = class of TWSCustomShellTreeView;
+  {$endif}
+
+  TWSCustomShellTreeView = class(TWSCustomTreeView{$ifdef wsintf},TWSCustomShellTreeViewClass{$endif})
+  impsection
+    imptype function DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
+      ANode: TTreeNode; ARect: TRect): TSize; virtual;
+    imptype function GetBuiltinIconSize: TSize; virtual;
+  end;
+  {$ifndef wsintf}TWSCustomShellTreeViewClass = class of TWSCustomShellTreeView;{$endif}
 
   { TWSCustomShellListView }
-
-  TWSCustomShellListView = class(TWSCustomListView)
-  published
-    class function GetBuiltInImageIndex(AListView: TCustomShellListView;
+  {$ifdef wsintf}
+  TWSCustomShellListViewClass = interface(TWSCustomListViewClass)
+    function GetBuiltInImageIndex(AListView: TCustomShellListView;
+      const AFileName: String; ALargeImage: Boolean): Integer;
+  end;
+  {$endif}
+  TWSCustomShellListView = class(TWSCustomListView{$ifdef wsintf},TWSCustomShellListViewClass{$endif})
+  impsection
+    imptype function GetBuiltInImageIndex(AListView: TCustomShellListView;
       const AFileName: String; ALargeImage: Boolean): Integer; virtual;
   end;
-  TWSCustomShellListViewClass = class of TWSCustomShellListView;
+  {$ifndef wsintf}TWSCustomShellListViewClass = class of TWSCustomShellListView;{$endif}
 
 procedure RegisterCustomShellTreeView;
 procedure RegisterCustomShellListView;
@@ -76,14 +88,14 @@ uses
 
 { TWSCustomShellTreeView }
 
-class function TWSCustomShellTreeView.DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
+imptype function TWSCustomShellTreeView.DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
   ANode: TTreeNode; ARect: TRect): TSize;
 begin
   Result.CX := 0;
   Result.CY := 0;
 end;
 
-class function TWSCustomShellTreeView.GetBuiltinIconSize: TSize;
+imptype function TWSCustomShellTreeView.GetBuiltinIconSize: TSize;
 begin
   Result.CX := 0;
   Result.CY := 0;
@@ -92,7 +104,7 @@ end;
 
 { TWSCustomShellListView }
 
-class function TWSCustomShellListView.GetBuiltInImageIndex(
+imptype function TWSCustomShellListView.GetBuiltInImageIndex(
   AListView: TCustomShellListView; const AFileName: String;
   ALargeImage: Boolean): Integer;
 begin
@@ -109,7 +121,7 @@ begin
   if Done then exit;
   //WSRegisterCustomShellTreeView;
   if not WSRegisterCustomShellTreeView then
-    RegisterWSComponent(TCustomShellTreeView, TWSCustomShellTreeView);
+    RegisterWSComponent(TCustomShellTreeView, TWSCustomShellTreeView{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 
@@ -120,7 +132,7 @@ begin
   if Done then exit;
 //  WSRegisterCustomShellListView;
   if not WSRegisterCustomShellListView then
-    RegisterWSComponent(TCustomShellListView, TWSCustomShellListView);
+    RegisterWSComponent(TCustomShellListView, TWSCustomShellListView{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 

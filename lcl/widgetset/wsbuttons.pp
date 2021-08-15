@@ -45,14 +45,22 @@ uses
 type
 
   { TWSBitBtn }
-  
+  {$ifndef wsintf}
   TWSBitBtnClass = class of TWSBitBtn;
+  {$else}
+  TWSBitBtnClass = interface(TWSButtonClass)
+    procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph);
+    procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout);
+    procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer);
+    procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer);
+  end;
+  {$endif}
   TWSBitBtn = class(TWSButton)
-  published
-    class procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); virtual;
-    class procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); virtual;
-    class procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); virtual;
-    class procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); virtual;
+  impsection
+    imptype procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); virtual;
+    imptype procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); virtual;
+    imptype procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); virtual;
+    imptype procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); virtual;
   end;
 
   { TWSSpeedButton }
@@ -77,22 +85,22 @@ uses
 
 { TWSCustomBitBtn }
 
-class procedure TWSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn;
+imptype procedure TWSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn;
   const AValue: TButtonGlyph);
 begin
 end;
 
-class procedure TWSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
+imptype procedure TWSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
   const AValue: TButtonLayout);
 begin
 end;
 
-class procedure TWSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn;
+imptype procedure TWSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn;
   const AValue: Integer);
 begin
 end;
 
-class procedure TWSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn;
+imptype procedure TWSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn;
   const AValue: Integer);
 begin
 end;

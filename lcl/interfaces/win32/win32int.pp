@@ -34,6 +34,9 @@ uses
   {$IF FPC_FULLVERSION>=30000}
   character,
   {$ENDIF}
+  {$ifdef wsintf}
+  WSStdCtrls,
+  {$endif}
   // LCL
   LCLPlatformDef, InterfaceBase, LCLIntf, LclProc, LCLType, LMessages,
   Controls, Buttons, Forms, Dialogs, StdCtrls,

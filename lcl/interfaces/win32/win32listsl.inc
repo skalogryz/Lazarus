@@ -323,22 +323,38 @@ procedure TWin32ComboBoxStringList.Assign(Source: TPersistent);
 var
   EditText: string;
   lItemIndex: integer;
-begin
+  {$ifdef wsintf}
+  intf: TWSCustomComboBoxClass;
+  {$endif}
+ begin
   if Source is TStrings then
   begin
     // save text in edit box, assigning strings clears the text
+    {$ifndef wsintf}
     TWin32WSCustomComboBox.GetText(FSender, EditText);
+    {$else}
+    intf:=TWSCustomComboBoxClass(FSender.WidgetSetClass);
+    intf.GetText(FSender, EditText);
+    {$endif}
 
     inherited Assign(Source);
     
     // restore text in edit box
+    {$ifndef wsintf}
     TWin32WSWinControl.SetText(FSender, EditText);
+    {$else}
+    intf.SetText(FSender, EditText);
+    {$endif}
     if EditText = '' then
       lItemIndex := -1
     else
       lItemIndex := IndexOf(EditText);
     if lItemIndex <> -1 then
+      {$ifndef wsintf}
       TWin32WSCustomComboBox.SetItemIndex(TCustomComboBox(FSender), lItemIndex);
+      {$else}
+      intf.SetItemIndex(TCustomComboBox(FSender), lItemIndex);
+      {$endif}
   end
   else
     inherited Assign(Source);

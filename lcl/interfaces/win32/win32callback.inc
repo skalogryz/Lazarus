@@ -311,7 +311,11 @@ begin
   Index := ComboBox.ItemIndex;
   // Index might be -1, if current text is not in the list.
   if (Index>=0) then
+    {$ifndef wsintf}
     TWin32WSWinControl.SetText(ComboBox, ComboBox.Items[Index]);
+    {$else}
+    TWSCustomComboBoxClass(ComboBox.WidgetSetClass).SetText(ComboBox, ComboBox.Items[Index]);
+    {$endif}
 end;
 
 // A helper class for WindowProc to make it easier to split code into smaller pieces.

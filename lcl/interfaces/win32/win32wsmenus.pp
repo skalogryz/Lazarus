@@ -30,7 +30,7 @@ uses
 ////////////////////////////////////////////////////
   LCLType, Graphics, GraphType, ImgList, Menus, Forms,
 ////////////////////////////////////////////////////
-  WSMenus, WSLCLClasses, WSProc,
+  WSMenus, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSProc,
   Windows, Controls, Classes, SysUtils, Win32Int, Win32Proc, Win32WSImgList,
   LCLProc, Themes, UxTheme, Win32Themes, Win32Extra,
   FileUtil, LazUTF8;
@@ -39,25 +39,31 @@ type
 
   { TWin32WSMenuItem }
 
-  TWin32WSMenuItem = class(TWSMenuItem)
-  published
-    class procedure AttachMenu(const AMenuItem: TMenuItem); override;
-    class function CreateHandle(const AMenuItem: TMenuItem): HMENU; override;
-    class procedure DestroyHandle(const AMenuItem: TMenuItem); override;
-    class procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); override;
-    class function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; override;
-    class procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); override;
-    class function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; override;
-    class function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; override;
-    class procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: Graphics.TBitmap); override;
+  TWin32WSMenuItem = class({$ifndef wsintf}TWSMenuItem{$else}TWSLCLComponent, TWSMenuItemClass{$endif})
+  impsection
+    imptype procedure AttachMenu(const AMenuItem: TMenuItem); rootoverride;
+    imptype function CreateHandle(const AMenuItem: TMenuItem): HMENU; rootoverride;
+    imptype procedure DestroyHandle(const AMenuItem: TMenuItem); rootoverride;
+    imptype procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); rootoverride;
+    imptype function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; rootoverride;
+    imptype procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+    imptype function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; rootoverride;
+    imptype function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; rootoverride;
+    imptype procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: Graphics.TBitmap); rootoverride;
+    {$ifdef wsintf}
+    imptype function  OpenCommand: LongInt; rootoverride;
+    imptype procedure CloseCommand(ACommand: LongInt); rootoverride;
+    imptype procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); rootoverride;
+    imptype function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean; rootoverride;
+    {$endif}
   end;
 
   { TWin32WSMenu }
 
-  TWin32WSMenu = class(TWSMenu)
-  published
-    class function CreateHandle(const AMenu: TMenu): HMENU; override;
-    class procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); override;
+  TWin32WSMenu = class({$ifndef wsintf}TWSMenu{$else}TWSLCLComponent, TWSMenuClass{$endif})
+  impsection
+    imptype function CreateHandle(const AMenu: TMenu): HMENU; rootoverride;
+    imptype procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); rootoverride;
   end;
 
   { TWin32WSMainMenu }
@@ -68,10 +74,10 @@ type
 
   { TWin32WSPopupMenu }
 
-  TWin32WSPopupMenu = class(TWSPopupMenu)
-  published
-    class function CreateHandle(const AMenu: TMenu): HMENU; override;
-    class procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); override;
+  TWin32WSPopupMenu = class({$ifndef wsintf}TWSPopupMenu{$else}TWin32WSMenu, TWSPopupMenuClass{$endif})
+  impsection
+    imptype function CreateHandle(const AMenu: TMenu): HMENU; override;
+    imptype procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); rootoverride;
   end;
 
   function MenuItemSize(AMenuItem: TMenuItem; AHDC: HDC): TSize;
@@ -1436,7 +1442,7 @@ begin
   TriggerFormUpdate(AMenuItem);
 end;
 
-class procedure TWin32WSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
+imptype procedure TWin32WSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
 var
   MenuInfo: MENUITEMINFO;     // TMenuItemInfoA and TMenuItemInfoW have same size and same structure type
   ParentMenuHandle: HMenu;
@@ -1536,12 +1542,12 @@ begin
   TriggerFormUpdate(AMenuItem);
 end;
 
-class function TWin32WSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
+imptype function TWin32WSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
 begin
   Result := CreatePopupMenu;
 end;
 
-class procedure TWin32WSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
+imptype procedure TWin32WSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
 var
   ParentOfParentHandle, ParentHandle: HMENU;
   MenuInfo: MENUITEMINFO;     // TMenuItemInfoA and TMenuItemInfoW have same size and same structure type
@@ -1584,23 +1590,23 @@ begin
   TriggerFormUpdate(AMenuItem);
 end;
 
-class procedure TWin32WSMenuItem.SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
+imptype procedure TWin32WSMenuItem.SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
 begin
   UpdateCaption(AMenuItem, aCaption);
 end;
 
-class function TWin32WSMenuItem.SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
+imptype function TWin32WSMenuItem.SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
 begin
   UpdateCaption(AMenuItem, aMenuItem.Caption);
   Result := Checked;
 end;
 
-class procedure TWin32WSMenuItem.SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut);
+imptype procedure TWin32WSMenuItem.SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut);
 begin
   UpdateCaption(AMenuItem, aMenuItem.Caption);
 end;
 
-class function TWin32WSMenuItem.SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
+imptype function TWin32WSMenuItem.SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
 var
   EnableFlag: DWord;
 begin
@@ -1609,25 +1615,45 @@ begin
   TriggerFormUpdate(AMenuItem);
 end;
 
-class function TWin32WSMenuItem.SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
+imptype function TWin32WSMenuItem.SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
 begin
   Result := ChangeMenuFlag(AMenuItem, MFT_RIGHTJUSTIFY, Justified);
 end;
 
-class procedure TWin32WSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
+imptype procedure TWin32WSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
   const HasIcon: Boolean; const AIcon: Graphics.TBitmap);
 begin
   UpdateCaption(AMenuItem, aMenuItem.Caption);
 end;
 
+imptype function TWin32WSMenuItem.OpenCommand: LongInt;
+begin
+  Result := -1;
+end;
+
+imptype procedure TWin32WSMenuItem.CloseCommand(ACommand: LongInt);
+begin
+
+end;
+
+imptype procedure TWin32WSMenuItem.SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);
+begin
+
+end;
+
+imptype function TWin32WSMenuItem.SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean;
+begin
+  Result := false;
+end;
+
 { TWin32WSMenu }
 
-class function TWin32WSMenu.CreateHandle(const AMenu: TMenu): HMENU;
+imptype function TWin32WSMenu.CreateHandle(const AMenu: TMenu): HMENU;
 begin
   Result := CreateMenu;
 end;
 
-class procedure TWin32WSMenu.SetBiDiMode(const AMenu : TMenu;
+imptype procedure TWin32WSMenu.SetBiDiMode(const AMenu : TMenu;
   UseRightToLeftAlign, UseRightToLeftReading: Boolean);
 begin
   if not WSCheckHandleAllocated(AMenu, 'SetBiDiMode')
@@ -1646,12 +1672,12 @@ end;
 
 { TWin32WSPopupMenu }
 
-class function TWin32WSPopupMenu.CreateHandle(const AMenu: TMenu): HMENU;
+imptype function TWin32WSPopupMenu.CreateHandle(const AMenu: TMenu): HMENU;
 begin
   Result := CreatePopupMenu;
 end;
 
-class procedure TWin32WSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
+imptype procedure TWin32WSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
 var
   MenuHandle: HMENU;
   WinHandle: HWND;

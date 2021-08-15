@@ -18,7 +18,13 @@ unit WSLCLClasses_Intf;
 {$mode objfpc}{$H+}
 {$I lcl_defines.inc}
 
-{$define WSINTF}
+{$ifndef wsintf}
+
+interface
+
+implementation
+
+{$else}
 
 {off$DEFINE VerboseWSRegistration}
 {off$DEFINE VerboseWSRegistration_methods}
@@ -819,5 +825,7 @@ end;
 
 finalization
   DoFinalization;
+{$endif}
 
 end.
+

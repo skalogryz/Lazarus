@@ -58,7 +58,7 @@ type
     procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad);
   end;{$endif}
 
-  TWSCustomImageListResolution = class(TWSLCLReferenceComponent, TWSLCLReferenceComponentClass)
+  TWSCustomImageListResolution = class(TWSLCLReferenceComponent{$ifdef wsintf}, TWSLCLReferenceComponentClass{$endif})
   impsection
     imptype procedure Clear(AList: TCustomImageListResolution); virtual;
     imptype function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,

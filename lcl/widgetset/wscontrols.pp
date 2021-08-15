@@ -74,7 +74,7 @@ type
       ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean; virtual;
   end;
 
-  {$ifndef WSINTF}TWSDragImageListResolutionClass = class ofTWSDragImageListResolution;{$endif}
+  {$ifndef WSINTF}TWSDragImageListResolutionClass = class of TWSDragImageListResolution;{$endif}
 
   { TWSLazAccessibleObject }
 
@@ -519,7 +519,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterDragImageListResolution then
-    RegisterWSComponent(TDragImageListResolution, TWSDragImageListResolution.Create);
+    RegisterWSComponent(TDragImageListResolution, TWSDragImageListResolution{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 
@@ -539,7 +539,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterControl then
-    RegisterWSComponent(TControl, TWSControl.Create);
+    RegisterWSComponent(TControl, TWSControl{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 
@@ -549,7 +549,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterWinControl then
-    RegisterWSComponent(TWinControl, TWSWinControl.Create);
+    RegisterWSComponent(TWinControl, TWSWinControl{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 

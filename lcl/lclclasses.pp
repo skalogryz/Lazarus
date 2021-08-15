@@ -19,8 +19,6 @@ unit LCLClasses;
 
 {$mode objfpc}{$H+}
 
-{$define WSINTF}
-
 { Add -dVerboseWSBrunoK switch to compile with $DEFINE VerboseWSBrunoK }
 
 interface

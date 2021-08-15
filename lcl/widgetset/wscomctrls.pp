@@ -41,225 +41,360 @@ uses
 ////////////////////////////////////////////////////
   Graphics, ImgList, Controls, StdCtrls, ComCtrls,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSExtCtrls, WSToolwin, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSExtCtrls, WSToolwin, WSFactory;
 
 type
   { TWSCustomPage }
-
+  {$ifndef wsintf}
   TWSCustomPageClass = class of TWSCustomPage;
-  TWSCustomPage = class(TWSWinControl)
-  published
-    class procedure UpdateProperties(const ACustomPage: TCustomPage); virtual;
+  {$else}
+  TWSCustomPageClass = interface(TWSWinControlClass)
+    procedure UpdateProperties(const ACustomPage: TCustomPage);
+  end;
+  {$endif}
+  TWSCustomPage = class(TWSWinControl{$ifdef wsintf},TWSCustomPageClass{$endif})
+  impsection
+    imptype procedure UpdateProperties(const ACustomPage: TCustomPage); virtual;
   end;
 
   { TWSCustomTabControl }
+  {$ifdef wsintf}
+  TWSCustomTabControlClass = interface(TWSWinControlClass)
+    procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer);
+    procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer);
+    procedure RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer);
 
-  TWSCustomTabControl = class(TWSWinControl)
-  published
-    class procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer); virtual;
-    class procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer); virtual;
-    class procedure RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer); virtual;
-
-    class function GetNotebookMinTabHeight(const AWinControl: TWinControl): integer; virtual;
-    class function GetNotebookMinTabWidth(const AWinControl: TWinControl): integer; virtual;
-    class function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer; virtual;
-    class function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect; virtual;
-    class function GetCapabilities: TCTabControlCapabilities; virtual;
-    class procedure SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer); virtual;
-    class procedure SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution); virtual;
-    class procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer); virtual;
-    class procedure SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string); virtual;
-    class procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition); virtual;
-    class procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean); virtual;
-    class procedure UpdateProperties(const ATabControl: TCustomTabControl); virtual;
+    function GetNotebookMinTabHeight(const AWinControl: TWinControl): integer;
+    function GetNotebookMinTabWidth(const AWinControl: TWinControl): integer;
+    function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer;
+    function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect;
+    function GetCapabilities: TCTabControlCapabilities;
+    procedure SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer);
+    procedure SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution);
+    procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer);
+    procedure SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string);
+    procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition);
+    procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean);
+    procedure UpdateProperties(const ATabControl: TCustomTabControl);
   end;
-  TWSCustomTabControlClass = class of TWSCustomTabControl;
+  {$endif}
+
+  TWSCustomTabControl = class(TWSWinControl{$ifdef wsintf},TWSCustomTabControlClass{$endif})
+  impsection
+    imptype procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer); virtual;
+    imptype procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer); virtual;
+    imptype procedure RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer); virtual;
+
+    imptype function GetNotebookMinTabHeight(const AWinControl: TWinControl): integer; virtual;
+    imptype function GetNotebookMinTabWidth(const AWinControl: TWinControl): integer; virtual;
+    imptype function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer; virtual;
+    imptype function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect; virtual;
+    imptype function GetCapabilities: TCTabControlCapabilities; virtual;
+    imptype procedure SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer); virtual;
+    imptype procedure SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution); virtual;
+    imptype procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer); virtual;
+    imptype procedure SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string); virtual;
+    imptype procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition); virtual;
+    imptype procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean); virtual;
+    imptype procedure UpdateProperties(const ATabControl: TCustomTabControl); virtual;
+  end;
+  {$ifndef wsintf}TWSCustomTabControlClass = class of TWSCustomTabControl;{$endif}
 
   { TWSStatusBar }
-
+  {$ifndef wsintf}
   TWSStatusBarClass = class of TWSStatusBar;
-  TWSStatusBar = class(TWSWinControl)
-  published
-    class procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); virtual;
-    class procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); virtual;
-    class procedure SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean); virtual;
-    class procedure Update(const AStatusBar: TStatusBar); virtual;
-    class function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
+  {$else}
+  TWSStatusBarClass = interface(TWSWinControlClass)
+    procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer);
+    procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer);
+    procedure SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean);
+    procedure Update(const AStatusBar: TStatusBar);
+  end;
+  {$endif}
+  TWSStatusBar = class(TWSWinControl{$ifdef wsintf},TWSStatusBarClass{$endif})
+  impsection
+    imptype procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); virtual;
+    imptype procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); virtual;
+    imptype procedure SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean); virtual;
+    imptype procedure Update(const AStatusBar: TStatusBar); virtual;
+    imptype function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
   end;
 
   { TWSTabSheet }
 
   TWSTabSheet = class(TWSCustomPage)
-  published
-    class function GetDefaultColor(const AControl: TControl;
+  impsection
+    imptype function GetDefaultColor(const AControl: TControl;
       const ADefaultColorType: TDefaultColorType): TColor; override;
   end;
 
   { TWSPageControl }
 
   TWSPageControl = class(TWSCustomTabControl)
-  published
+  impsection
   end;
 
   { TWSCustomListView }
   TWSListViewItemChange = (lvicText, lvicImage);
   TWSListViewItemChanges = set of TWSListViewItemChange;
-
-  TWSCustomListView = class(TWSWinControl)
-  published
+  {$ifdef wsintf}
+  TWSCustomListViewClass = interface(TWSWinControlClass)
     // Column
-    class procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); virtual;
-    class function  ColumnGetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn): Integer; virtual;
-    class procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn); virtual;
-    class procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn); virtual;
-    class procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAlignment: TAlignment); virtual;
-    class procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAutoSize: Boolean); virtual;
-    class procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ACaption: String); virtual;
-    class procedure ColumnSetImage(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AImageIndex: Integer); virtual;
-    class procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMaxWidth: Integer); virtual;
-    class procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMinWidth: integer); virtual;
-    class procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AWidth: Integer); virtual;
-    class procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AVisible: Boolean); virtual;
-    class procedure ColumnSetSortIndicator(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ASortIndicator: TSortIndicator); virtual;
-              
-    // Item          
-    class procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer); virtual;
-    class function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect; virtual;
-    class procedure ItemExchange(const ALV: TCustomListView; AItem: TListItem; const AIndex1, AIndex2: Integer); virtual;
-    class procedure ItemMove(const ALV: TCustomListView; AItem: TListItem; const AFromIndex, AToIndex: Integer); virtual;
-    class function  ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem): Boolean; virtual;
-    class function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint; virtual;
-    class function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; virtual; // returns True if supported
-    class function  ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean; virtual; // returns True if supported
-    class procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem); virtual;
-    class procedure ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AChecked: Boolean); virtual;
-    class procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AImageIndex: Integer); virtual;
-    class function ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean; virtual;
-    class procedure ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer); virtual;
-    class procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean); virtual;
-    class procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex: Integer; const AText: String); virtual;
-    class procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const PartialOK: Boolean); virtual;
-    class procedure ItemUpdate(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem); virtual;
-    
+    procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer);
+    function  ColumnGetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn): Integer;
+    procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn);
+    procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn);
+    procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAlignment: TAlignment);
+    procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAutoSize: Boolean);
+    procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ACaption: String);
+    procedure ColumnSetImage(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AImageIndex: Integer);
+    procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMaxWidth: Integer);
+    procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMinWidth: integer);
+    procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AWidth: Integer);
+    procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AVisible: Boolean);
+    procedure ColumnSetSortIndicator(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ASortIndicator: TSortIndicator);
+
+    // Item
+    procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer);
+    function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect;
+    procedure ItemExchange(const ALV: TCustomListView; AItem: TListItem; const AIndex1, AIndex2: Integer);
+    procedure ItemMove(const ALV: TCustomListView; AItem: TListItem; const AFromIndex, AToIndex: Integer);
+    function  ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem): Boolean;
+    function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint;
+    function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; // returns True if supported
+    function  ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean; // returns True if supported
+    procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem);
+    procedure ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AChecked: Boolean);
+    procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AImageIndex: Integer);
+    function ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean;
+    procedure ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer);
+    procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean);
+    procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex: Integer; const AText: String);
+    procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const PartialOK: Boolean);
+    procedure ItemUpdate(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem);
+
     // LV
-    class procedure BeginUpdate(const ALV: TCustomListView); virtual;
-    class procedure EndUpdate(const ALV: TCustomListView); virtual;
+    procedure BeginUpdate(const ALV: TCustomListView);
+    procedure EndUpdate(const ALV: TCustomListView);
 
-    class function GetBoundingRect(const ALV: TCustomListView): TRect; virtual;
-    class function GetDropTarget(const ALV: TCustomListView): Integer; virtual;
-    class function GetFocused(const ALV: TCustomListView): Integer; virtual;
-    class function GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests; virtual;
-    class function GetHoverTime(const ALV: TCustomListView): Integer; virtual;
-    class function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer; virtual;
-    class function GetSelCount(const ALV: TCustomListView): Integer; virtual;
-    class function GetSelection(const ALV: TCustomListView): Integer; virtual;
-    class function GetTopItem(const ALV: TCustomListView): Integer; virtual;
-    class function GetViewOrigin(const ALV: TCustomListView): TPoint; virtual;
-    class function GetVisibleRowCount(const ALV: TCustomListView): Integer; virtual;
-    class function GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem; virtual;
+    function GetBoundingRect(const ALV: TCustomListView): TRect;
+    function GetDropTarget(const ALV: TCustomListView): Integer;
+    function GetFocused(const ALV: TCustomListView): Integer;
+    function GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests;
+    function GetHoverTime(const ALV: TCustomListView): Integer;
+    function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer;
+    function GetSelCount(const ALV: TCustomListView): Integer;
+    function GetSelection(const ALV: TCustomListView): Integer;
+    function GetTopItem(const ALV: TCustomListView): Integer;
+    function GetViewOrigin(const ALV: TCustomListView): TPoint;
+    function GetVisibleRowCount(const ALV: TCustomListView): Integer;
+    function GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem;
 
-    class procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean); virtual;
-    class procedure SetAllocBy(const ALV: TCustomListView; const AValue: Integer); virtual;
-    class procedure SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer); virtual;
-    class procedure SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles); virtual;
-    class procedure SetHoverTime(const ALV: TCustomListView; const AValue: Integer); virtual;
-    class procedure SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement); virtual;
-    class procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageListResolution); virtual;
-    class procedure SetItemsCount(const ALV: TCustomListView; const Avalue: Integer); virtual;
-    class procedure SetOwnerData(const ALV: TCustomListView; const AValue: Boolean); virtual;
-    class procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean); virtual;
-    class procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties); virtual;
-    class procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle); virtual;
-    class procedure SetSort(const ALV: TCustomListView; const AType: TSortType; const AColumn: Integer;
-      const ASortDirection: TSortDirection); virtual;
-    class procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); virtual;
-    class procedure SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle); virtual;
+    procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean);
+    procedure SetAllocBy(const ALV: TCustomListView; const AValue: Integer);
+    procedure SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer);
+    procedure SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles);
+    procedure SetHoverTime(const ALV: TCustomListView; const AValue: Integer);
+    procedure SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement);
+    procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageListResolution);
+    procedure SetItemsCount(const ALV: TCustomListView; const Avalue: Integer);
+    procedure SetOwnerData(const ALV: TCustomListView; const AValue: Boolean);
+    procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean);
+    procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties);
+    procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle);
+    procedure SetSort(const ALV: TCustomListView; const AType: TSortType; const AColumn: Integer;
+      const ASortDirection: TSortDirection);
+    procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint);
+    procedure SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle);
     // if returns true, then LCL will call SetItemChecked after calling SetSort
     // for every item previously checked. Only widgetsets that don't support native sort
     // AND/OR that don't support native checkboxes should have this method return true
-    class function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean; virtual;
+    function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean;
+  end;
+  {$endif}
+  TWSCustomListView = class(TWSWinControl{$ifdef wsintf}, TWSCustomListViewClass{$endif})
+  impsection
+    // Column
+    imptype procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); virtual;
+    imptype function  ColumnGetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn): Integer; virtual;
+    imptype procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn); virtual;
+    imptype procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn); virtual;
+    imptype procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAlignment: TAlignment); virtual;
+    imptype procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAutoSize: Boolean); virtual;
+    imptype procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ACaption: String); virtual;
+    imptype procedure ColumnSetImage(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AImageIndex: Integer); virtual;
+    imptype procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMaxWidth: Integer); virtual;
+    imptype procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMinWidth: integer); virtual;
+    imptype procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AWidth: Integer); virtual;
+    imptype procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AVisible: Boolean); virtual;
+    imptype procedure ColumnSetSortIndicator(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ASortIndicator: TSortIndicator); virtual;
+              
+    // Item          
+    imptype procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer); virtual;
+    imptype function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect; virtual;
+    imptype procedure ItemExchange(const ALV: TCustomListView; AItem: TListItem; const AIndex1, AIndex2: Integer); virtual;
+    imptype procedure ItemMove(const ALV: TCustomListView; AItem: TListItem; const AFromIndex, AToIndex: Integer); virtual;
+    imptype function  ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem): Boolean; virtual;
+    imptype function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint; virtual;
+    imptype function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; virtual; // returns True if supported
+    imptype function  ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean; virtual; // returns True if supported
+    imptype procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem); virtual;
+    imptype procedure ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AChecked: Boolean); virtual;
+    imptype procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AImageIndex: Integer); virtual;
+    imptype function ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean; virtual;
+    imptype procedure ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer); virtual;
+    imptype procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean); virtual;
+    imptype procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex: Integer; const AText: String); virtual;
+    imptype procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const PartialOK: Boolean); virtual;
+    imptype procedure ItemUpdate(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem); virtual;
+    
+    // LV
+    imptype procedure BeginUpdate(const ALV: TCustomListView); virtual;
+    imptype procedure EndUpdate(const ALV: TCustomListView); virtual;
+
+    imptype function GetBoundingRect(const ALV: TCustomListView): TRect; virtual;
+    imptype function GetDropTarget(const ALV: TCustomListView): Integer; virtual;
+    imptype function GetFocused(const ALV: TCustomListView): Integer; virtual;
+    imptype function GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests; virtual;
+    imptype function GetHoverTime(const ALV: TCustomListView): Integer; virtual;
+    imptype function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer; virtual;
+    imptype function GetSelCount(const ALV: TCustomListView): Integer; virtual;
+    imptype function GetSelection(const ALV: TCustomListView): Integer; virtual;
+    imptype function GetTopItem(const ALV: TCustomListView): Integer; virtual;
+    imptype function GetViewOrigin(const ALV: TCustomListView): TPoint; virtual;
+    imptype function GetVisibleRowCount(const ALV: TCustomListView): Integer; virtual;
+    imptype function GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem; virtual;
+
+    imptype procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean); virtual;
+    imptype procedure SetAllocBy(const ALV: TCustomListView; const AValue: Integer); virtual;
+    imptype procedure SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer); virtual;
+    imptype procedure SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles); virtual;
+    imptype procedure SetHoverTime(const ALV: TCustomListView; const AValue: Integer); virtual;
+    imptype procedure SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement); virtual;
+    imptype procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageListResolution); virtual;
+    imptype procedure SetItemsCount(const ALV: TCustomListView; const Avalue: Integer); virtual;
+    imptype procedure SetOwnerData(const ALV: TCustomListView; const AValue: Boolean); virtual;
+    imptype procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean); virtual;
+    imptype procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties); virtual;
+    imptype procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle); virtual;
+    imptype procedure SetSort(const ALV: TCustomListView; const AType: TSortType; const AColumn: Integer;
+      const ASortDirection: TSortDirection); virtual;
+    imptype procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); virtual;
+    imptype procedure SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle); virtual;
+    // if returns true, then LCL will call SetItemChecked after calling SetSort
+    // for every item previously checked. Only widgetsets that don't support native sort
+    // AND/OR that don't support native checkboxes should have this method return true
+    imptype function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean; virtual;
   end;
 
-  TWSCustomListViewClass = class of TWSCustomListView;
+  {$ifndef wsintf}TWSCustomListViewClass = class of TWSCustomListView;{$endif}
 
   { TWSListView }                             
 
   TWSListView = class(TWSCustomListView)
-  published
+  impsection
   end;
 
   { TWSProgressBar }
-
+  {$ifndef wsintf}
   TWSProgressBarClass = class of TWSProgressBar;
-  TWSProgressBar = class(TWSWinControl)
-  published
-    class procedure ApplyChanges(const AProgressBar: TCustomProgressBar); virtual;
-    class procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); virtual;
-    class procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle); virtual;
+  {$else}
+  TWSProgressBarClass = interface(TWSWinControlClass)
+    procedure ApplyChanges(const AProgressBar: TCustomProgressBar);
+    procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer);
+    procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle);
+  end;
+  {$endif}
+  TWSProgressBar = class(TWSWinControl{$ifdef wsintf},TWSProgressBarClass{$endif})
+  impsection
+    imptype procedure ApplyChanges(const AProgressBar: TCustomProgressBar); virtual;
+    imptype procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); virtual;
+    imptype procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle); virtual;
   end;
 
   { TWSCustomUpDown }
-
-  TWSCustomUpDown = class(TWSCustomControl)
-  published
-    class procedure SetIncrement(const AUpDown: TCustomUpDown; AValue: Double); virtual;
-    class procedure SetMaxPosition(const AUpDown: TCustomUpDown; AValue: Double); virtual;
-    class procedure SetMinPosition(const AUpDown: TCustomUpDown; AValue: Double); virtual;
-    class procedure SetOrientation(const AUpDown: TCustomUpDown; AOrientation: TUDOrientation); virtual;
-    class procedure SetPosition(const AUpDown: TCustomUpDown; AValue: Double); virtual;
-    // class procedure SetRepeatInterval(const AUpDown: TWSCustomUpDown; ms: Integer); virtual;
-    class procedure SetUseArrowKeys(const AUpDown: TCustomUpDown; AUseArrow: Boolean); virtual;
-    class procedure SetWrap(const AUpDown: TCustomUpDown; ADoWrap: Boolean); virtual;
+  {$ifdef wsintf}
+  TWSCustomUpDownClass = interface(TWSWinControlClass)
+    procedure SetIncrement(const AUpDown: TCustomUpDown; AValue: Double);
+    procedure SetMaxPosition(const AUpDown: TCustomUpDown; AValue: Double);
+    procedure SetMinPosition(const AUpDown: TCustomUpDown; AValue: Double);
+    procedure SetOrientation(const AUpDown: TCustomUpDown; AOrientation: TUDOrientation);
+    procedure SetPosition(const AUpDown: TCustomUpDown; AValue: Double);
+    // procedure SetRepeatInterval(const AUpDown: TWSCustomUpDown; ms: Integer);
+    procedure SetUseArrowKeys(const AUpDown: TCustomUpDown; AUseArrow: Boolean);
+    procedure SetWrap(const AUpDown: TCustomUpDown; ADoWrap: Boolean);
   end;
-  TWSCustomUpDownClass = class of TWSCustomUpDown;
+  {$endif}
+  TWSCustomUpDown = class(TWSCustomControl{$ifdef wsintf},TWSCustomUpDownClass{$endif})
+  impsection
+    imptype procedure SetIncrement(const AUpDown: TCustomUpDown; AValue: Double); virtual;
+    imptype procedure SetMaxPosition(const AUpDown: TCustomUpDown; AValue: Double); virtual;
+    imptype procedure SetMinPosition(const AUpDown: TCustomUpDown; AValue: Double); virtual;
+    imptype procedure SetOrientation(const AUpDown: TCustomUpDown; AOrientation: TUDOrientation); virtual;
+    imptype procedure SetPosition(const AUpDown: TCustomUpDown; AValue: Double); virtual;
+    // class procedure SetRepeatInterval(const AUpDown: TWSCustomUpDown; ms: Integer); virtual;
+    imptype procedure SetUseArrowKeys(const AUpDown: TCustomUpDown; AUseArrow: Boolean); virtual;
+    imptype procedure SetWrap(const AUpDown: TCustomUpDown; ADoWrap: Boolean); virtual;
+  end;
+  {$ifndef wsintf}TWSCustomUpDownClass = class of TWSCustomUpDown;{$endif}
 
   { TWSUpDown }
 
   TWSUpDown = class(TWSCustomUpDown)
-  published
+  impsection
   end;
 
   { TWSToolButton }
 
   TWSToolButton = class(TWSCustomControl)
-  published
+  impsection
   end;
 
   { TWSToolBar }
 
   TWSToolbarClass = class of TWSToolbar;
   TWSToolBar = class(TWSToolWindow)
-  published
+  impsection
 {$ifdef OldToolbar}  
-    class function  GetButtonCount(const AToolBar: TToolBar): integer; virtual;
-    class procedure InsertToolButton(const AToolBar: TToolbar; const AControl: TControl); virtual;
-    class procedure DeleteToolButton(const AToolBar: TToolbar; const AControl: TControl); virtual;
+    imptype function  GetButtonCount(const AToolBar: TToolBar): integer; virtual;
+    imptype procedure InsertToolButton(const AToolBar: TToolbar; const AControl: TControl); virtual;
+    imptype procedure DeleteToolButton(const AToolBar: TToolbar; const AControl: TControl); virtual;
 {$endif}    
   end;
 
   { TWSTrackBar }
-
-  TWSTrackBar = class(TWSWinControl)
-  published
-    class procedure ApplyChanges(const ATrackBar: TCustomTrackBar); virtual;
-    class function GetPosition(const ATrackBar: TCustomTrackBar): integer; virtual;
-    class procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation); virtual;
-    class procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer); virtual;
-    class procedure SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer); virtual;
-    class procedure SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle); virtual;
+  {$ifdef wsintf}
+  TWSTrackBarClass = interface(TWSWinControlClass)
+    procedure ApplyChanges(const ATrackBar: TCustomTrackBar);
+    function GetPosition(const ATrackBar: TCustomTrackBar): integer;
+    procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation);
+    procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer);
+    procedure SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer);
+    procedure SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle);
   end;
-  TWSTrackBarClass = class of TWSTrackBar;
+  {$endif}
+
+  TWSTrackBar = class(TWSWinControl{$ifdef wsintf},TWSTrackBarClass{$endif})
+  impsection
+    imptype procedure ApplyChanges(const ATrackBar: TCustomTrackBar); virtual;
+    imptype function GetPosition(const ATrackBar: TCustomTrackBar): integer; virtual;
+    imptype procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation); virtual;
+    imptype procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer); virtual;
+    imptype procedure SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer); virtual;
+    imptype procedure SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle); virtual;
+  end;
+  {$ifndef wsintf}TWSTrackBarClass = class of TWSTrackBar;{$endif}
 
   { TWSCustomTreeView }
 
   TWSCustomTreeView = class(TWSCustomControl)
-  published
+  impsection
   end;
 
   { TWSTreeView }
 
   TWSTreeView = class(TWSCustomTreeView)
-  published
+  impsection
   end;
 
   { WidgetSetRegistration }
@@ -282,43 +417,43 @@ uses
 
 { TWSCustomUpDown }
 
-class procedure TWSCustomUpDown.SetUseArrowKeys(const AUpDown: TCustomUpDown;
+imptype procedure TWSCustomUpDown.SetUseArrowKeys(const AUpDown: TCustomUpDown;
   AUseArrow: Boolean);
 begin
 
 end;
 
-class procedure TWSCustomUpDown.SetMinPosition(const AUpDown: TCustomUpDown;
+imptype procedure TWSCustomUpDown.SetMinPosition(const AUpDown: TCustomUpDown;
   AValue: Double);
 begin
 
 end;
 
-class procedure TWSCustomUpDown.SetMaxPosition(const AUpDown: TCustomUpDown;
+imptype procedure TWSCustomUpDown.SetMaxPosition(const AUpDown: TCustomUpDown;
   AValue: Double);
 begin
 
 end;
 
-class procedure TWSCustomUpDown.SetPosition(const AUpDown: TCustomUpDown;
+imptype procedure TWSCustomUpDown.SetPosition(const AUpDown: TCustomUpDown;
   AValue: Double);
 begin
 
 end;
 
-class procedure TWSCustomUpDown.SetIncrement(const AUpDown: TCustomUpDown;
+imptype procedure TWSCustomUpDown.SetIncrement(const AUpDown: TCustomUpDown;
   AValue: Double);
 begin
 
 end;
 
-class procedure TWSCustomUpDown.SetOrientation(const AUpDown: TCustomUpDown;
+imptype procedure TWSCustomUpDown.SetOrientation(const AUpDown: TCustomUpDown;
   AOrientation: TUDOrientation);
 begin
 
 end;
 
-class procedure TWSCustomUpDown.SetWrap(const AUpDown: TCustomUpDown;
+imptype procedure TWSCustomUpDown.SetWrap(const AUpDown: TCustomUpDown;
   ADoWrap: Boolean);
 begin
 
@@ -326,7 +461,7 @@ end;
 
 { TWSTabSheet }
 
-class function TWSTabSheet.GetDefaultColor(const AControl: TControl;
+imptype function TWSTabSheet.GetDefaultColor(const AControl: TControl;
   const ADefaultColorType: TDefaultColorType): TColor;
 begin
   Result:=DefBtnColors[ADefaultColorType];
@@ -334,7 +469,7 @@ end;
 
 { TWSCustomPage }
 
-class procedure TWSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
+imptype procedure TWSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
 begin
 end;
 
@@ -349,7 +484,7 @@ end;
 
   Adds a new page to a notebook
  ------------------------------------------------------------------------------}
-class procedure TWSCustomTabControl.AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer);
+imptype procedure TWSCustomTabControl.AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer);
 begin
 end;
 
@@ -362,7 +497,7 @@ end;
 
   Moves a page in a notebook control
  ------------------------------------------------------------------------------}
-class procedure TWSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;
+imptype procedure TWSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;
   const AChild: TCustomPage; const NewIndex: integer);
 begin
 end;
@@ -375,7 +510,7 @@ end;
 
   Removes a page from a notebook control
  ------------------------------------------------------------------------------}
-class procedure TWSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer);
+imptype procedure TWSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer);
 begin
 end;
 
@@ -386,7 +521,7 @@ end;
   Returns the minimum height of the horizontal tabs of a notebook. That is the
   Notebook with TabPosition in [tpTop,tpBottom] without the client panel.
 -------------------------------------------------------------------------------}
-class function  TWSCustomTabControl.GetNotebookMinTabHeight(
+imptype function  TWSCustomTabControl.GetNotebookMinTabHeight(
   const AWinControl: TWinControl): integer;
 begin
   Result:=30;
@@ -399,60 +534,60 @@ end;
   Returns the minimum width of the vertical tabs of a notebook. That is the
   Notebook with TabPosition in [tpLeft,tpRight] without the client panel.
 -------------------------------------------------------------------------------}
-class function TWSCustomTabControl.GetNotebookMinTabWidth(const AWinControl: TWinControl
+imptype function TWSCustomTabControl.GetNotebookMinTabWidth(const AWinControl: TWinControl
   ): integer;
 begin
   Result:=60;
 end;
 
-class function TWSCustomTabControl.GetTabIndexAtPos(const ATabControl: TCustomTabControl;
+imptype function TWSCustomTabControl.GetTabIndexAtPos(const ATabControl: TCustomTabControl;
   const AClientPos: TPoint): integer;
 begin
   Result := -1;
 end;
 
-class function TWSCustomTabControl.GetTabRect(const ATabControl: TCustomTabControl;
+imptype function TWSCustomTabControl.GetTabRect(const ATabControl: TCustomTabControl;
   const AIndex: Integer): TRect;
 begin
   Result := Rect(-1,-1,-1,-1);
 end;
 
-class function TWSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
+imptype function TWSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
 begin
   Result:=[];
 end;
 
-class procedure TWSCustomTabControl.SetTabSize(
+imptype procedure TWSCustomTabControl.SetTabSize(
   const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer);
 begin
 end;
 
-class procedure TWSCustomTabControl.SetImageList(
+imptype procedure TWSCustomTabControl.SetImageList(
   const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution);
 begin
 end;
 
-class procedure TWSCustomTabControl.SetPageIndex(const ATabControl: TCustomTabControl;
+imptype procedure TWSCustomTabControl.SetPageIndex(const ATabControl: TCustomTabControl;
   const AIndex: integer);
 begin
 end;
 
-class procedure TWSCustomTabControl.SetTabCaption(const ATabControl: TCustomTabControl;
+imptype procedure TWSCustomTabControl.SetTabCaption(const ATabControl: TCustomTabControl;
   const AChild: TCustomPage; const AText: string);
 begin
 end;
 
-class procedure TWSCustomTabControl.SetTabPosition(const ATabControl: TCustomTabControl;
+imptype procedure TWSCustomTabControl.SetTabPosition(const ATabControl: TCustomTabControl;
   const ATabPosition: TTabPosition);
 begin
 end;
 
-class procedure TWSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl;
+imptype procedure TWSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl;
   AShowTabs: boolean);
 begin
 end;
 
-class procedure TWSCustomTabControl.UpdateProperties(
+imptype procedure TWSCustomTabControl.UpdateProperties(
   const ATabControl: TCustomTabControl);
 begin
 
@@ -460,131 +595,131 @@ end;
 
 { TWSStatusBar }
 
-class procedure TWSStatusBar.PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer);
+imptype procedure TWSStatusBar.PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer);
 begin
 end;
 
-class procedure TWSStatusBar.SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer);
+imptype procedure TWSStatusBar.SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer);
 begin
 end;
 
-class procedure TWSStatusBar.SetSizeGrip(const AStatusBar: TStatusBar;
+imptype procedure TWSStatusBar.SetSizeGrip(const AStatusBar: TStatusBar;
   SizeGrip: Boolean);
 begin
 end;
 
-class procedure TWSStatusBar.Update(const AStatusBar: TStatusBar);
+imptype procedure TWSStatusBar.Update(const AStatusBar: TStatusBar);
 begin
 end;
 
-class function TWSStatusBar.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
+imptype function TWSStatusBar.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
 begin
   Result := DefBtnColors[ADefaultColorType];
 end;
     
 { TWSCustomListView }
 
-class procedure TWSCustomListView.ColumnDelete(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnDelete(const ALV: TCustomListView;
   const AIndex: Integer);
 begin
 end;
 
-class function TWSCustomListView.ColumnGetWidth(const ALV: TCustomListView;
+imptype function TWSCustomListView.ColumnGetWidth(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn): Integer;
 begin
   Result := -1;
 end;
 
-class procedure TWSCustomListView.ColumnInsert(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnInsert(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnMove(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnMove(const ALV: TCustomListView;
   const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetAlignment(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnSetAlignment(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn;
   const AAlignment: TAlignment);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetAutoSize(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnSetAutoSize(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn; const AAutoSize: Boolean);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetCaption(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnSetCaption(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn; const ACaption: String);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetImage(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnSetImage(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn; const AImageIndex: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetMaxWidth(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnSetMaxWidth(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn; const AMaxWidth: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetMinWidth(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnSetMinWidth(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn; const AMinWidth: integer);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetWidth(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnSetWidth(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn; const AWidth: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetVisible(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ColumnSetVisible(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn; const AVisible: Boolean);
 begin
 end;
 
-class procedure TWSCustomListView.ColumnSetSortIndicator(
+imptype procedure TWSCustomListView.ColumnSetSortIndicator(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const ASortIndicator: TSortIndicator);
 begin
 
 end;
 
-class procedure TWSCustomListView.ItemDelete(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemDelete(const ALV: TCustomListView;
   const AIndex: Integer);
 begin
 end;
 
-class function TWSCustomListView.ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect;
+imptype function TWSCustomListView.ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect;
 begin
   Result := Rect(0,0,0,0);
 end;
 
-class procedure TWSCustomListView.ItemExchange(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemExchange(const ALV: TCustomListView;
   AItem: TListItem; const AIndex1, AIndex2: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.ItemMove(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemMove(const ALV: TCustomListView;
   AItem: TListItem; const AFromIndex, AToIndex: Integer);
 begin
 end;
 
-class function TWSCustomListView.ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem): Boolean;
+imptype function TWSCustomListView.ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomListView.ItemGetPosition(const ALV: TCustomListView;
+imptype function TWSCustomListView.ItemGetPosition(const ALV: TCustomListView;
   const AIndex: Integer): TPoint;
 begin
   Result := Point(0, 0);
 end;
 
-class function TWSCustomListView.ItemGetState(const ALV: TCustomListView;
+imptype function TWSCustomListView.ItemGetState(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const AState: TListItemState;
   out AIsSet: Boolean): Boolean;
 begin
@@ -593,161 +728,161 @@ begin
   AIsSet:=false;
 end;
 
-class function TWSCustomListView.ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean;
+imptype function TWSCustomListView.ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean;
 begin
   // returns True if supported
   Result := False;
 end;
 
-class procedure TWSCustomListView.ItemInsert(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemInsert(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem);
 begin
 end;
 
-class procedure TWSCustomListView.ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AChecked: Boolean);
+imptype procedure TWSCustomListView.ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AChecked: Boolean);
 begin
 end;
 
-class procedure TWSCustomListView.ItemSetImage(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemSetImage(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem;
   const ASubIndex, AImageIndex: Integer);
 begin
 end;
 
-class function TWSCustomListView.ItemSetPosition(const ALV: TCustomListView;
+imptype function TWSCustomListView.ItemSetPosition(const ALV: TCustomListView;
   const AIndex: Integer; const ANewPosition: TPoint): Boolean;
 begin
   Result := False;
 end;
 
-class procedure TWSCustomListView.ItemSetStateImage(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemSetStateImage(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem;
   const ASubIndex, AStateImageIndex: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.ItemSetState(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemSetState(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const AState: TListItemState;
   const AIsSet: Boolean);
 begin
 end;
 
-class procedure TWSCustomListView.ItemSetText(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemSetText(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const ASubIndex: Integer;
   const AText: String);
 begin
 end;
 
-class procedure TWSCustomListView.ItemShow(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemShow(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const PartialOK: Boolean);
 begin
 end;
 
-class procedure TWSCustomListView.ItemUpdate(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.ItemUpdate(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem);
 begin
 end;
 
-class procedure TWSCustomListView.BeginUpdate(const ALV: TCustomListView);
+imptype procedure TWSCustomListView.BeginUpdate(const ALV: TCustomListView);
 begin
 end;
 
-class procedure TWSCustomListView.EndUpdate(const ALV: TCustomListView);
+imptype procedure TWSCustomListView.EndUpdate(const ALV: TCustomListView);
 begin
 end;
 
-class function TWSCustomListView.GetBoundingRect(const ALV: TCustomListView): TRect;
+imptype function TWSCustomListView.GetBoundingRect(const ALV: TCustomListView): TRect;
 begin
   Result := Rect(0,0,0,0);
 end;
 
-class function TWSCustomListView.GetDropTarget(const ALV: TCustomListView): Integer;
+imptype function TWSCustomListView.GetDropTarget(const ALV: TCustomListView): Integer;
 begin       
   Result := -1;
 end;
 
-class function TWSCustomListView.GetFocused(const ALV: TCustomListView): Integer;
+imptype function TWSCustomListView.GetFocused(const ALV: TCustomListView): Integer;
 begin
   Result := -1;
 end;
 
-class function TWSCustomListView.GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests;
+imptype function TWSCustomListView.GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests;
 begin
   Result := [];
 end;
 
-class function TWSCustomListView.GetHoverTime(const ALV: TCustomListView): Integer;
+imptype function TWSCustomListView.GetHoverTime(const ALV: TCustomListView): Integer;
 begin
   Result := -1;
 end;
 
-class function TWSCustomListView.GetItemAt(const ALV: TCustomListView; x,y: integer): Integer;
+imptype function TWSCustomListView.GetItemAt(const ALV: TCustomListView; x,y: integer): Integer;
 begin
   result:=-1;
 end;
 
-class function TWSCustomListView.GetSelCount(const ALV: TCustomListView): Integer;
+imptype function TWSCustomListView.GetSelCount(const ALV: TCustomListView): Integer;
 begin
   Result := 0;
 end;
 
-class function TWSCustomListView.GetSelection(const ALV: TCustomListView): Integer;
+imptype function TWSCustomListView.GetSelection(const ALV: TCustomListView): Integer;
 begin
   Result := -1;
 end;
 
-class function TWSCustomListView.GetTopItem(const ALV: TCustomListView): Integer;
+imptype function TWSCustomListView.GetTopItem(const ALV: TCustomListView): Integer;
 begin
   Result := -1;
 end;
 
-class function TWSCustomListView.GetViewOrigin(const ALV: TCustomListView): TPoint;
+imptype function TWSCustomListView.GetViewOrigin(const ALV: TCustomListView): TPoint;
 begin
   Result := Point(0, 0);
 end;
 
-class function TWSCustomListView.GetVisibleRowCount(const ALV: TCustomListView): Integer;
+imptype function TWSCustomListView.GetVisibleRowCount(const ALV: TCustomListView): Integer;
 begin
   Result := 0;
 end;
 
-class procedure TWSCustomListView.SetAllocBy(const ALV: TCustomListView; const AValue: Integer);
+imptype procedure TWSCustomListView.SetAllocBy(const ALV: TCustomListView; const AValue: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer);
+imptype procedure TWSCustomListView.SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles);
+imptype procedure TWSCustomListView.SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles);
 begin
 end;
 
-class procedure TWSCustomListView.SetHoverTime(const ALV: TCustomListView; const AValue: Integer);
+imptype procedure TWSCustomListView.SetHoverTime(const ALV: TCustomListView; const AValue: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.SetIconArrangement(
+imptype procedure TWSCustomListView.SetIconArrangement(
   const ALV: TCustomListView; const AValue: TIconArrangement);
 begin
 end;
 
-class procedure TWSCustomListView.SetImageList(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.SetImageList(const ALV: TCustomListView;
   const AList: TListViewImageList; const AValue: TCustomImageListResolution);
 begin
 end;
 
-class procedure TWSCustomListView.SetOwnerData(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.SetOwnerData(const ALV: TCustomListView;
   const AValue: Boolean);
 begin
 end;
 
-class procedure TWSCustomListView.SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean);
+imptype procedure TWSCustomListView.SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean);
 begin
 end;
 
 // Default implementation based on SetProperty
-class procedure TWSCustomListView.SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties);
+imptype procedure TWSCustomListView.SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties);
 begin
   SetProperty(ALV, lvpAutoArrange, lvpAutoArrange in AProps);
   SetProperty(ALV, lvpCheckboxes, lvpCheckboxes in AProps);
@@ -767,42 +902,42 @@ begin
   SetProperty(ALV, lvpToolTips, lvpToolTips in AProps);
 end;
 
-class procedure TWSCustomListView.SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle);
+imptype procedure TWSCustomListView.SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle);
 begin
 end;
 
-class procedure TWSCustomListView.SetSort(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.SetSort(const ALV: TCustomListView;
   const AType: TSortType; const AColumn: Integer;
   const ASortDirection: TSortDirection);
 begin
 end;
 
-class procedure TWSCustomListView.SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint);
+imptype procedure TWSCustomListView.SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint);
 begin
 end;
 
-class procedure TWSCustomListView.SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle);
+imptype procedure TWSCustomListView.SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle);
 begin
 end;
 
-class function TWSCustomListView.RestoreItemCheckedAfterSort(const ALV: TCustomListView
+imptype function TWSCustomListView.RestoreItemCheckedAfterSort(const ALV: TCustomListView
   ): Boolean;
 begin
   Result := false;
 end;
 
-class procedure TWSCustomListView.SetItemsCount(const ALV: TCustomListView; const Avalue: Integer); 
+imptype procedure TWSCustomListView.SetItemsCount(const ALV: TCustomListView; const Avalue: Integer);
 begin
 end;
 
-class procedure TWSCustomListView.SelectAll(const ALV: TCustomListView;
+imptype procedure TWSCustomListView.SelectAll(const ALV: TCustomListView;
   const AIsSet: Boolean);
 begin
 
 end;
 
 //Default implementation
-class function TWSCustomListView.GetNextItem(const ALV: TCustomListView;
+imptype function TWSCustomListView.GetNextItem(const ALV: TCustomListView;
   const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem;
 var
   ACount: Integer;
@@ -847,16 +982,16 @@ end;
 
 { TWSProgressBar }
 
-class procedure TWSProgressBar.ApplyChanges(const AProgressBar: TCustomProgressBar);
+imptype procedure TWSProgressBar.ApplyChanges(const AProgressBar: TCustomProgressBar);
 begin
 end;
 
-class procedure TWSProgressBar.SetPosition(const AProgressBar: TCustomProgressBar;
+imptype procedure TWSProgressBar.SetPosition(const AProgressBar: TCustomProgressBar;
   const NewPosition: integer);
 begin
 end;
 
-class procedure TWSProgressBar.SetStyle(const AProgressBar: TCustomProgressBar;
+imptype procedure TWSProgressBar.SetStyle(const AProgressBar: TCustomProgressBar;
   const NewStyle: TProgressBarStyle);
 begin
 end;
@@ -865,16 +1000,16 @@ end;
 
 {$ifdef OldToolbar}
 
-class function TWSToolbar.GetButtonCount(const AToolBar: TToolBar): integer;
+imptype function TWSToolbar.GetButtonCount(const AToolBar: TToolBar): integer;
 begin
   Result := 0;
 end;
 
-class procedure TWSToolbar.InsertToolButton(const AToolBar: TToolbar; const AControl: TControl);
+imptype procedure TWSToolbar.InsertToolButton(const AToolBar: TToolbar; const AControl: TControl);
 begin
 end;
 
-class procedure TWSToolbar.DeleteToolButton(const AToolBar: TToolbar; const AControl: TControl);
+imptype procedure TWSToolbar.DeleteToolButton(const AToolBar: TToolbar; const AControl: TControl);
 begin
 end;
 
@@ -882,30 +1017,30 @@ end;
 
 { TWSTrackBar }
 
-class procedure TWSTrackBar.ApplyChanges(const ATrackBar: TCustomTrackBar);
+imptype procedure TWSTrackBar.ApplyChanges(const ATrackBar: TCustomTrackBar);
 begin
 end;
 
-class function  TWSTrackBar.GetPosition(const ATrackBar: TCustomTrackBar): integer;
+imptype function  TWSTrackBar.GetPosition(const ATrackBar: TCustomTrackBar): integer;
 begin
   Result := 0;
 end;
 
-class procedure TWSTrackBar.SetOrientation(const ATrackBar: TCustomTrackBar;
+imptype procedure TWSTrackBar.SetOrientation(const ATrackBar: TCustomTrackBar;
   const AOrientation: TTrackBarOrientation);
 begin
   RecreateWnd(ATrackBar);
 end;
 
-class procedure TWSTrackBar.SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer);
+imptype procedure TWSTrackBar.SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer);
 begin
 end;
 
-class procedure TWSTrackBar.SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer);
+imptype procedure TWSTrackBar.SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer);
 begin
 end;
 
-class procedure TWSTrackBar.SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle);
+imptype procedure TWSTrackBar.SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle);
 begin
   RecreateWnd(ATrackBar);
 end;

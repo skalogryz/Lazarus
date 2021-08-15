@@ -212,7 +212,11 @@ begin
   inherited Create(AOwner);
   ControlStyle := ControlStyle  - [csDoubleClicks] +
                   [csClickEvents, csOpaque, csReplicatable, csNoFocus];
+  {$ifdef wsintf}
+  FUseWS := false;
+  {$else}
   FUseWS := IsWSComponentInheritsFrom(TCustomUpDown, TWSCustomUpDown);
+  {$endif}
   FOrientation := udVertical;
 
   if not FUseWS then begin

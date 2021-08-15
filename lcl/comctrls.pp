@@ -31,7 +31,7 @@ interface
 uses
   SysUtils, Types, Classes, Math, Laz_AVL_Tree,
   // LCL
-  LCLStrConsts, LResources, LCLIntf, LCLType, LCLProc, LMessages, WSLCLClasses,
+  LCLStrConsts, LResources, LCLIntf, LCLType, LCLProc, LMessages, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif},
   WSReferences, Graphics, ImgList, ActnList, Themes, Menus,
   Controls, Forms, StdCtrls, ExtCtrls, ToolWin, Buttons,
   // LazUtils
@@ -4236,7 +4236,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterCustomNotebook then
-    RegisterWSComponent(TCustomTabControl, TWSCustomTabControl);
+    RegisterWSComponent(TCustomTabControl, TWSCustomTabControl{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 

@@ -505,7 +505,7 @@ end;
 
 { TWin32WSScrollBar }
 
-function TWin32WSScrollBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSScrollBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -523,13 +523,13 @@ begin
   Result := Params.Window;
 end;
 
-function TWin32WSScrollBar.GetDoubleBuffered(const AWinControl: TWinControl
+imptype function TWin32WSScrollBar.GetDoubleBuffered(const AWinControl: TWinControl
   ): Boolean;
 begin
   Result := GetWin32NativeDoubleBuffered(AWinControl); // double buffered scrollbar flickers on mouse-in/mouse-out on Windows 10
 end;
 
-procedure TWin32WSScrollBar.SetParams(const AScrollBar: TCustomScrollBar);
+imptype procedure TWin32WSScrollBar.SetParams(const AScrollBar: TCustomScrollBar);
 var
   ScrollInfo: TScrollInfo;
   AMax: Integer;
@@ -794,7 +794,7 @@ begin
   Result := WindowProc(Window, Msg, WParam, LParam);
 end;
 
-procedure TWin32WSCustomListBox.AdaptBounds(const AWinControl: TWinControl;
+imptype procedure TWin32WSCustomListBox.AdaptBounds(const AWinControl: TWinControl;
   var Left, Top, Width, Height: integer; var SuppressMove: boolean);
 var
   ColCount: Integer;
@@ -814,7 +814,7 @@ begin
   end;
 end;
 
-function TWin32WSCustomListBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TWin32WSCustomListBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Params: TCreateWindowExParams;
@@ -832,7 +832,7 @@ begin
   Result := Params.Window;
 end;
 
-procedure TWin32WSCustomListBox.DragStart(const ACustomListBox: TCustomListBox);
+imptype procedure TWin32WSCustomListBox.DragStart(const ACustomListBox: TCustomListBox);
 var
   P: TPoint;
 begin
@@ -846,7 +846,7 @@ begin
   end;
 end;
 
-function TWin32WSCustomListBox.GetIndexAtXY(
+imptype function TWin32WSCustomListBox.GetIndexAtXY(
   const ACustomListBox: TCustomListBox; X, Y: integer): integer;
 begin
   Result := Windows.SendMessage(ACustomListBox.Handle, LB_ITEMFROMPOINT, 0, MakeLParam(X,Y));
@@ -856,7 +856,7 @@ begin
     Result := -1;
 end;
 
-function TWin32WSCustomListBox.GetItemIndex(const ACustomListBox: TCustomListBox
+imptype function TWin32WSCustomListBox.GetItemIndex(const ACustomListBox: TCustomListBox
   ): integer;
 begin
   if ACustomListBox.MultiSelect then
@@ -867,7 +867,7 @@ begin
     Result := SendMessage(ACustomListBox.Handle, LB_GETCURSEL, 0, 0);
 end;
 
-function TWin32WSCustomListBox.GetItemRect(
+imptype function TWin32WSCustomListBox.GetItemRect(
   const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect
   ): boolean;
 var
@@ -879,13 +879,13 @@ begin
   Result := Assigned(GetProp(Handle, 'WinControl')) and (Windows.SendMessage(Handle, LB_GETITEMRECT, Index, LPARAM(@ARect)) <> LB_ERR);
 end;
 
-function TWin32WSCustomListBox.GetScrollWidth(
+imptype function TWin32WSCustomListBox.GetScrollWidth(
   const ACustomListBox: TCustomListBox): Integer;
 begin
   Result := Windows.SendMessage(ACustomListBox.Handle, LB_GETHORIZONTALEXTENT, 0, 0);
 end;
 
-function TWin32WSCustomListBox.GetSelCount(const ACustomListBox: TCustomListBox
+imptype function TWin32WSCustomListBox.GetSelCount(const ACustomListBox: TCustomListBox
   ): integer;
 begin
   // GetSelCount only works for multiple-selection listboxes
@@ -899,7 +899,7 @@ begin
   end;
 end;
 
-function TWin32WSCustomListBox.GetSelected(
+imptype function TWin32WSCustomListBox.GetSelected(
   const ACustomListBox: TCustomListBox; const AIndex: integer): boolean;
 var
   WindowInfo: PWin32WindowInfo;
@@ -914,7 +914,7 @@ begin
     Result := Windows.SendMessage(winHandle, LB_GETSEL, Windows.WParam(AIndex), 0) > 0;
 end;
 
-function TWin32WSCustomListBox.GetStrings(const ACustomListBox: TCustomListBox
+imptype function TWin32WSCustomListBox.GetStrings(const ACustomListBox: TCustomListBox
   ): TStrings;
 var
   Handle: HWND;
@@ -923,20 +923,20 @@ begin
   Result := TWin32ListStringList.Create(Handle, ACustomListBox);
   GetWin32WindowInfo(Handle)^.List := Result;
 end;
-
+{$ifdef wsintf}
 imptype procedure TWin32WSCustomListBox.FreeStrings(var AStrings: TStrings);
 begin
   AStrings.Free;
   AStrings := nil;
 end;
-
-function TWin32WSCustomListBox.GetTopIndex(const ACustomListBox: TCustomListBox
+{$endif}
+imptype function TWin32WSCustomListBox.GetTopIndex(const ACustomListBox: TCustomListBox
   ): integer;
 begin
   Result:=Windows.SendMessage(ACustomListBox.Handle, LB_GETTOPINDEX, 0, 0);
 end;
 
-procedure TWin32WSCustomListBox.SelectItem(
+imptype procedure TWin32WSCustomListBox.SelectItem(
   const ACustomListBox: TCustomListBox; AIndex: integer; ASelected: boolean);
 begin
   if ACustomListBox.MultiSelect then
@@ -949,7 +949,7 @@ begin
     SetItemIndex(ACustomListBox, -1);
 end;
 
-procedure TWin32WSCustomListBox.SelectRange(
+imptype procedure TWin32WSCustomListBox.SelectRange(
   const ACustomListBox: TCustomListBox; ALow, AHigh: integer; ASelected: boolean
   );
 var
@@ -985,7 +985,7 @@ begin
 
 end;
 
-procedure TWin32WSCustomListBox.SetBorder(const ACustomListBox: TCustomListBox);
+imptype procedure TWin32WSCustomListBox.SetBorder(const ACustomListBox: TCustomListBox);
 var
   Handle: HWND;
   StyleEx: PtrInt;
@@ -999,14 +999,14 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, StyleEx);
 end;
 
-procedure TWin32WSCustomListBox.SetColumnCount(
+imptype procedure TWin32WSCustomListBox.SetColumnCount(
   const ACustomListBox: TCustomListBox; ACount: Integer);
 begin
   // The listbox styles can't be updated, so recreate the listbox
   RecreateWnd(ACustomListBox);
 end;
 
-procedure TWin32WSCustomListBox.SetItemIndex(
+imptype procedure TWin32WSCustomListBox.SetItemIndex(
   const ACustomListBox: TCustomListBox; const AIndex: integer);
 var
   Handle: HWND;
@@ -1025,20 +1025,20 @@ begin
     Windows.SendMessage(Handle, LB_SETCURSEL, Windows.WParam(AIndex), 0);
 end;
 
-procedure TWin32WSCustomListBox.SetScrollWidth(
+imptype procedure TWin32WSCustomListBox.SetScrollWidth(
   const ACustomListBox: TCustomListBox; const AScrollWidth: Integer);
 begin
   Windows.SendMessage(ACustomListBox.Handle, LB_SETHORIZONTALEXTENT, AScrollWidth, 0);
 end;
 
-procedure TWin32WSCustomListBox.SetSelectionMode(
+imptype procedure TWin32WSCustomListBox.SetSelectionMode(
   const ACustomListBox: TCustomListBox; const AExtendedSelect,
   AMultiSelect: boolean);
 begin
   RecreateWnd(ACustomListBox);
 end;
 
-procedure TWin32WSCustomListBox.SetStyle(const ACustomListBox: TCustomListBox);
+imptype procedure TWin32WSCustomListBox.SetStyle(const ACustomListBox: TCustomListBox);
 begin
   // The listbox styles can't be updated, so recreate the listbox
   RecreateWnd(ACustomListBox);
@@ -1731,7 +1731,7 @@ end;
 imptype procedure TWin32WSCustomMemo.SetSelText(const ACustomEdit: TCustomEdit;
   const NewSelText: string);
 begin
-  {$ifndef wsintf}TWin32WSWinControl.{$else} inherited {$endif}SetSelText(ACustomEdit, NewSelText);
+  {$ifndef wsintf}TWin32WSCustomEdit.{$else} inherited {$endif}SetSelText(ACustomEdit, NewSelText);
 end;
 
 imptype procedure TWin32WSCustomMemo.SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean);

@@ -391,10 +391,12 @@ begin
   end;
 end;
 
+{$ifdef wsintf}
 imptype function TWin32WSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon
   ): TCanvas;
 begin
   Result := ATrayIcon.Icon.Canvas;
 end;
+{$endif}
 
 

@@ -214,7 +214,7 @@ type
 
   { TWin32WSProgressBar }
 
-  TWin32WSProgressBar = class({$ifndef wsintf}WSProgressBar{$else}TWin32WSWinControl, TWSProgressBarClass{$endif})
+  TWin32WSProgressBar = class({$ifndef wsintf}TWSProgressBar{$else}TWin32WSWinControl, TWSProgressBarClass{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;

@@ -39,7 +39,7 @@ type
 
   { TWin32WSCustomCalendar }
 
-  TWin32WSCustomCalendar = class({$ifdef msintf}TWSCustomCalendar{$else}TWin32WSWinControl, TWSCustomCalendarClass{$endif})
+  TWin32WSCustomCalendar = class({$ifndef wsintf}TWSCustomCalendar{$else}TWin32WSWinControl, TWSCustomCalendarClass{$endif})
   impsection
     imptype function  CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;

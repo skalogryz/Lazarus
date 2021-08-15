@@ -1625,7 +1625,7 @@ imptype procedure TWin32WSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
 begin
   UpdateCaption(AMenuItem, aMenuItem.Caption);
 end;
-
+{$ifdef wsintf}
 imptype function TWin32WSMenuItem.OpenCommand: LongInt;
 begin
   Result := -1;
@@ -1645,7 +1645,7 @@ imptype function TWin32WSMenuItem.SetRadioItem(const AMenuItem: TMenuItem; const
 begin
   Result := false;
 end;
-
+{$endif}
 { TWin32WSMenu }
 
 imptype function TWin32WSMenu.CreateHandle(const AMenu: TMenu): HMENU;

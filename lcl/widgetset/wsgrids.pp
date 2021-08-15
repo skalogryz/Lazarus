@@ -41,20 +41,30 @@ uses
 ////////////////////////////////////////////////////
   LCLType, Types, Controls, StdCtrls, Grids, LazUTF8, Graphics,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf,{$else}WSLCLClasses,{$endif} WSControls, WSFactory;
 
 type
   { TWSCustomGrid }
+  {$ifdef wsintf}
+  TWSCustomGridClass = interface(TWSWinControlClass)
+    procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char);
+    function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer;
+    function GetEditorBoundsFromCellRect(ACanvas: TCanvas;
+      const ACellRect: TRect; const AColumnLayout: TTextLayout): TRect;
+  end;
+  {$endif}
 
-  TWSCustomGrid = class(TWSCustomControl)
-  published
-    class procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char); virtual;
-    class function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer; virtual;
-    class procedure Invalidate(sender: TCustomGrid); virtual; reintroduce;
-    class function GetEditorBoundsFromCellRect(ACanvas: TCanvas;
+  TWSCustomGrid = class(TWSCustomControl{$ifdef wsintf},TWSCustomGridClass{$endif})
+  impsection
+    imptype procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char); virtual;
+    imptype function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer; virtual;
+    {$ifndef wsintf}
+    imptype procedure Invalidate(sender: TCustomGrid); virtual; reintroduce;
+    {$endif}
+    imptype function GetEditorBoundsFromCellRect(ACanvas: TCanvas;
       const ACellRect: TRect; const AColumnLayout: TTextLayout): TRect; virtual;
   end;
-  TWSCustomGridClass = class of TWSCustomgrid;
+  {$ifndef wsintf}TWSCustomGridClass = class of TWSCustomgrid;{$endif}
 
   { WidgetSetRegistration }
 
@@ -70,7 +80,7 @@ type
 
 { TWSCustomGrid }
 
-class procedure TWSCustomGrid.SendCharToEditor(AEditor:TWinControl;
+imptype procedure TWSCustomGrid.SendCharToEditor(AEditor:TWinControl;
   Ch: TUTF8Char);
 var
   GMsg: TGridMessage;
@@ -109,7 +119,7 @@ begin
       EditorTextChanged(Col, Row, GMsg.Value);
 end;
 
-class function TWSCustomGrid.GetEditorBoundsFromCellRect(ACanvas: TCanvas;
+imptype function TWSCustomGrid.GetEditorBoundsFromCellRect(ACanvas: TCanvas;
   const ACellRect: TRect; const AColumnLayout: TTextLayout): TRect;
 begin
   Result := ACellRect;
@@ -117,17 +127,17 @@ begin
   Dec(Result.Bottom);
 end;
 
-class function TWSCustomGrid.InvalidateStartY(const FixedHeight,
+imptype function TWSCustomGrid.InvalidateStartY(const FixedHeight,
   RowOffset: Integer): integer;
 begin
   result := FixedHeight;
 end;
-
-class procedure TWSCustomGrid.Invalidate(sender: TCustomGrid);
+{$ifndef wsintf}
+imptype procedure TWSCustomGrid.Invalidate(sender: TCustomGrid);
 begin
   // override in widgetset level if needed
 end;
-
+{$endif}
 { WidgetSetRegistration }
 
 function RegisterCustomGrid: Boolean;
@@ -137,7 +147,7 @@ begin
   Result := False;
   if Done then exit;
   if not WSRegisterCustomGrid then
-    RegisterWSComponent(TCustomGrid, TWSCustomGrid);
+    RegisterWSComponent(TCustomGrid, TWSCustomGrid{$ifdef wsintf}.Create{$endif});
   Done := True;
   Result := True;
 end;

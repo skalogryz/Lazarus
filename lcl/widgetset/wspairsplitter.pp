@@ -38,7 +38,7 @@ uses
 ////////////////////////////////////////////////////
 // To get as little as posible circles,
 // uncomment only when needed for registration
-  Controls, ExtCtrls, PairSplitter, WSLCLClasses, WSControls, WSFactory;
+  Controls, ExtCtrls, PairSplitter, {$ifdef wsintf}WSLCLCLasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSFactory;
 
 type
   { TWSPairSplitterSide }
@@ -48,19 +48,30 @@ type
   end;
 
   { TWSCustomPairSplitter }
-
-  TWSCustomPairSplitter = class(TWSWinControl)
-  published
-    class function AddSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean; virtual;
-    class function RemoveSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean; virtual;
-    class function GetPosition(ASplitter: TCustomPairSplitter): Integer; virtual;
-    class function SetPosition(ASplitter: TCustomPairSplitter; var NewPosition: integer): Boolean; virtual;
+  {$ifdef wsintf}
+  TWSCustomPairSplitterClass = interface(TWSWinControlClass)
+    function AddSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean;
+    function RemoveSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean;
+    function GetPosition(ASplitter: TCustomPairSplitter): Integer;
+    function SetPosition(ASplitter: TCustomPairSplitter; var NewPosition: integer): Boolean;
 
     // special cursor handling
-    class function GetSplitterCursor(ASplitter: TCustomPairSplitter; var ACursor: TCursor): Boolean; virtual;
-    class function SetSplitterCursor(ASplitter: TCustomPairSplitter; ACursor: TCursor): Boolean; virtual;
+    function GetSplitterCursor(ASplitter: TCustomPairSplitter; var ACursor: TCursor): Boolean;
+    function SetSplitterCursor(ASplitter: TCustomPairSplitter; ACursor: TCursor): Boolean;
   end;
-  TWSCustomPairSplitterClass = class of TWSCustomPairSplitter;
+  {$endif}
+  TWSCustomPairSplitter = class(TWSWinControl{$ifdef wsintf},TWSCustomPairSplitterClass{$endif})
+  impsection
+    imptype function AddSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean; virtual;
+    imptype function RemoveSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean; virtual;
+    imptype function GetPosition(ASplitter: TCustomPairSplitter): Integer; virtual;
+    imptype function SetPosition(ASplitter: TCustomPairSplitter; var NewPosition: integer): Boolean; virtual;
+
+    // special cursor handling
+    imptype function GetSplitterCursor(ASplitter: TCustomPairSplitter; var ACursor: TCursor): Boolean; virtual;
+    imptype function SetSplitterCursor(ASplitter: TCustomPairSplitter; ACursor: TCursor): Boolean; virtual;
+  end;
+  {$ifndef wsintf}TWSCustomPairSplitterClass = class of TWSCustomPairSplitter;{$endif}
 
   { WidgetSetRegistration }
 
@@ -86,7 +97,7 @@ end;
 
 { TWSCustomPairSplitter }
 
-class function TWSCustomPairSplitter.AddSide(ASplitter: TCustomPairSplitter;
+imptype function TWSCustomPairSplitter.AddSide(ASplitter: TCustomPairSplitter;
   ASide: TPairSplitterSide; Side: integer): Boolean;
 var
   InternalSplitter: TSplitter;
@@ -128,13 +139,13 @@ begin
   Result := True;
 end;
 
-class function TWSCustomPairSplitter.RemoveSide(ASplitter: TCustomPairSplitter;
+imptype function TWSCustomPairSplitter.RemoveSide(ASplitter: TCustomPairSplitter;
   ASide: TPairSplitterSide; Side: integer): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomPairSplitter.GetPosition(ASplitter: TCustomPairSplitter): Integer;
+imptype function TWSCustomPairSplitter.GetPosition(ASplitter: TCustomPairSplitter): Integer;
 begin
   if WSCheckHandleAllocated(ASplitter, 'GetPosition') then
   begin
@@ -146,7 +157,7 @@ begin
     Result := ASplitter.Position;
 end;
 
-class function TWSCustomPairSplitter.SetPosition(
+imptype function TWSCustomPairSplitter.SetPosition(
   ASplitter: TCustomPairSplitter; var NewPosition: integer): Boolean;
 var
   InternalSplitter: TSplitter;
@@ -178,7 +189,7 @@ begin
   Result := True;
 end;
 
-class function TWSCustomPairSplitter.GetSplitterCursor(ASplitter: TCustomPairSplitter; var ACursor: TCursor): Boolean;
+imptype function TWSCustomPairSplitter.GetSplitterCursor(ASplitter: TCustomPairSplitter; var ACursor: TCursor): Boolean;
 var
   InternalSplitter: TSplitter;
 begin
@@ -190,7 +201,7 @@ begin
     ACursor := crDefault;
 end;
 
-class function TWSCustomPairSplitter.SetSplitterCursor(ASplitter: TCustomPairSplitter; ACursor: TCursor): Boolean;
+imptype function TWSCustomPairSplitter.SetSplitterCursor(ASplitter: TCustomPairSplitter; ACursor: TCursor): Boolean;
 var
   InternalSplitter: TSplitter;
 begin
@@ -223,7 +234,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterCustomPairSplitter then
-    RegisterWSComponent(TCustomPairSplitter, TWSCustomPairSplitter);
+    RegisterWSComponent(TCustomPairSplitter, TWSCustomPairSplitter{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 

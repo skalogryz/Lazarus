@@ -41,26 +41,33 @@ uses
 ////////////////////////////////////////////////////
   Spin, LResources,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSStdCtrls, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSStdCtrls, WSFactory;
 
 type
   { TWSCustomFloatSpinEdit }
+  {$ifdef wsintf}
+  TWSCustomFloatSpinEditClass = interface(TWSCustomEditClass)
+    function  GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): double;
+    procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
+    procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean);
+  end;
+  {$endif}
 
   TWSCustomFloatSpinEdit = class(TWSCustomEdit)
-  published
-    class function  GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): double; virtual;
+  impsection
+    imptype function  GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): double; virtual;
 
 (*  TODO: seperation into properties instead of bulk update
-    class procedure SetIncrement(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewIncrement: Double); virtual;
-    class procedure SetMinValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewValue: Double); virtual;
-    class procedure SetMaxValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewValue: Double); virtual;
-    class procedure SetValueEmpty(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewEmpty: boolean); virtual;
+    imptype procedure SetIncrement(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewIncrement: Double); virtual;
+    imptype procedure SetMinValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewValue: Double); virtual;
+    imptype procedure SetMaxValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewValue: Double); virtual;
+    imptype procedure SetValueEmpty(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewEmpty: boolean); virtual;
 *)
 
-    class procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit); virtual;
-    class procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean); virtual;
+    imptype procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit); virtual;
+    imptype procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean); virtual;
   end;
-  TWSCustomFloatSpinEditClass = class of TWSCustomFloatSpinEdit;
+  {$ifndef wsintf}TWSCustomFloatSpinEditClass = class of TWSCustomFloatSpinEdit;{$endif}
 
   { WidgetSetRegistration }
 
@@ -70,16 +77,16 @@ implementation
 
 { TWSCustomFloatSpinEdit }
 
-class function TWSCustomFloatSpinEdit.GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): double;
+imptype function TWSCustomFloatSpinEdit.GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): double;
 begin
   Result := 0.0;
 end;
 
-class procedure TWSCustomFloatSpinEdit.UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
+imptype procedure TWSCustomFloatSpinEdit.UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
 begin
 end;
 
-class procedure TWSCustomFloatSpinEdit.SetEditorEnabled(
+imptype procedure TWSCustomFloatSpinEdit.SetEditorEnabled(
   const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean);
 begin
 end;
@@ -93,7 +100,7 @@ begin
   if Done then exit;
   RegisterPropertyToSkip(TCustomFloatSpinEdit, 'MaxLength', 'VCL compatibility property', '');
   if not WSRegisterCustomFloatSpinEdit then
-    RegisterWSComponent(TCustomFloatSpinEdit, TWSCustomFloatSpinEdit);
+    RegisterWSComponent(TCustomFloatSpinEdit, TWSCustomFloatSpinEdit{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 

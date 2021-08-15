@@ -34,7 +34,7 @@ uses
   ImgList, GraphType, Graphics, LCLType,
 // ws
   Win32Extra, Win32Int, Win32Proc, InterfaceBase,
-  WSImgList, WSLCLClasses, WSProc, WSReferences;
+  WSImgList, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSProc, WSReferences;
 
 type
 
@@ -42,7 +42,7 @@ type
 
   { TWin32WSCustomImageListResolution }
 
-  TWin32WSCustomImageListResolution = class(TWSCustomImageListResolution)
+  TWin32WSCustomImageListResolution = class(TWSCustomImageListResolution{$ifdef wsintf}, TWSLCLReferenceComponentClass{$endif})
   protected
     imptype procedure AddData(AListHandle: TLCLIntfHandle;
       ACount, AReplaceIndex, AWidth, AHeight: Integer; AData: PRGBAQuad);

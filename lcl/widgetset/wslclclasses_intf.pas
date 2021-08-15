@@ -98,7 +98,9 @@ procedure RegisterWSComponent(AComponent: TComponentClass;
 function RegisterNewWSComp(AComponent: TComponentClass): TWSLCLComponentClass; //inline;
 // Only for non-TComponent based objects
 function GetWSLazAccessibleObject: TWSObjectClass;
+{$endif}
 procedure RegisterWSLazAccessibleObject(const AWSObject: TWSObjectClass);
+{$ifndef WSINTF}
 function GetWSLazDeviceAPIs: TWSObjectClass;
 procedure RegisterWSLazDeviceAPIs(const AWSObject: TWSObjectClass);
 

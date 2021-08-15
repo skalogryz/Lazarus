@@ -539,7 +539,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterControl then
-    RegisterWSComponent(TControl, TWSControl);
+    RegisterWSComponent(TControl, TWSControl.Create);
   Done := True;
 end;
 
@@ -549,7 +549,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterWinControl then
-    RegisterWSComponent(TWinControl, TWSWinControl);
+    RegisterWSComponent(TWinControl, TWSWinControl.Create);
   Done := True;
 end;
 

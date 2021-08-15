@@ -44,25 +44,44 @@ uses
 
 type
   { TWSCustomCheckListBox }
+  {$ifdef wsintf}
+  TWSCustomCheckListBoxClass = interface(TWSCustomListBoxClass)
+    function GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer;
+    function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean;
+    function GetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean;
+    function GetState(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): TCheckBoxState;
+    procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AEnabled: Boolean);
+    procedure SetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AHeader: Boolean);
+    procedure SetState(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AState: TCheckBoxState);
+  end;
+  {$endif}
 
   TWSCustomCheckListBox = class(TWSCustomListBox)
-  published
-    class function GetCheckWidth(const ACheckListBox: TCustomCheckListBox):
+  impsection
+    imptype function GetCheckWidth(const ACheckListBox: TCustomCheckListBox):
       integer; virtual;
-    class function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+    imptype function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer): Boolean; virtual;
-    class function GetHeader(const ACheckListBox: TCustomCheckListBox;
+    imptype function GetHeader(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer): Boolean; virtual;
-    class function GetState(const ACheckListBox: TCustomCheckListBox;
+    imptype function GetState(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer): TCheckBoxState; virtual;
-    class procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+    imptype procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer; const AEnabled: Boolean); virtual;
-    class procedure SetHeader(const ACheckListBox: TCustomCheckListBox;
+    imptype procedure SetHeader(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer; const AHeader: Boolean); virtual;
-    class procedure SetState(const ACheckListBox: TCustomCheckListBox;
+    imptype procedure SetState(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer; const AState: TCheckBoxState); virtual;
   end;
+  {$ifndef wsintf}
   TWSCustomCheckListBoxClass = class of TWSCustomCheckListBox;
+  {$endif}
 
   { WidgetSetRegistration }
 
@@ -70,44 +89,44 @@ type
 
 implementation
 
-class function TWSCustomCheckListBox.GetCheckWidth(
+imptype function TWSCustomCheckListBox.GetCheckWidth(
   const ACheckListBox: TCustomCheckListBox): Integer;
 begin
   Result := 0;
 end;
 
-class function TWSCustomCheckListBox.GetHeader(
+imptype function TWSCustomCheckListBox.GetHeader(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer): Boolean;
 begin
   Result := False;
 end;
 
-class function TWSCustomCheckListBox.GetItemEnabled(
+imptype function TWSCustomCheckListBox.GetItemEnabled(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer): Boolean;
 begin
   Result := True;
 end;
 
-class function TWSCustomCheckListBox.GetState(
+imptype function TWSCustomCheckListBox.GetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer
   ): TCheckBoxState;
 begin
   Result := cbUnchecked;
 end;
 
-class procedure TWSCustomCheckListBox.SetHeader(
+imptype procedure TWSCustomCheckListBox.SetHeader(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AHeader: Boolean);
 begin
 end;
 
-class procedure TWSCustomCheckListBox.SetItemEnabled(
+imptype procedure TWSCustomCheckListBox.SetItemEnabled(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AEnabled: Boolean);
 begin
 end;
 
-class procedure TWSCustomCheckListBox.SetState(
+imptype procedure TWSCustomCheckListBox.SetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AState: TCheckBoxState);
 begin

@@ -101,7 +101,9 @@ function IsWSComponentInheritsFrom(const AComponent: TComponentClass;
   InheritFromClass: TWSLCLComponentClass): Boolean;
 procedure RegisterWSComponent(AComponent: TComponentClass;
   AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass = nil);
+{$endif}
 function RegisterNewWSComp(AComponent: TComponentClass): TWSLCLComponentClass; //inline;
+{$ifndef WSINTF}
 // Only for non-TComponent based objects
 function GetWSLazAccessibleObject: TWSObjectClass;
 {$endif}
@@ -114,7 +116,7 @@ procedure RegisterWSLazDeviceAPIs(const AWSObject: TWSObjectClass);
 function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
 {$else}
 function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
-  procedure RegisterWSComponent(AComponent: TComponentClass;
+procedure RegisterWSComponent(AComponent: TComponentClass;
     AWSComponent: TWSLCLComponentClass);
 {$endif}
 
@@ -211,14 +213,9 @@ begin
 end;
 
 function FindWSComponentClass(const AComponent: TComponentClass): TWSLCLComponentClass;
-var
-  Node: PClassNode;
 begin
-  Node := FindClassNode(AComponent);
-  if Assigned(Node) then
-    Result := TWSLCLComponentClass(Node^.VClass)
-  else
-    Result := nil;
+  //Result := FindWSRegistered(AComponent);
+  Result := RegisterNewWSComp(AComponent);
 end;
 
 {$ifndef WSINTF}
@@ -566,21 +563,41 @@ end;
 {$endif}
 
 // Do not create VClass at runtime but use normal Object Pascal class creation.
-{$ifndef WSINTF}
 function RegisterNewWSComp(AComponent: TComponentClass): TWSLCLComponentClass;
 var
-  n: PClassNode;
+  p : TComponentClass;
+  reg : TList;
+  i   : integer;
+  c   : TClass;
 begin
   (* RegisterNewWSComp should only be called, if a previous FindWSRegistered failed
      => WSClassesList should be created already *)
   Assert(Assigned(WSClassesList), 'RegisterNewWSComp: WSClassesList=Nil');
-  n := GetPClassNode(AComponent, Nil, True, True);
-  if n <> nil then
-    Result := TWSLCLComponentClass(n^.VClass)
-  else
-    Result := nil;
+  writeln('trying to find: ', AComponent.ClassName);
+  Result := FindWSRegistered(AComponent);
+  if (Result = nil) then begin
+    reg := TList.Create;
+    try
+      while not Assigned(Result) do begin
+        p := AComponent;
+        reg.Add(p);
+        c := p.ClassParent;
+        writeln('class = ',c.className,' ',c.InheritsFrom(TComponent));
+        if c.InheritsFrom(TComponent) then
+          AComponent := TComponentClass(c)
+        else
+          Break;
+        Result := FindWSComponentClass(AComponent);
+      end;
+      if Assigned(Result) then
+        for i:=0 to reg.Count-1 do
+          RegisterWSComponent(tComponentClass(reg[i]), Result);
+    finally
+      reg.Free;
+    end;
+  end;
 end;
-{$endif}
+
 
 function GetWSLazAccessibleObject: TWSObjectClass;
 begin
@@ -812,14 +829,53 @@ begin
 end;
 
 {$ifdef WSINTF}
-function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
+
+function FindClassIndex(const AComponent: TComponentClass): Integer;
+var
+  n : PClassNode;
+  i : integer;
 begin
-  Result := nil;
+  if not Assigned(WSClassesList) then
+    DoInitialization;
+  Result := -1;
+  for i:=0 to WSClassesList.Count-1 do begin
+    n := PClassNode(WSClassesList[i]);
+    if n^.LCLClass = AComponent then begin
+      Result := i;
+      Exit;
+    end;
+  end;
+  Result := -1;
+end;
+
+function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
+var
+  idx : integer;
+begin
+  if not Assigned(WSClassesList) then
+    DoInitialization;
+  idx := FindClassIndex(AComponent);
+  if (idx < 0) then Result:=nil
+  else Result := PClassNode(WSClassesList[idx])^.WSClass;
 end;
 
 procedure RegisterWSComponent(AComponent: TComponentClass;
   AWSComponent: TWSLCLComponentClass);
+var
+  idx : integer;
+  p : PClassNode;
 begin
+  writeln('register: ', AComponent.ClassName);
+  idx := FindClassIndex(AComponent);
+  if (idx < 0) then begin
+    New(p);
+    p^.WSClass := AWSComponent;
+    p^.LCLClass := AComponent;
+    p^.Child := nil;
+    p^.Sibling := nil;
+    WSClassesList.Add(p);
+  end else
+    PClassNode(WSClassesList[idx])^.WSClass := AWSComponent;
 end;
 {$endif}
 

@@ -17,6 +17,7 @@
 unit Win32WSPairSplitter;
 
 {$mode objfpc}{$H+}
+{$I win32defines.inc}
 
 interface
 

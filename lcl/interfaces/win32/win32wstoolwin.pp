@@ -17,6 +17,7 @@
 unit Win32WSToolwin;
 
 {$mode objfpc}{$H+}
+{$i win32defines.inc}
 
 interface
 

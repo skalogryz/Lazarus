@@ -30,7 +30,7 @@ uses
 ////////////////////////////////////////////////////
   Windows,
 ////////////////////////////////////////////////////
-  WSExtDlgs, WSLCLClasses, Win32WSDialogs, Win32WSControls, Win32Int, Win32Proc,
+  WSExtDlgs, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, Win32WSDialogs, Win32WSControls, Win32Int, Win32Proc,
   Types, Controls, Dialogs, ExtDlgs, LCLType, Graphics, Themes, Win32Extra, ShlObj;
 
 type

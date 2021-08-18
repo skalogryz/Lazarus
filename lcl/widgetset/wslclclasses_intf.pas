@@ -552,7 +552,6 @@ begin
   (* RegisterNewWSComp should only be called, if a previous FindWSRegistered failed
      => WSClassesList should be created already *)
   Assert(Assigned(WSClassesList), 'RegisterNewWSComp: WSClassesList=Nil');
-  writeln('trying to find: ', AComponent.ClassName);
   Result := FindWSRegistered(AComponent);
   if (Result = nil) then begin
     reg := TList.Create;
@@ -561,7 +560,6 @@ begin
         p := AComponent;
         reg.Add(p);
         c := p.ClassParent;
-        writeln('class = ',c.className,' ',c.InheritsFrom(TComponent));
         if c.InheritsFrom(TComponent) then
           AComponent := TComponentClass(c)
         else
@@ -755,7 +753,6 @@ var
   idx : integer;
   p : TClassNode;
 begin
-  writeln('register: ', AComponent.ClassName);
   idx := FindClassIndex(AComponent);
   if (idx < 0) then begin
     p := TClassNode.Create;

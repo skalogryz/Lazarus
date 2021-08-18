@@ -12,6 +12,7 @@
 unit LazDeviceApis;
 
 {$mode delphi}
+{$I lcl_defines.inc}
 
 interface
 

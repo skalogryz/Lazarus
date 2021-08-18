@@ -230,8 +230,8 @@ procedure RegisterWinControl;
 procedure RegisterGraphicControl;
 procedure RegisterCustomControl;
 
-function WSControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSControlClass; inline;
-function WSWinControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSWinControlClass; inline;
+function WSControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSControlClass; inline;
+function WSWinControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSWinControlClass; inline;
 
 implementation
 
@@ -581,7 +581,7 @@ begin
   Done := True;
 end;
 
-function WSControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSControlClass; inline;
+function WSControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSControlClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as TWSControlClass);
@@ -590,7 +590,7 @@ begin
   {$endif}
 end;
 
-function WSWinControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSWinControlClass; inline;
+function WSWinControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSWinControlClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as TWSWinControlClass);

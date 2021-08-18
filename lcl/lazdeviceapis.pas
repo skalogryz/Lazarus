@@ -147,7 +147,7 @@ var
 
 implementation
 
-uses wslazdeviceapis, wslclclasses;
+uses wslazdeviceapis, {$ifdef wsintf}wslclclasses_intf{$else}wslclclasses{$endif};
 
 { TLazDevice }
 

@@ -52,6 +52,7 @@ const
   );
 type
   {$ifdef WSINTF}TWSDragImageListResolutionClass = interface (TWSCustomImageListResolutionClass)
+    ['{26748686-E425-47A8-B050-9C2B26BD2948}']
     function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer): Boolean;
     function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean;
     procedure EndDrag(const ADragImageList: TDragImageListResolution);
@@ -94,6 +95,7 @@ type
   { TWSControl }
   {$ifdef WSINTF}
   TWSControlClass = interface(TWSLCLComponentClass)
+    ['{F0A3885B-D555-40E6-82D6-177297B0D5AE}']
     procedure AddControl(const AControl: TControl);
     function GetConstraints(const AControl: TControl; const AConstraints: TObject): Boolean;
     function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
@@ -122,6 +124,7 @@ type
   { TWSWinControl }
   {$ifdef WSINTF}
   TWSWinControlClass = interface(TWSControlClass)
+    ['{8E124F9B-064C-4D8A-AB5D-3E105119DC2C}']
     function  CanFocus(const AWincontrol: TWinControl): Boolean;
     function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
     function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
@@ -226,6 +229,9 @@ procedure RegisterControl;
 procedure RegisterWinControl;
 procedure RegisterGraphicControl;
 procedure RegisterCustomControl;
+
+function WSControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSControlClass; inline;
+function WSWinControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSWinControlClass; inline;
 
 implementation
 
@@ -573,6 +579,24 @@ begin
 //  if not WSRegisterCustomControl then
 //    RegisterWSComponent(TCustomControl, TWSCustomControl);
   Done := True;
+end;
+
+function WSControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSControlClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSControlClass);
+  {$else}
+  TWSControlClass(AWidgetSetClass).GetConstraints(Control, Self);
+  {$endif}
+end;
+
+function WSWinControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSWinControlClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSWinControlClass);
+  {$else}
+  TWSWinControlClass(AWidgetSetClass).GetConstraints(Control, Self);
+  {$endif}
 end;
 
 end.

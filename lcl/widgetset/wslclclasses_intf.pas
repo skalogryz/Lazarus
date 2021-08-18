@@ -64,26 +64,18 @@ type
   TWSObjectClass = class of TWSObject;
 
   { TWSLCLComponent }
-  {$ifdef WSINTF}
   TWSLCLComponentClass = interface
+    ['{3B826F70-BEA2-4F4D-B6EE-A10335918977}']
+    function DebugName: string;
   end;
   TWSLCLComponent = class(TInterfacedObject, TWSLCLComponentClass)
+    function DebugName: string;
   end;
-  {$else}
-
-{$M+}
-  TWSLCLComponent = class(TObject)
-  public
-    class function WSPrivate: TWSPrivateClass; inline;
-  end;
-{$M-}
-  TWSLCLComponentClass = class of TWSLCLComponent;
-  {$endif}
-
 
   { TWSLCLHandleComponent }
 
   TWSLCLReferenceComponentClass = interface(TWSLCLComponentClass)
+    ['{789375CC-3B5B-43AB-AC4B-CAF21BAA9322}']
     procedure DestroyReference(AComponent: TComponent);
   end;
 
@@ -142,31 +134,30 @@ procedure DoInitialization; forward;
 // Registration code
 ////////////////////////////////////////////////////
 type
-  PClassNode = ^TClassNode;
-  TClassNode = record
+  TClassNode = class(TObject)
     LCLClass: TComponentClass;     { Class of the created instances }
     WSClass: TWSLCLComponentClass; { WidgetSet specific implementation class }
-    VClass: Pointer;               { Adjusted vmt table to handle WS virtual methods }
-    VClassName: ShortString;       { Class name attibuted when node was create }
-    VClassNew: Boolean;            { True Indicates that VClass=Parent.VClass.
-                                     When True VClass is not runtime created }
-    Parent: PClassNode;
-    Child: PClassNode;
-    Sibling: PClassNode;
+    //VClass: Pointer;               { Adjusted vmt table to handle WS virtual methods }
+    //VClassName: ShortString;       { Class name attibuted when node was create }
+    //VClassNew: Boolean;            { True Indicates that VClass=Parent.VClass.
+    //                                 When True VClass is not runtime created }
+    //Parent: PClassNode;
+    //Child: PClassNode;
+    //Sibling: PClassNode;
   end;
 
 const
   // vmtAutoTable is something Delphi 2 and not used, we 'borrow' the vmt entry
   vmtWSPrivate = vmtAutoTable;
 
-type
+//type
 
   { TWSClassesList }
 
   // Holds list of already registered TWidgetSetClass'es so TLCLComponent.NewInstance
   // can find faster the WidgetSetClass of the newinstance.
 
-  TWSClassesList = class(TFPList)
+  (*TWSClassesList = class(TFPList)
   private
     FLastFoundIdx: integer;
     FLastFoundClass: TClass;
@@ -183,14 +174,14 @@ type
     {$ENDIF}
   public
     constructor Create;
-  end;
+  end;*)
 
 var
-  WSClassesList: TWSClassesList = nil;
+  WSClassesList: TFPList = nil;
   WSLazAccessibleObjectClass: TWSObjectClass;
   WSLazDeviceAPIsClass: TWSObjectClass;
 
-function FindNodeParent(AComponent: TClass): PClassNode;
+{function FindNodeParent(AComponent: TClass): TClassNode;
 var
   idx: integer;
 begin
@@ -200,16 +191,36 @@ begin
     AComponent := AComponent.ClassParent;
   end;
   Result := nil;
+end;}
+
+function FindClassIndex(const AComponent: TComponentClass): Integer;
+var
+  n : TClassNode;
+  i : integer;
+begin
+  if not Assigned(WSClassesList) then
+    DoInitialization;
+  Result := -1;
+  for i:=0 to WSClassesList.Count-1 do begin
+    n := TClassNode(WSClassesList[i]);
+    if n.LCLClass = AComponent then begin
+      Result := i;
+      Exit;
+    end;
+  end;
+  Result := -1;
 end;
 
-function FindClassNode(const AComponent: TComponentClass): PClassNode;
+
+function FindClassNode(const AComponent: TComponentClass): TClassNode;
 var
   idx: integer;
 begin
   Result := nil;
-  if WSClassesList.Search(AComponent, idx) then
-    Exit(WSClassesList[idx]);
-  Result := FindNodeParent(AComponent.ClassParent);
+  idx := FindClassIndex(AComponent);
+  if (idx>=0) then
+    Exit(TClassNode(WSClassesList[idx]));
+  //Result := FindNodeParent(AComponent.ClassParent);
 end;
 
 function FindWSComponentClass(const AComponent: TComponentClass): TWSLCLComponentClass;
@@ -232,35 +243,8 @@ begin
 end;
 {$endif}
 
-type
-  TMethodNameTableEntry = packed record
-      Name: PShortstring;
-      Addr: Pointer;
-    end;
 
-  TMethodNameTable = packed record
-    Count: DWord;
-    Entries: packed array[0..9999999] of TMethodNameTableEntry;
-  end;
-  PMethodNameTable =  ^TMethodNameTable;
-
-  TPointerArray = packed array[0..9999999] of Pointer;
-  PPointerArray = ^TPointerArray;
-{
-function GetClassNameP(aClassName:string) : Pointer;
-var
-  lLen: integer;
-  lShortStr : shortstring;
-begin
-  lShortStr := aClassName + #0;
-  lLen := Length(lShortStr);
-  SetLength(lShortStr,lLen-1);
-  Result := GetMem(lLen+1);
-  move(lShortStr, Result^, lLen + 2);
-end;
-}
-
-function FindParentWSClassNode(const ANode: PClassNode): PClassNode;
+{function FindParentWSClassNode(const ANode: PClassNode): PClassNode;
 begin
   Result := ANode^.Parent;
   while Result <> nil do begin
@@ -268,7 +252,7 @@ begin
     Result := Result^.Parent;
   end;
   Result := nil;
-end;
+end;}
 
 function FindCommonAncestor(const AClass1, AClass2: TClass): TClass;
 begin
@@ -619,6 +603,13 @@ begin
   WSLazDeviceAPIsClass := AWSObject;
 end;
 
+ { TWSLCLComponent }
+
+  function TWSLCLComponent.DebugName: string;
+ begin
+   Result := Self.ClassName;
+ end;
+
 {$ifndef WSINTF}
 function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass;
 begin
@@ -636,82 +627,6 @@ end;
 {$ENDIF}
 
 { TWSClassesList }
-
-constructor TWSClassesList.Create;
-begin
-  FLastFoundClass:=TClass(High(UIntPtr));
-end;
-
-function TWSClassesList.FindWSClass(const AComponent: TComponentClass): TWSLCLComponentClass;
-var
-  I: integer;
-begin
-  {$IFDEF VerboseWSBrunoK} Write('Searching ', AComponent.ClassName); {$ENDIF}
-  if Search(AComponent, i) then begin
-    {$IFDEF VerboseWSBrunoK} WriteLn(' -> FOUND'); {$ENDIF}
-    Exit(TWSLCLComponentClass(Items[i]^.VClass));
-  end;
-  {$IFDEF VerboseWSBrunoK} WriteLn(' -> NOT FOUND'); {$ENDIF}
-  Result := nil;
-end;
-
-function TWSClassesList.Get(Index: integer): PClassNode;
-begin
-  Result := PClassNode(inherited Get(Index));
-end;
-
-procedure TWSClassesList.Insert(aIndex: Integer; aItem: Pointer);
-begin
-  inherited Insert(aIndex, aItem);
-  UpdatLastFound(TClass(aItem), aIndex);
-end;
-
-{ Searches a match for AComponent.ClassType. Returns index in items of
-  the matching AComponent or the next bigger one }
-function TWSClassesList.Search(const aItem: TClass; out Index: integer): boolean;
-var
-  L, R: integer;
-  lLCLClass: TClass;
-begin
-  if aItem = FLastFoundClass then begin
-    Index := FLastFoundIdx;
-    Exit(True);
-  end;
-  L := 0;
-  R := Count - 1;
-  Index := 0;
-  if R < 0 then
-    exit(False);
-
-  // Use binary search.
-  while (L < R) do begin
-    Index := cardinal(L + R) div 2;
-    if Pointer(aItem) <= Pointer(PClassNode(List^[Index])^.LCLClass) then
-      R := Index
-    else begin
-      L := Index + 1;
-    end;
-  end;
-
-  Index := L;
-  lLCLClass := PClassNode(List^[Index])^.LCLClass;
-  if aItem = lLCLClass then begin
-    UpdatLastFound(lLCLClass, Index);
-    Exit(True);
-  end;
-
-  if Pointer(aItem) < Pointer(lLCLClass) then
-    Index := L
-  else
-    Index := L + 1;
-  Result := False;
-end;
-
-procedure TWSClassesList.UpdatLastFound(aClass: TClass; aIndex: integer);
-begin
-  FLastFoundClass := TComponentClass(aClass);
-  FLastFoundIdx := aIndex;
-end;
 
 {$IFDEF VerboseWSBrunoK}
 procedure TWSClassesList.DumpNode(aN: integer; aPClassNode: PClassNode);
@@ -800,13 +715,13 @@ end;
 
 procedure DoInitialization;
 begin
-  WSClassesList := TWSClassesList.Create;
+  WSClassesList := TFPList.Create;
 end;
 
 procedure DoFinalization;
 var
   n: Integer;
-  Node: PClassNode;
+  Node: TClassNode;
 begin
   {$IFDEF VerboseWSBrunoK}
   WSClassesList.DumpNodes;
@@ -817,10 +732,8 @@ begin
   {$ENDIF}
   for n := 0 to WSClassesList.Count - 1 do
   begin
-    Node := WSClassesList[n];
-    if (Node^.VClass <> nil) and (not Node^.VClassNew) then
-      Freemem(Node^.VClass);
-    Dispose(Node);
+    Node := TClassNode(WSClassesList[n]);
+    Node.Free;
   end;
   FreeAndNil(WSClassesList);
   {$IFDEF VerboseWSBrunoK}
@@ -830,24 +743,6 @@ end;
 
 {$ifdef WSINTF}
 
-function FindClassIndex(const AComponent: TComponentClass): Integer;
-var
-  n : PClassNode;
-  i : integer;
-begin
-  if not Assigned(WSClassesList) then
-    DoInitialization;
-  Result := -1;
-  for i:=0 to WSClassesList.Count-1 do begin
-    n := PClassNode(WSClassesList[i]);
-    if n^.LCLClass = AComponent then begin
-      Result := i;
-      Exit;
-    end;
-  end;
-  Result := -1;
-end;
-
 function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
 var
   idx : integer;
@@ -856,26 +751,24 @@ begin
     DoInitialization;
   idx := FindClassIndex(AComponent);
   if (idx < 0) then Result:=nil
-  else Result := PClassNode(WSClassesList[idx])^.WSClass;
+  else Result := TClassNode(WSClassesList[idx]).WSClass;
 end;
 
 procedure RegisterWSComponent(AComponent: TComponentClass;
   AWSComponent: TWSLCLComponentClass);
 var
   idx : integer;
-  p : PClassNode;
+  p : TClassNode;
 begin
   writeln('register: ', AComponent.ClassName);
   idx := FindClassIndex(AComponent);
   if (idx < 0) then begin
-    New(p);
-    p^.WSClass := AWSComponent;
-    p^.LCLClass := AComponent;
-    p^.Child := nil;
-    p^.Sibling := nil;
+    p := TClassNode.Create;
+    p.WSClass := AWSComponent;
+    p.LCLClass := AComponent;
     WSClassesList.Add(p);
   end else
-    PClassNode(WSClassesList[idx])^.WSClass := AWSComponent;
+    TClassNode(WSClassesList[idx]).WSClass := AWSComponent;
 end;
 {$endif}
 

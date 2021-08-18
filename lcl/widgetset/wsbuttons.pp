@@ -40,7 +40,7 @@ uses
 ////////////////////////////////////////////////////
   Classes, Controls, Buttons, Graphics,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSStdCtrls, WSControls, LCLType, LCLIntf, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSStdCtrls, WSControls, LCLType, LCLIntf, WSFactory;
 
 type
 

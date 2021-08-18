@@ -40,7 +40,7 @@ uses
 ////////////////////////////////////////////////////
 //  ExtDlgs,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSDialogs, WSForms, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSDialogs, WSForms, WSFactory;
 
 type
   { TWSPreviewFileControl }

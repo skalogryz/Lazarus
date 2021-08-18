@@ -42,7 +42,7 @@ uses
 ////////////////////////////////////////////////////
   Graphics, Controls, StdCtrls,
 ////////////////////////////////////////////////////
-  Clipbrd, LazUTF8, WSLCLClasses, WSControls, WSFactory;
+  Clipbrd, LazUTF8, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSFactory;
 
 type
   { TWSScrollBar }

@@ -41,7 +41,7 @@ uses
 ////////////////////////////////////////////////////
   Graphics, Controls, Forms, LCLType,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSFactory;
+  {$ifdef WSINTF}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSFactory;
 
 type
   { TWSScrollingWinControl }

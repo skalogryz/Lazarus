@@ -40,7 +40,7 @@ uses
 ////////////////////////////////////////////////////
   Types, Math, LazDeviceAPIs,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls, WSFactory;
 
 type
   { TWSLazDeviceAPIS }

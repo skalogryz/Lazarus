@@ -40,7 +40,7 @@ uses
 ////////////////////////////////////////////////////
 //  Toolwin,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSControls;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls;
 
 type
   { TWSToolWindow }

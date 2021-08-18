@@ -40,7 +40,7 @@ uses
 ////////////////////////////////////////////////////
   StdCtrls, CheckLst,
 ////////////////////////////////////////////////////
-  WSLCLClasses, WSStdCtrls, Classes, WSFactory;
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSStdCtrls, Classes, WSFactory;
 
 type
   { TWSCustomCheckListBox }

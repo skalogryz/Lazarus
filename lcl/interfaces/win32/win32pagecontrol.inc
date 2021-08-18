@@ -144,7 +144,11 @@ begin
       AWinControl.Parent.InvalidateClientRectCache(False);
     end;
   end;
-  TWSWinControlClass(ClassParent).DestroyHandle(AWinControl);
+  {$ifdef wsintf}
+  inherited DestroyHandle(AWinControl);
+  {$else}
+  WSWinControlClass(ClassParent).DestroyHandle(AWinControl);
+  {$endif}
 end;
 
 class procedure TWin32WSCustomPage.ThemeChange(Wnd: HWND);

@@ -1204,7 +1204,11 @@ var
 begin
   // call inherited SetFont; need to do it this way,
   // because the compile time ancestor class is TWSCustomListView
-  TWSWinControlClass(ClassParent).SetFont(AWinControl, AFont);
+  {$ifdef wsintf}
+  inherited SetFont(AWinControl, AFont);
+  {$else}
+  WSWinControlClass(ClassParent).SetFont(AWinControl, AFont);
+  {$endif}
   Color := AFont.Color;
   if Color = clDefault then
    Color := AWinControl.GetDefaultColor(dctFont);

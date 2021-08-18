@@ -425,7 +425,7 @@ begin
     WM_ERASEBKGND:
       begin
         WindowInfo := GetWin32WindowInfo(Window);
-        if not TWSWinControlClass(WindowInfo^.WinControl.WidgetSetClass).GetDoubleBuffered(WindowInfo^.WinControl) then
+        if not WSWinControlClass(WindowInfo^.WinControl.WidgetSetClass).GetDoubleBuffered(WindowInfo^.WinControl) then
         begin
           LMessage.msg := Msg;
           LMessage.wParam := WParam;
@@ -489,7 +489,7 @@ begin
     WM_ERASEBKGND:
       begin
         Control := GetWin32WindowInfo(Window)^.WinControl;
-        if not TWSWinControlClass(Control.WidgetSetClass).GetDoubleBuffered(Control) then
+        if not WSWinControlClass(Control.WidgetSetClass).GetDoubleBuffered(Control) then
         begin
           LMessage.msg := Msg;
           LMessage.wParam := WParam;
@@ -1955,8 +1955,11 @@ begin
   if (GetWindowLong(AWinControl.Handle, GWL_STYLE) and SS_NOPREFIX) <>
      AccelCharToStaticTextFlags[TCustomStaticText(AWinControl).ShowAccelChar] then
     RecreateWnd(AWinControl);
-
-  TWSWinControlClass(ClassParent).SetText(AWinControl, AText);
+  {$ifdef wsintf}
+  inherited SetText(AWinControl, AText);
+  {$else}
+  WSWinControlClass(ClassParent).SetText(AWinControl, AText);
+  {$endif}
 end;
 
 { TWin32WSButtonControl }
@@ -1989,7 +1992,7 @@ begin
     WM_ERASEBKGND:
       begin
         Control := GetWin32WindowInfo(Window)^.WinControl;
-        if not TWSWinControlClass(Control.WidgetSetClass).GetDoubleBuffered(Control) then
+        if not WSWinControlClass(Control.WidgetSetClass).GetDoubleBuffered(Control) then
         begin
           LMessage.msg := Msg;
           LMessage.wParam := WParam;

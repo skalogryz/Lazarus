@@ -642,7 +642,7 @@ begin
   // check if double buffering is requested
   useDoubleBuffer := (ControlDC = 0) and (
       ((csDesigning in lWinControl.ComponentState) and (GetSystemMetrics(SM_REMOTESESSION)=0)) // force double buffer in the designer
-    or TWSWinControlClass(TWinControl(lWinControl).WidgetSetClass).GetDoubleBuffered(lWinControl));
+    or WSWinControlClass(TWinControl(lWinControl).WidgetSetClass).GetDoubleBuffered(lWinControl));
 
   if useDoubleBuffer then
     BufferWasSaved := PrepareDoubleBuffer(DoubleBufferBitmapOld)
@@ -2840,7 +2840,7 @@ begin
       begin
         // Now ask control is it needs mouse messages
         MapWindowPoints(Parent, TWinControl(Control).Handle, P, 1);
-        if TWSWinControlClass(TWinControl(Control).WidgetSetClass).GetDesignInteractive(TWinControl(Control), P) then
+        if WSWinControlClass(TWinControl(Control).WidgetSetClass).GetDesignInteractive(TWinControl(Control), P) then
           Result := HTTRANSPARENT
       end;
     end;

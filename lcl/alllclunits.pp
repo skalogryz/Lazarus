@@ -20,15 +20,14 @@ uses
   Themes, TmSchema, Toolwin, UTrace, XMLPropStorage, TimePopup, Messages, 
   WSButtons, WSCalendar, WSCheckLst, WSComCtrls, WSControls, WSDesigner, 
   WSDialogs, WSExtCtrls, WSExtDlgs, WSFactory, WSForms, WSGrids, WSImgList, 
-  WSLCLClasses, WSMenus, WSPairSplitter, WSProc, WSReferences, WSSpin, 
-  WSStdCtrls, WSToolwin, ActnList, AsyncProcess, ButtonPanel, Buttons, 
-  Calendar, RegisterLCL, ValEdit, LazCanvas, LazDialogs, LazRegions, 
-  CustomDrawn_Common, CustomDrawnControls, CustomDrawnDrawers, LazDeviceApis, 
-  LDockTree, LazFreeTypeIntfDrawer, CustomDrawn_WinXP, CustomDrawn_Android, 
-  Arrow, EditBtn, ComboEx, DBExtCtrls, CustomDrawn_Mac, CalcForm, 
-  LCLTranslator, GroupedEdit, LCLTaskDialog, WSLazDeviceAPIS, LCLPlatformDef, 
-  IndustrialBase, JSONPropStorage, LCLExceptionStackTrace, WSLCLClasses_Intf, 
-  LazarusPackageIntf;
+  WSMenus, WSPairSplitter, WSProc, WSReferences, WSSpin, WSStdCtrls, 
+  WSToolwin, ActnList, AsyncProcess, ButtonPanel, Buttons, Calendar, 
+  RegisterLCL, ValEdit, LazCanvas, LazDialogs, LazRegions, CustomDrawn_Common, 
+  CustomDrawnControls, CustomDrawnDrawers, LazDeviceApis, LDockTree, 
+  LazFreeTypeIntfDrawer, CustomDrawn_WinXP, CustomDrawn_Android, Arrow, 
+  EditBtn, ComboEx, DBExtCtrls, CustomDrawn_Mac, CalcForm, LCLTranslator, 
+  GroupedEdit, LCLTaskDialog, WSLazDeviceAPIS, LCLPlatformDef, IndustrialBase, 
+  JSONPropStorage, LCLExceptionStackTrace, LazarusPackageIntf;
 
 implementation
 

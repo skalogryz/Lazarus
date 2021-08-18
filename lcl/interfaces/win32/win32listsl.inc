@@ -333,7 +333,7 @@ var
     {$ifndef wsintf}
     TWin32WSCustomComboBox.GetText(FSender, EditText);
     {$else}
-    intf:=TWSCustomComboBoxClass(FSender.WidgetSetClass);
+    intf:=WSCustomComboBoxClass(FSender.WidgetSetClass);
     intf.GetText(FSender, EditText);
     {$endif}
 

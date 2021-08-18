@@ -314,7 +314,7 @@ begin
     {$ifndef wsintf}
     TWin32WSWinControl.SetText(ComboBox, ComboBox.Items[Index]);
     {$else}
-    TWSCustomComboBoxClass(ComboBox.WidgetSetClass).SetText(ComboBox, ComboBox.Items[Index]);
+    WSCustomComboBoxClass(ComboBox.WidgetSetClass).SetText(ComboBox, ComboBox.Items[Index]);
     {$endif}
 end;
 

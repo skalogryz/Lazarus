@@ -95,22 +95,17 @@ procedure RegisterWSComponent(AComponent: TComponentClass;
   AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass = nil);
 {$endif}
 function RegisterNewWSComp(AComponent: TComponentClass): TWSLCLComponentClass; //inline;
-{$ifndef WSINTF}
+
 // Only for non-TComponent based objects
 function GetWSLazAccessibleObject: TWSObjectClass;
-{$endif}
 procedure RegisterWSLazAccessibleObject(const AWSObject: TWSObjectClass);
-{$ifndef WSINTF}
+
 function GetWSLazDeviceAPIs: TWSObjectClass;
 procedure RegisterWSLazDeviceAPIs(const AWSObject: TWSObjectClass);
-
 // ~bk Search for already registered classes
-function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
-{$else}
 function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
 procedure RegisterWSComponent(AComponent: TComponentClass;
     AWSComponent: TWSLCLComponentClass);
-{$endif}
 
 
 { Debug : Dump the WSClassesList nodes }

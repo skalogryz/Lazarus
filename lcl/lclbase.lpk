@@ -959,6 +959,7 @@
       </Item232>
       <Item233>
         <Filename Value="widgetset/wslclclasses.pp"/>
+        <AddToUsesPkgSection Value="False"/>
         <UnitName Value="WSLCLClasses"/>
       </Item233>
       <Item234>
@@ -1183,6 +1184,7 @@
       </Item287>
       <Item288>
         <Filename Value="widgetset/wslclclasses_intf.pas"/>
+        <AddToUsesPkgSection Value="False"/>
         <UnitName Value="WSLCLClasses_Intf"/>
       </Item288>
     </Files>

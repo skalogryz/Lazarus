@@ -586,7 +586,7 @@ begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as TWSControlClass);
   {$else}
-  TWSControlClass(AWidgetSetClass).GetConstraints(Control, Self);
+  Result := TWSControlClass(AWidgetSetClass);
   {$endif}
 end;
 
@@ -595,7 +595,7 @@ begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as TWSWinControlClass);
   {$else}
-  TWSWinControlClass(AWidgetSetClass).GetConstraints(Control, Self);
+  Result := TWSWinControlClass(AWidgetSetClass);
   {$endif}
 end;
 

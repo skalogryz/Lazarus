@@ -47,6 +47,7 @@ type
   { TWSScrollingWinControl }
 
   TWSScrollingWinControlClass = {$ifdef wsintf}
+  ['{D63FAD67-4280-4610-94F6-ABA927F62817}']
   interface(TWSWinControlClass)
   end;
   {$else}
@@ -80,6 +81,7 @@ type
 
   {$ifdef wsintf}
   TWSCustomFormClass = interface(TWSScrollingWinControlClass)
+    ['{E543CD56-7CF2-4967-B399-65F430B16063}']
     procedure CloseModal(const ACustomForm: TCustomForm);
     procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean);
     procedure SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean;
@@ -178,6 +180,8 @@ type
   procedure RegisterCustomFrame;
   procedure RegisterCustomForm;
   procedure RegisterHintWindow;
+
+function WSCustomFormClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFormClass; inline;
 
 implementation
 
@@ -375,6 +379,15 @@ begin
 //  if not WSRegisterHintWindow then
 //    RegisterWSComponent(THintWindow, TWSHintWindow);
   Done := True;
+end;
+
+function WSCustomFormClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFormClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomFormClass);
+  {$else}
+  Result := TWSCustomFormClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

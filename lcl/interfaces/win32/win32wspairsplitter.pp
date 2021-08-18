@@ -27,7 +27,7 @@ uses
 // To get as little as posible circles,
 // uncomment only when needed for registration
 ////////////////////////////////////////////////////
-  WSPairSplitter, WSLCLClasses;
+  WSPairSplitter, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif};
 
 type
 

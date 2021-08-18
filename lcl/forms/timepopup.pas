@@ -239,7 +239,7 @@ end;
 
 procedure TTimePopupForm.ActivateDoubleBuffered;
 begin
-  DoubleBuffered := TWSCustomFormClass(WidgetSetClass).GetDefaultDoubleBuffered;
+  DoubleBuffered := WSCustomFormClass(WidgetSetClass).GetDefaultDoubleBuffered;
 end;
 
 procedure TTimePopupForm.CalcGridHeights;

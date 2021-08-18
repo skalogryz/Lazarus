@@ -47,8 +47,8 @@ type
   { TWSScrollingWinControl }
 
   TWSScrollingWinControlClass = {$ifdef wsintf}
-  ['{D63FAD67-4280-4610-94F6-ABA927F62817}']
   interface(TWSWinControlClass)
+    ['{D63FAD67-4280-4610-94F6-ABA927F62817}']
   end;
   {$else}
   class of TWSScrollingWinControl;

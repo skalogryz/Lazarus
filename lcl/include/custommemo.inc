@@ -49,7 +49,7 @@ end;
 
 procedure TCustomMemo.SetCaretPos(const AValue: TPoint);
 begin
-  TWSCustomMemoClass(WidgetSetClass).SetCaretPos(Self, AValue);
+  WSCustomMemoClass(WidgetSetClass).SetCaretPos(Self, AValue);
 end;
 
 procedure TCustomMemo.SetWantReturns(const AValue: Boolean);
@@ -58,7 +58,7 @@ begin
     Exit;
   FWantReturns := AValue;
   if HandleAllocated then
-    TWSCustomMemoClass(WidgetSetClass).SetWantReturns(Self, AValue);
+    WSCustomMemoClass(WidgetSetClass).SetWantReturns(Self, AValue);
 end;
 
 class procedure TCustomMemo.WSRegisterClass;
@@ -102,7 +102,7 @@ begin
   DebugLn('[TCustomMemo.InitializeWnd] A ',FLines.ClassName);
   {$endif}
   // fetch/create the interface item list
-  NewStrings := TWSCustomMemoClass(WidgetSetClass).GetStrings(Self);
+  NewStrings := WSCustomMemoClass(WidgetSetClass).GetStrings(Self);
   // copy the items (text)
   NewStrings.Assign(Lines);
 
@@ -134,7 +134,7 @@ begin
     NewStrings.Assign(Lines);
 
     // Delete the interface item list
-    TWSCustomMemoClass(WidgetSetClass).FreeStrings(FLines);
+    WSCustomMemoClass(WidgetSetClass).FreeStrings(FLines);
 
     // new item list is the internal item list
     FLines := NewStrings;
@@ -173,7 +173,7 @@ end;
  ------------------------------------------------------------------------------}
 function TCustomMemo.GetCaretPos: TPoint;
 begin
-  Result := TWSCustomMemoClass(WidgetSetClass).GetCaretPos(Self);
+  Result := WSCustomMemoClass(WidgetSetClass).GetCaretPos(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ begin
   if AValue <> FScrollbars then begin
     FScrollbars:= AValue;
     if HandleAllocated and (not (csLoading in ComponentState)) then
-      TWSCustomMemoClass(WidgetSetClass).SetScrollbars(Self, AValue);
+      WSCustomMemoClass(WidgetSetClass).SetScrollbars(Self, AValue);
   end;
 end;
 
@@ -207,8 +207,8 @@ begin
   inherited Loaded;
   if HandleAllocated then
   begin
-    TWSCustomMemoClass(WidgetSetClass).SetScrollbars(Self, FScrollbars);
-    TWSCustomMemoClass(WidgetSetClass).SetWordWrap(Self, FWordWrap);
+    WSCustomMemoClass(WidgetSetClass).SetScrollbars(Self, FScrollbars);
+    WSCustomMemoClass(WidgetSetClass).SetWordWrap(Self, FWordWrap);
   end;
 end;
 
@@ -263,7 +263,7 @@ begin
   if FWantTabs = NewWantTabs then exit;
   FWantTabs := NewWantTabs;
   if HandleAllocated then
-    TWSCustomMemoClass(WidgetSetClass).SetWantTabs(Self, NewWantTabs);
+    WSCustomMemoClass(WidgetSetClass).SetWantTabs(Self, NewWantTabs);
 end;
 
 procedure TCustomMemo.SetWordWrap(const AValue: boolean);
@@ -275,7 +275,7 @@ begin
     {$endif}
     FWordWrap := AValue;
     if HandleAllocated and (not (csLoading in ComponentState)) then
-      TWSCustomMemoClass(WidgetSetClass).SetWordWrap(Self, AValue);
+      WSCustomMemoClass(WidgetSetClass).SetWordWrap(Self, AValue);
   end;    
 end;
 

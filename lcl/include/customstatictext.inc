@@ -73,7 +73,7 @@ begin
   if fAlignment <> value then begin
     fAlignment:= value;
     if HandleAllocated then
-      TWSCustomStaticTextClass(WidgetSetClass).SetAlignment(Self, Value);
+      WSCustomStaticTextClass(WidgetSetClass).SetAlignment(Self, Value);
   end;
 end;
 
@@ -141,7 +141,7 @@ begin
     FStaticBorderStyle := Value;
     if HandleAllocated then
     begin
-      TWSCustomStaticTextClass(WidgetsetClass).SetStaticBorderStyle(Self, Value);
+      WSCustomStaticTextClass(WidgetsetClass).SetStaticBorderStyle(Self, Value);
       if AutoSize then
       begin
         InvalidatePreferredSize;

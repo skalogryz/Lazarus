@@ -44,7 +44,7 @@ begin
   if HandleAllocated and (not (csLoading in ComponentState)) then
   begin
     //debugln('TCustomCheckBox.SetAlignment ',dbgsname(Self),' ',dbgs((FAlignment)),' ',WidgetSetClass.ClassName);
-    TWSCustomCheckBoxClass(WidgetSetClass).SetAlignment(Self, FAlignment);
+    WSCustomCheckBoxClass(WidgetSetClass).SetAlignment(Self, FAlignment);
   end;
 end;
 
@@ -86,7 +86,7 @@ begin
   // don't read from interface during loading
   if HandleAllocated and ([csLoading,csDestroying]*ComponentState=[]) then
   begin
-    Result := TWSCustomCheckBoxClass(WidgetSetClass).RetrieveState(Self);
+    Result := WSCustomCheckBoxClass(WidgetSetClass).RetrieveState(Self);
     //debugln('TCustomCheckBox.RetrieveState ',dbgsname(Self),' ',dbgs(ord(Result)));
   end;
 end;
@@ -194,7 +194,7 @@ begin
   if HandleAllocated and (not (csLoading in ComponentState)) then
   begin
     //debugln('TCustomCheckBox.ApplyChanges ',dbgsname(Self),' ',dbgs(ord(FState)),' ',WidgetSetClass.ClassName);
-    TWSCustomCheckBoxClass(WidgetSetClass).SetState(Self, FState);
+    WSCustomCheckBoxClass(WidgetSetClass).SetState(Self, FState);
   end;
 end;
 
@@ -209,7 +209,7 @@ begin
   // Send first the FState to the interface before calling inherited,
   // otherwise the FState will be lost and the default interface State is taken.
   if HandleAllocated then
-    TWSCustomCheckBoxClass(WidgetSetClass).SetState(Self, FState);
+    WSCustomCheckBoxClass(WidgetSetClass).SetState(Self, FState);
   inherited Loaded;
 end;
 
@@ -227,7 +227,7 @@ begin
     if AccelIndex > -1 then
     begin
       FShortCut := Menus.ShortCut(Char2VK(ParseStr[AccelIndex]), [ssCtrl]);
-      TWSCustomCheckBoxClass(WidgetSetClass).SetShortCut(Self, FShortCut, FShortCutKey2);
+      WSCustomCheckBoxClass(WidgetSetClass).SetShortCut(Self, FShortCut, FShortCutKey2);
     end;
   end;
   inherited WSSetText(AText);

@@ -43,7 +43,7 @@ end;
 procedure TCustomListBox.BeforeDragStart;
 begin
   if HandleAllocated then
-    TWSCustomListBoxClass(WidgetSetClass).DragStart(Self);
+    WSCustomListBoxClass(WidgetSetClass).DragStart(Self);
 end;
 
 procedure TCustomListBox.BeginAutoDrag;
@@ -140,7 +140,7 @@ begin
   LockSelectionChange;
   inherited InitializeWnd;
   // fetch the interface item list
-  NewStrings := TWSCustomListBoxClass(WidgetSetClass).GetStrings(Self);
+  NewStrings := WSCustomListBoxClass(WidgetSetClass).GetStrings(Self);
   // copy the items (text+objects)
   OldItems := FItems as TExtendedStringList;
 
@@ -153,7 +153,7 @@ begin
 
   // don't reset item index without a need - on windows this may cause an undesired selection of
   // item for multiselect listbox
-  if FItemIndex <> TWSCustomListBoxClass(WidgetSetClass).GetItemIndex(Self) then
+  if FItemIndex <> WSCustomListBoxClass(WidgetSetClass).GetItemIndex(Self) then
     SendItemIndex;
 
   // copy items attributes
@@ -161,8 +161,8 @@ begin
     AssignCacheToItemData(i, OldItems.Records[i]);
   // free old items
   OldItems.Free;
-  TWSCustomListBoxClass(WidgetSetClass).SetSorted(Self, FItems, FSorted);
-  TWSCustomListBoxClass(WidgetSetClass).SetScrollWidth(Self, FScrollWidth);
+  WSCustomListBoxClass(WidgetSetClass).SetSorted(Self, FItems, FSorted);
+  WSCustomListBoxClass(WidgetSetClass).SetScrollWidth(Self, FScrollWidth);
   UnlockSelectionChange;
 end;
 
@@ -198,7 +198,7 @@ begin
       AssignItemDataToCache(i, NewStrings.Records[i]);
 
     // free the interface items list
-    TWSCustomListBoxClass(WidgetSetClass).FreeStrings(FItems);
+    WSCustomListBoxClass(WidgetSetClass).FreeStrings(FItems);
     // new item list is the internal item list
     NewStrings.Sorted:=FSorted;
     FItems:= NewStrings;
@@ -221,7 +221,7 @@ procedure TCustomListBox.UpdateSelectionMode;
 begin
   if not HandleAllocated then exit;
   LockSelectionChange;
-  TWSCustomListBoxClass(WidgetSetClass).SetSelectionMode(Self, 
+  WSCustomListBoxClass(WidgetSetClass).SetSelectionMode(Self,
     ExtendedSelect, MultiSelect);
   UnlockSelectionChange;
 end;
@@ -232,7 +232,7 @@ end;
 function TCustomListBox.GetTopIndex: Integer;
 begin
   if HandleAllocated then
-    FTopIndex := TWSCustomListBoxClass(WidgetSetClass).GetTopIndex(Self);
+    FTopIndex := WSCustomListBoxClass(WidgetSetClass).GetTopIndex(Self);
   Result := FTopIndex;
 end;
 
@@ -247,14 +247,14 @@ begin
     Exit;
   FColumns := AValue;
   if HandleAllocated then
-    TWSCustomListBoxClass(WidgetSetClass).SetColumnCount(Self, FColumns);
+    WSCustomListBoxClass(WidgetSetClass).SetColumnCount(Self, FColumns);
 end;
 
 procedure TCustomListBox.SetScrollWidth(const AValue: Integer);
 begin
   FScrollWidth := AValue;
   if HandleAllocated then
-    TWSCustomListBoxClass(WidgetSetClass).SetScrollWidth(Self, FScrollWidth);
+    WSCustomListBoxClass(WidgetSetClass).SetScrollWidth(Self, FScrollWidth);
 end;
 
 {------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ begin
   Result := FScrollWidth;
   if (Result > 0) or (csDesigning in ComponentState) then Exit;
   if HandleAllocated then
-    Result := TWSCustomListBoxClass(WidgetSetClass).GetScrollWidth(Self);
+    Result := WSCustomListBoxClass(WidgetSetClass).GetScrollWidth(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -282,7 +282,7 @@ begin
   // will make it complete visible.
   FTopIndex := AValue;
   if HandleAllocated and ([csLoading,csDestroying]*ComponentState=[]) then
-    TWSCustomListBoxClass(WidgetSetClass).SetTopIndex(Self, AValue);
+    WSCustomListBoxClass(WidgetSetClass).SetTopIndex(Self, AValue);
 end;
 
 {------------------------------------------------------------------------------
@@ -293,7 +293,7 @@ begin
   if HandleAllocated then
   begin
     LockSelectionChange;
-    TWSCustomListBoxClass(WidgetSetClass).SetSorted(Self, FItems, FSorted);
+    WSCustomListBoxClass(WidgetSetClass).SetSorted(Self, FItems, FSorted);
     UnlockSelectionChange;
   end
   else
@@ -378,7 +378,7 @@ end;
 procedure TCustomListBox.SendItemSelected(Index: integer; IsSelected: boolean);
 begin
   if HandleAllocated then
-    TWSCustomListBoxClass(WidgetSetClass).SelectItem(Self, Index, IsSelected);
+    WSCustomListBoxClass(WidgetSetClass).SelectItem(Self, Index, IsSelected);
 end;
 
 class procedure TCustomListBox.WSRegisterClass;
@@ -441,7 +441,7 @@ function TCustomListBox.GetSelected(Index: integer): boolean;
 begin
   CheckIndex(Index);
   if HandleAllocated then
-    Result := TWSCustomListBoxClass(WidgetSetClass).GetSelected(Self, Index)
+    Result := WSCustomListBoxClass(WidgetSetClass).GetSelected(Self, Index)
   else
     Result := GetSelectedCache(Index);
 end;
@@ -452,7 +452,7 @@ end;
 function TCustomListBox.GetSelCount: integer;
 begin
   if HandleAllocated then
-    Result := TWSCustomListBoxClass(WidgetSetClass).GetSelCount(Self)
+    Result := WSCustomListBoxClass(WidgetSetClass).GetSelCount(Self)
   else
     Result := 0;
 end;
@@ -500,7 +500,7 @@ begin
   begin
     FStyle:= Val;
     if HandleAllocated then
-      TWSCustomListBoxClass(WidgetSetClass).SetStyle(Self);
+      WSCustomListBoxClass(WidgetSetClass).SetStyle(Self);
   end;
 end;
 
@@ -546,7 +546,7 @@ end;
 
 procedure TCustomListBox.SendItemIndex;
 begin
-  TWSCustomListBoxClass(WidgetSetClass).SetItemIndex(Self, FItemIndex);
+  WSCustomListBoxClass(WidgetSetClass).SetItemIndex(Self, FItemIndex);
 end;
 
 procedure TCustomListBox.WMGetDlgCode(var Message: TLMNoParams);
@@ -631,7 +631,7 @@ function TCustomListBox.GetItemIndex: integer;
 begin
   if HandleAllocated then
   begin
-    Result := TWSCustomListBoxClass(WidgetSetClass).GetItemIndex(Self);
+    Result := WSCustomListBoxClass(WidgetSetClass).GetItemIndex(Self);
     if (Result < 0) or (Result >= Count) then
       Result := -1;
     FItemIndex := Result;
@@ -735,7 +735,7 @@ begin
   if (ALow<0) or (AHigh>=Items.Count) then Exit;
   if MultiSelect then
   begin
-    TWSCustomListBoxClass(WidgetSetClass).SelectRange(Self, ALow, AHigh, ASelected);
+    WSCustomListBoxClass(WidgetSetClass).SelectRange(Self, ALow, AHigh, ASelected);
     DoSelectionChange(false);
   end
   else
@@ -773,7 +773,7 @@ function TCustomListBox.GetIndexAtXY(X, Y: integer): integer;
 begin
   Result := -1;
   if (not HandleAllocated) then Exit;
-  Result := TWSCustomListBoxClass(WidgetSetClass).GetIndexAtXY(Self, X, Y);
+  Result := WSCustomListBoxClass(WidgetSetClass).GetIndexAtXY(Self, X, Y);
 end;
 
 function TCustomListBox.GetIndexAtY(Y: integer): integer;
@@ -834,11 +834,11 @@ begin
   if not HandleAllocated then
     Exit;
   if (Index >= 0) and (Index < Items.Count) then
-    TWSCustomListBoxClass(WidgetSetClass).GetItemRect(Self, Index, Result)
+    WSCustomListBoxClass(WidgetSetClass).GetItemRect(Self, Index, Result)
   else
   if (Index=Items.Count) and (Index>0) then
   begin
-    TWSCustomListBoxClass(WidgetSetClass).GetItemRect(Self, Index - 1, Result);
+    WSCustomListBoxClass(WidgetSetClass).GetItemRect(Self, Index - 1, Result);
     OffsetRect(Result, 0, Result.Bottom - Result.Top);
   end;
 end;
@@ -854,7 +854,7 @@ var
 begin
   Result := False;
   if (Index < 0) or (Index >= Items.Count) then Exit;
-  if not TWSCustomListBoxClass(WidgetSetClass).GetItemRect(Self, Index, ARect) then
+  if not WSCustomListBoxClass(WidgetSetClass).GetItemRect(Self, Index, ARect) then
     Exit;
   if (ARect.Bottom < 0) or (ARect.Top > ClientHeight) then
     Exit;
@@ -872,7 +872,7 @@ var
 begin
   Result := False;
   if (Index < 0) or (Index >= Items.Count) then Exit;
-  if not TWSCustomListBoxClass(WidgetSetClass).GetItemRect(Self, Index, ARect) then
+  if not WSCustomListBoxClass(WidgetSetClass).GetItemRect(Self, Index, ARect) then
     Exit;
   if (ARect.Top < 0) or (ARect.Bottom > ClientHeight) then
     Exit;

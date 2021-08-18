@@ -85,7 +85,7 @@ begin
   if (csLoading in ComponentState) then Exit;
 
   if HandleAllocated then
-    TWSScrollBarClass(WidgetSetClass).SetKind(Self, FKind = sbHorizontal);
+    WSScrollBarClass(WidgetSetClass).SetKind(Self, FKind = sbHorizontal);
 
   SetBounds(Left,Top,OldHeight,OldWidth);
 end;
@@ -124,7 +124,7 @@ begin
     Change;
   end;
   if HandleAllocated then
-    TWSScrollBarClass(WidgetSetClass).SetParams(Self);
+    WSScrollBarClass(WidgetSetClass).SetParams(Self);
 end;
 
 procedure TCustomScrollBar.SetParams(APosition, AMin, AMax: Integer);

@@ -339,9 +339,11 @@ type
   { TWSButton }
   {$ifdef wsintf}
   TWSButtonControlClass = interface(TWSWinControlClass)
+    ['{55276A23-FB12-44A8-BD25-47EA7C6E0F22}']
   end;
 
   TWSButtonClass = interface(TWSButtonControlClass)
+    ['{725C342A-65A9-4792-B25F-590BEE061339}']
     procedure SetDefault(const AButton: TCustomButton; ADefault: Boolean);
     procedure SetShortCut(const AButton: TCustomButton; const ShortCutK1, ShortCutK2: TShortCut);
   end;
@@ -407,6 +409,8 @@ type
   procedure RegisterRadioButton;
   procedure RegisterCustomStaticText;
   procedure RegisterCustomLabel;
+
+function WSButtonClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSButtonClass; inline;
 
 implementation
 
@@ -1026,6 +1030,15 @@ end;
 imptype function TWSButtonControl.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
 begin
   Result := DefBtnColors[ADefaultColorType];
+end;
+
+function WSButtonClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSButtonClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSButtonClass);
+  {$else}
+  Result := TWSButtonClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

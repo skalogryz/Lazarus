@@ -111,7 +111,7 @@ begin
   if Val <> FShowAccelChar then begin
     FShowAccelChar:= Val;
     if HandleAllocated then begin
-      TWSWinControlClass(WidgetSetClass).SetText(Self,Caption);
+      WSWinControlClass(WidgetSetClass).SetText(Self,Caption);
       InvalidatePreferredSize;
     end;
   end;

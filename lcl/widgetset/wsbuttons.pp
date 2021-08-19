@@ -56,7 +56,7 @@ type
     procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer);
   end;
   {$endif}
-  TWSBitBtn = class(TWSButton, TWSBitBtnClass)
+  TWSBitBtn = class(TWSButton{$ifdef wsintf}, TWSBitBtnClass{$endif})
   impsection
     imptype procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); virtual;
     imptype procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); virtual;

@@ -334,7 +334,7 @@ end;
 function TCustomTabControl.TabRect(AIndex: Integer): TRect;
 begin
   if HandleAllocated then
-    Result := TWSCustomTabControlClass(WidgetSetClass).GetTabRect(Self, AIndex)
+    Result := WSCustomTabControlClass(WidgetSetClass).GetTabRect(Self, AIndex)
   else
     Result := Rect(-1, -1, -1, -1);
 end;
@@ -376,19 +376,19 @@ end;
 
 function TCustomTabControl.GetMinimumTabWidth: integer;
 begin
-  Result := TWSCustomTabControlClass(WidgetSetClass).GetNotebookMinTabWidth(Self);
+  Result := WSCustomTabControlClass(WidgetSetClass).GetNotebookMinTabWidth(Self);
   //debugln('TCustomTabControl.GetMinimumTabWidth A ',dbgs(Result));
 end;
 
 function TCustomTabControl.GetMinimumTabHeight: integer;
 begin
-  Result := TWSCustomTabControlClass(WidgetSetClass).GetNotebookMinTabHeight(Self);
+  Result := WSCustomTabControlClass(WidgetSetClass).GetNotebookMinTabHeight(Self);
   //debugln('TCustomTabControl.GetMinimumTabHeight A ',dbgs(Result));
 end;
 
 function TCustomTabControl.GetCapabilities: TCTabControlCapabilities;
 begin
-  Result:=TWSCustomTabControlClass(WidgetSetClass).GetCapabilities;
+  Result:=WSCustomTabControlClass(WidgetSetClass).GetCapabilities;
 end;
 
 function TCustomTabControl.PageToTabIndex(AIndex: integer): integer;
@@ -543,7 +543,7 @@ begin
   if nboShowCloseButtons in ChangedOptions then
     UpdateTabProperties;
   if HandleAllocated then
-    TWSCustomTabControlClass(WidgetSetClass).UpdateProperties(Self);
+    WSCustomTabControlClass(WidgetSetClass).UpdateProperties(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -702,7 +702,7 @@ begin
       inc(i);
     until false;
     //DebugLn(['TCustomTabControl.WSMovePage APage=',DbgSName(APage),' NewIndex=',NewIndex,' RealIndex=',RealIndex]);
-    TWSCustomTabControlClass(WidgetSetClass).MovePage(Self, APage, RealIndex);
+    WSCustomTabControlClass(WidgetSetClass).MovePage(Self, APage, RealIndex);
   end;
 end;
 
@@ -717,7 +717,7 @@ begin
       {$ENDIF}
       if (pfAdded in APage.FFlags) then exit;
       Include(APage.FFlags,pfAdding);
-      TWSCustomTabControlClass(WidgetSetClass).AddPage(Self, APage, APage.VisibleIndex);
+      WSCustomTabControlClass(WidgetSetClass).AddPage(Self, APage, APage.VisibleIndex);
       APage.FFlags:=APage.FFlags+[pfAdded]-[pfAdding];
       APage.AdjustSize;
     end else begin
@@ -727,7 +727,7 @@ begin
       if not (pfAdded in APage.FFlags) or (pfRemoving in APage.FFlags) then
         exit;
       APage.FFlags := APage.FFlags - [pfAdded] + [pfRemoving];
-      TWSCustomTabControlClass(WidgetSetClass).RemovePage(Self, APage.VisibleIndex);
+      WSCustomTabControlClass(WidgetSetClass).RemovePage(Self, APage.VisibleIndex);
       if APage.HandleAllocated then
         APage.DestroyHandle;
       Exclude(APage.FFlags, pfRemoving);
@@ -948,7 +948,7 @@ end;
 function TCustomTabControl.IndexOfTabAt(P: TPoint): Integer;
 begin
   if HandleAllocated then
-    Result := TWSCustomTabControlClass(WidgetSetClass).GetTabIndexAtPos(Self, P)
+    Result := WSCustomTabControlClass(WidgetSetClass).GetTabIndexAtPos(Self, P)
   else
     Result := -1;
 end;
@@ -991,7 +991,7 @@ var
 begin
   if not HandleAllocated or (csLoading in ComponentState) then exit;
   for i := 0 to PageCount - 1 do
-    TWSCustomPageClass(Page[i].WidgetSetClass).UpdateProperties(Page[i]);
+    WSCustomPageClass(Page[i].WidgetSetClass).UpdateProperties(Page[i]);
 end;
 
 class function TCustomTabControl.GetControlClassDefaultSize: TSize;
@@ -1146,7 +1146,7 @@ begin
   {$ENDIF}
   ShowCurrentPage;
   FPageIndexOnLastChange := FPageIndex;
-  TWSCustomTabControlClass(WidgetSetClass).SetPageIndex(Self, FPageIndex);
+  WSCustomTabControlClass(WidgetSetClass).SetPageIndex(Self, FPageIndex);
   {$IFDEF NOTEBOOK_DEBUG}
   //DebugLn('[TCustomTabControl.DoSendPageIndex] END ',dbgs(FPageIndex));
   {$ENDIF}
@@ -1161,7 +1161,7 @@ begin
   {$IFDEF NOTEBOOK_DEBUG}
   DebugLn('[TCustomTabControl.DoSendShowTabs] A ',dbgsName(Self));
   {$ENDIF}
-  TWSCustomTabControlClass(WidgetSetClass).ShowTabs(Self, FShowTabs);
+  WSCustomTabControlClass(WidgetSetClass).ShowTabs(Self, FShowTabs);
   {$IFDEF NOTEBOOK_DEBUG}
   DebugLn('[TCustomTabControl.DoSendShowTabs] B ',dbgsName(Self));
   {$ENDIF}
@@ -1173,13 +1173,13 @@ end;
 procedure TCustomTabControl.DoSendTabPosition;
 begin
   if not HandleAllocated or (csLoading in ComponentState) then exit;
-  TWSCustomTabControlClass(WidgetSetClass).SetTabPosition(Self, FTabPosition);
+  WSCustomTabControlClass(WidgetSetClass).SetTabPosition(Self, FTabPosition);
 end;
 
 procedure TCustomTabControl.DoSendTabSize;
 begin
   if not HandleAllocated or (csLoading in ComponentState) then exit;
-  TWSCustomTabControlClass(WidgetSetClass).SetTabSize(Self, FTabWidth, FTabHeight);
+  WSCustomTabControlClass(WidgetSetClass).SetTabSize(Self, FTabWidth, FTabHeight);
   DoSendTabPosition;
   Invalidate;
 end;
@@ -1189,16 +1189,16 @@ begin
   if HandleAllocated then
   begin
     if Assigned(Images) then
-      TWSCustomTabControlClass(WidgetSetClass).SetImageList(Self, Images.ResolutionForPPI[ImagesWidth, Font.PixelsPerInch, 1].Resolution) // to-do: support scaling factor
+      WSCustomTabControlClass(WidgetSetClass).SetImageList(Self, Images.ResolutionForPPI[ImagesWidth, Font.PixelsPerInch, 1].Resolution) // to-do: support scaling factor
     else
-      TWSCustomTabControlClass(WidgetSetClass).SetImageList(Self, nil);
+      WSCustomTabControlClass(WidgetSetClass).SetImageList(Self, nil);
   end;
 end;
 
 procedure TCustomTabControl.DoImageListDestroyResolutionHandle(
   Sender: TCustomImageList; AWidth: Integer; AReferenceHandle: TLCLHandle);
 begin
-  TWSCustomTabControlClass(WidgetSetClass).SetImageList(Self, nil);
+  WSCustomTabControlClass(WidgetSetClass).SetImageList(Self, nil);
   Application.QueueAsyncCall(@SetImageListAsync, 0);
 end;
 

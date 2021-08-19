@@ -72,7 +72,7 @@ begin
   and ((FChangeIndex = -1) or (FUpdate <> []))
   then begin                  
     LV := FOwner.FOwner.FOwner;
-    WSC := TWSCustomListViewClass(LV.WidgetSetClass);
+    WSC := WSCustomListViewClass(LV.WidgetSetClass);
     idx := FOwner.GetIndex;
     
     if FChangeIndex = -1 
@@ -348,7 +348,7 @@ var
   LV: TCustomListView;
 begin
   LV := FOwner.FOwner;
-  Result := TWSCustomListViewClass(LV.WidgetSetClass).ItemDisplayRect(
+  Result := WSCustomListViewClass(LV.WidgetSetClass).ItemDisplayRect(
                                                          LV, GetIndex, 0, code);
 end;
 
@@ -363,7 +363,7 @@ var
   LV: TCustomListView;
 begin
   LV := FOwner.FOwner;
-  Result := TWSCustomListViewClass(LV.WidgetSetClass).ItemDisplayRect(
+  Result := WSCustomListViewClass(LV.WidgetSetClass).ItemDisplayRect(
                                                    LV, GetIndex, subItem, code);
 end;
 
@@ -390,7 +390,7 @@ var
   WSC: TWSCustomListViewClass;
 begin
   LV := FOwner.FOwner;
-  WSC := TWSCustomListViewClass(LV.WidgetSetClass);
+  WSC := WSCustomListViewClass(LV.WidgetSetClass);
   idx := GetIndex;
   
   WSC.ItemSetText(LV, idx, Self, 0, FCaption);      
@@ -422,7 +422,7 @@ var
   WSC: TWSCustomListViewClass;
 begin
   LV := FOwner.FOwner;
-  WSC := TWSCustomListViewClass(LV.WidgetSetClass);
+  WSC := WSCustomListViewClass(LV.WidgetSetClass);
   idx := GetIndex;
   
   WSC.ItemSetImage(LV, idx, Self, 0, FImageIndex);      
@@ -451,7 +451,7 @@ var
 begin
   LV := FOwner.FOwner;
   idx := GetIndex;
-  TWSCustomListViewClass(LV.WidgetSetClass).ItemSetChecked(LV, idx, Self, FChecked);
+  WSCustomListViewClass(LV.WidgetSetClass).ItemSetChecked(LV, idx, Self, FChecked);
 end;
 
 procedure TListItem.WSUpdateState;
@@ -466,7 +466,7 @@ begin
   FStates := [];
   for AState := Low(TListItemState) to High(TListItemState) do
   begin
-    if TWSCustomListViewClass(LV.WidgetSetClass).ItemGetState(LV, idx, Self, AState, AIsSet) then
+    if WSCustomListViewClass(LV.WidgetSetClass).ItemGetState(LV, idx, Self, AState, AIsSet) then
     begin
       if AIsSet then
         include(FStates, AState);
@@ -483,7 +483,7 @@ begin
   LV := FOwner.FOwner;
   idx := GetIndex;
   for AState := Low(TListItemState) to High(TListItemState) do
-    TWSCustomListViewClass(LV.WidgetSetClass).ItemSetState(LV, idx, Self, AState, AState in FStates);
+    WSCustomListViewClass(LV.WidgetSetClass).ItemSetState(LV, idx, Self, AState, AState in FStates);
 end;
 
 {------------------------------------------------------------------------------}
@@ -534,7 +534,7 @@ begin
   // we are using cached data when moving or exchanging items
   Result := LV.Checkboxes and WSUpdateAllowed and not (lffItemsMoving in LV.FFlags);
   if Result then
-    Result := TWSCustomListViewClass(LV.WidgetSetClass).ItemGetChecked(LV, GetIndex, Self)
+    Result := WSCustomListViewClass(LV.WidgetSetClass).ItemGetChecked(LV, GetIndex, Self)
   else
     Result := FChecked;
 end;
@@ -549,7 +549,7 @@ begin
   LV := FOwner.FOwner;
 
   if WSUpdateAllowed
-  and TWSCustomListViewClass(LV.WidgetSetClass).ItemGetState(LV, GetIndex, Self, AState, Result)
+  and WSCustomListViewClass(LV.WidgetSetClass).ItemGetState(LV, GetIndex, Self, AState, Result)
   then begin
     // update FStates
     if Result
@@ -569,7 +569,7 @@ var
 begin
   LV := FOwner.FOwner;
 
-  if TWSCustomListViewClass(LV.WidgetSetClass).ItemGetStates(LV, GetIndex, States)
+  if WSCustomListViewClass(LV.WidgetSetClass).ItemGetStates(LV, GetIndex, States)
   then
     Result := States
   else
@@ -601,7 +601,7 @@ var
   LV: TCustomListView;
 begin
   LV := FOwner.FOwner;
-  Result := TWSCustomListViewClass(LV.WidgetSetClass).ItemGetPosition(LV, GetIndex);
+  Result := WSCustomListViewClass(LV.WidgetSetClass).ItemGetPosition(LV, GetIndex);
 end;
 
 {------------------------------------------------------------------------------}
@@ -635,7 +635,7 @@ begin
   LV := FOwner.FOwner;
   CurPos := Position;
   if (CurPos.X <> AValue.X) or (CurPos.Y <> AValue.Y) then
-    TWSCustomListViewClass(LV.WidgetSetClass).ItemSetPosition(LV, GetIndex, AValue);
+    WSCustomListViewClass(LV.WidgetSetClass).ItemSetPosition(LV, GetIndex, AValue);
 end;
 
 {------------------------------------------------------------------------------}
@@ -659,7 +659,7 @@ begin
   FCaption := AValue;
   LV := FOwner.FOwner;
   if WSUpdateAllowed
-  then TWSCustomListViewClass(LV.WidgetSetClass).ItemSetText(LV, GetIndex, Self, 0, FCaption);
+  then WSCustomListViewClass(LV.WidgetSetClass).ItemSetText(LV, GetIndex, Self, 0, FCaption);
 end;
 
 {------------------------------------------------------------------------------}
@@ -680,7 +680,7 @@ begin
   LV := FOwner.FOwner;
   FChecked := AValue;
   if LV.Checkboxes and WSUpdateAllowed then
-    TWSCustomListViewClass(LV.WidgetSetClass).ItemSetChecked(LV, GetIndex,
+    WSCustomListViewClass(LV.WidgetSetClass).ItemSetChecked(LV, GetIndex,
       Self, AValue);
 end;
 
@@ -703,7 +703,7 @@ begin
   FImageIndex := AValue;
 
   if WSUpdateAllowed
-  then TWSCustomListViewClass(FOwner.FOwner.WidgetSetClass).ItemSetImage(FOwner.FOwner, GetIndex, Self, 0, FImageIndex);
+  then WSCustomListViewClass(FOwner.FOwner.WidgetSetClass).ItemSetImage(FOwner.FOwner, GetIndex, Self, 0, FImageIndex);
 end;
 
 {------------------------------------------------------------------------------}
@@ -729,7 +729,7 @@ begin
   FStateIndex := AValue;
 
   if WSUpdateAllowed then
-    TWSCustomListViewClass(FOwner.FOwner.WidgetSetClass).ItemSetStateImage(FOwner.FOwner, GetIndex, Self, 0, FStateIndex);
+    WSCustomListViewClass(FOwner.FOwner.WidgetSetClass).ItemSetStateImage(FOwner.FOwner, GetIndex, Self, 0, FStateIndex);
 
 end;
 
@@ -757,7 +757,7 @@ begin
 
   if not WSUpdateAllowed and not IsOwnerData then Exit;
   LV := FOwner.FOwner;
-  TWSCustomListViewClass(LV.WidgetSetClass).ItemSetState(LV, GetIndex, Self, AState, AIsSet);
+  WSCustomListViewClass(LV.WidgetSetClass).ItemSetState(LV, GetIndex, Self, AState, AIsSet);
 end;
 
 {------------------------------------------------------------------------------}

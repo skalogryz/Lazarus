@@ -164,7 +164,7 @@ begin
     FCacheItem := AItem;
     if not Owner.OwnerData and WSUpdateAllowed then
     begin
-      TWSCustomListViewClass(FOwner.WidgetSetClass).ItemExchange(FOwner, AItem,
+      WSCustomListViewClass(FOwner.WidgetSetClass).ItemExchange(FOwner, AItem,
         AIndex1, AIndex2);
       Owner.InvalidateSelected;
       Owner.ItemFocused := nil;
@@ -198,7 +198,7 @@ begin
     FCacheItem := AItem;
     if not Owner.OwnerData and WSUpdateAllowed then
     begin
-      TWSCustomListViewClass(FOwner.WidgetSetClass).ItemMove(FOwner, AItem,
+      WSCustomListViewClass(FOwner.WidgetSetClass).ItemMove(FOwner, AItem,
         AFromIndex, AToIndex);
       Owner.InvalidateSelected;
       Owner.ItemFocused := nil;
@@ -218,7 +218,7 @@ var
   ACacheItem: TListItem;
 begin
   ACacheItem := FCacheItem; // we must use local copy because FCacheItem changes in WSUpdateText on win32
-  TWSCustomListViewClass(FOwner.WidgetSetClass).ItemInsert(FOwner, FCacheIndex, ACacheItem);
+  WSCustomListViewClass(FOwner.WidgetSetClass).ItemInsert(FOwner, FCacheIndex, ACacheItem);
   Include(ACacheItem.FFlags, lifCreated);
   ACacheItem.WSUpdateText;
   ACacheItem.WSUpdateImages;
@@ -261,12 +261,12 @@ end;
 
 procedure TListItems.WSUpdateItem(const AIndex: Integer; const AValue: TListItem);
 begin
-  TWSCustomListViewClass(FOwner.WidgetSetClass).ItemUpdate(FOwner, AIndex, AValue);
+  WSCustomListViewClass(FOwner.WidgetSetClass).ItemUpdate(FOwner, AIndex, AValue);
 end;
 
 procedure TListItems.WSSetItemsCount(const ACount: Integer); 
 begin
-  TWSCustomListViewClass(FOwner.WidgetSetClass).SetItemsCount(FOwner, ACount);
+  WSCustomListViewClass(FOwner.WidgetSetClass).SetItemsCount(FOwner, ACount);
 end;
 
 {------------------------------------------------------------------------------}
@@ -299,7 +299,7 @@ begin
     if (FOwner.HandleAllocated) and (lifCreated in AItem.FFlags) then
     begin
       Exclude(AItem.FFlags, lifCreated);
-      TWSCustomListViewClass(FOwner.WidgetSetClass).ItemDelete(FOwner, idx);
+      WSCustomListViewClass(FOwner.WidgetSetClass).ItemDelete(FOwner, idx);
     end;
   end;
 

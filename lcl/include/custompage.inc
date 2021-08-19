@@ -39,7 +39,7 @@ begin
   if FImageIndex = AValue then Exit;
   FImageIndex := AValue;
   if not HandleAllocated or (csLoading in ComponentState) then Exit;
-  TWSCustomPageClass(WidgetSetClass).UpdateProperties(Self);
+  WSCustomPageClass(WidgetSetClass).UpdateProperties(Self);
 end;
 
 function TCustomPage.GetTabVisible: Boolean;

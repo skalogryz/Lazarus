@@ -230,6 +230,7 @@ procedure RegisterWinControl;
 procedure RegisterGraphicControl;
 procedure RegisterCustomControl;
 
+function WSDragImageListResolutionClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSDragImageListResolutionClass; inline;
 function WSControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSControlClass; inline;
 function WSWinControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSWinControlClass; inline;
 
@@ -579,6 +580,15 @@ begin
 //  if not WSRegisterCustomControl then
 //    RegisterWSComponent(TCustomControl, TWSCustomControl);
   Done := True;
+end;
+
+function WSDragImageListResolutionClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSDragImageListResolutionClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSDragImageListResolutionClass);
+  {$else}
+  Result := TWSDragImageListResolutionClass(AWidgetSetClass);
+  {$endif}
 end;
 
 function WSControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSControlClass; inline;

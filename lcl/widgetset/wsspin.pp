@@ -47,6 +47,7 @@ type
   { TWSCustomFloatSpinEdit }
   {$ifdef wsintf}
   TWSCustomFloatSpinEditClass = interface(TWSCustomEditClass)
+    ['{E879A434-9543-46B1-B880-004E0C72A1EF}']
     function  GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): double;
     procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
     procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean);
@@ -72,6 +73,8 @@ type
   { WidgetSetRegistration }
 
   procedure RegisterCustomFloatSpinEdit;
+
+function WSCustomFloatSpinEditClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomFloatSpinEditClass; inline;
 
 implementation
 
@@ -102,6 +105,15 @@ begin
   if not WSRegisterCustomFloatSpinEdit then
     RegisterWSComponent(TCustomFloatSpinEdit, TWSCustomFloatSpinEdit{$ifdef wsintf}.Create{$endif});
   Done := True;
+end;
+
+function WSCustomFloatSpinEditClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomFloatSpinEditClass;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomFloatSpinEditClass);
+  {$else}
+  Result := TWSCustomFloatSpinEditClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

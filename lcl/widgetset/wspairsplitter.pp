@@ -50,6 +50,7 @@ type
   { TWSCustomPairSplitter }
   {$ifdef wsintf}
   TWSCustomPairSplitterClass = interface(TWSWinControlClass)
+    ['{E6DA4A54-F7FD-4777-A1E1-3B6FC9DBAA27}']
     function AddSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean;
     function RemoveSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean;
     function GetPosition(ASplitter: TCustomPairSplitter): Integer;
@@ -77,6 +78,8 @@ type
 
   procedure RegisterPairSplitterSide;
   procedure RegisterCustomPairSplitter;
+
+function WSCustomPairSplitterClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomPairSplitterClass; inline;
 
 implementation
 uses
@@ -236,6 +239,15 @@ begin
   if not WSRegisterCustomPairSplitter then
     RegisterWSComponent(TCustomPairSplitter, TWSCustomPairSplitter{$ifdef wsintf}.Create{$endif});
   Done := True;
+end;
+
+function WSCustomPairSplitterClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomPairSplitterClass;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomPairSplitterClass);
+  {$else}
+  Result := TWSCustomPairSplitterClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

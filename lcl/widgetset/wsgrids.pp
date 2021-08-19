@@ -47,6 +47,7 @@ type
   { TWSCustomGrid }
   {$ifdef wsintf}
   TWSCustomGridClass = interface(TWSWinControlClass)
+    ['{6DB8361C-C1A0-44E4-B0FB-12C965BA1082}']
     procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char);
     function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer;
     function GetEditorBoundsFromCellRect(ACanvas: TCanvas;
@@ -69,6 +70,8 @@ type
   { WidgetSetRegistration }
 
   function RegisterCustomGrid: Boolean;
+
+function WSCustomGridClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomGridClass; inline;
 
 implementation
 uses
@@ -150,6 +153,15 @@ begin
     RegisterWSComponent(TCustomGrid, TWSCustomGrid{$ifdef wsintf}.Create{$endif});
   Done := True;
   Result := True;
+end;
+
+function WSCustomGridClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomGridClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomGridClass);
+  {$else}
+  Result := TWSCustomGridClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

@@ -41,7 +41,9 @@ uses
 type
   { TWSCustomImageListResolution }
 
-  {$ifdef WSINTF}TWSCustomImageListResolutionClass = interface (TWSLCLReferenceComponentClass)
+  {$ifdef WSINTF}
+  TWSCustomImageListResolutionClass = interface (TWSLCLReferenceComponentClass)
+    ['{93C64993-2F06-42AA-9F17-1602C8928D90}']
     procedure Clear(AList: TCustomImageListResolution);
     function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
     AHeight: Integer; AData: PRGBAQuad): TWSCustomImageListReference;
@@ -56,7 +58,8 @@ type
     procedure Move(AList: TCustomImageListResolution; ACurIndex, ANewIndex: Integer);
 
     procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad);
-  end;{$endif}
+  end;
+  {$endif}
 
   TWSCustomImageListResolution = class(TWSLCLReferenceComponent{$ifdef wsintf}, TWSLCLReferenceComponentClass{$endif})
   impsection
@@ -78,6 +81,8 @@ type
   {$ifndef WSINTF}TWSCustomImageListResolutionClass = class of TWSCustomImageListResolution;{$endif}
 
   procedure RegisterCustomImageListResolution;
+
+function WSCustomImageListResolutionClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomImageListResolutionClass; inline;
 
 implementation
 
@@ -284,6 +289,15 @@ begin
     RegisterWSComponent(TCustomImageListResolution, TWSCustomImageListResolution);
   {$endif}
   Done := True;
+end;
+
+function WSCustomImageListResolutionClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomImageListResolutionClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomImageListResolutionClass);
+  {$else}
+  Result := TWSCustomImageListResolutionClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

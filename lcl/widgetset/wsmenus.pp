@@ -49,19 +49,20 @@ type
   { TWSMenuItem }
   {$ifdef wsintf}
   TWSMenuItemClass = interface(TWSLCLComponentClass)
-    imptype function  OpenCommand: LongInt;
-    imptype procedure CloseCommand(ACommand: LongInt);
-    imptype procedure AttachMenu(const AMenuItem: TMenuItem);
-    imptype function  CreateHandle(const AMenuItem: TMenuItem): HMENU;
-    imptype procedure DestroyHandle(const AMenuItem: TMenuItem);
-    imptype procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
-    imptype procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut);
-    imptype procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);
-    imptype function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
-    imptype function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
-    imptype function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean;
-    imptype function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
-    imptype procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap);
+    ['{030AC85F-1A83-419D-A9E0-C6FEF0F0779C}']
+    function  OpenCommand: LongInt;
+    procedure CloseCommand(ACommand: LongInt);
+    procedure AttachMenu(const AMenuItem: TMenuItem);
+    function  CreateHandle(const AMenuItem: TMenuItem): HMENU;
+    procedure DestroyHandle(const AMenuItem: TMenuItem);
+    procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
+    procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut);
+    procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);
+    function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
+    function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
+    function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean;
+    function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
+    procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap);
   end;
   {$endif}
   TWSMenuItem = class(TWSLCLComponent{$ifdef wsintf},TWSMenuItemClass{$endif})
@@ -87,6 +88,7 @@ type
   {$ifndef wsintf}TWSMenuClass = class of TWSMenu;{$endif}
   {$ifdef wsintf}
   TWSMenuClass = interface(TWSLCLComponentClass)
+    ['{167D872B-A510-4782-B18E-06CD4A775F68}']
     function CreateHandle(const AMenu: TMenu): HMENU;
     procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean);
   end;
@@ -107,6 +109,7 @@ type
   { TWSPopupMenu }
   {$ifdef wsintf}
   TWSPopupMenuClass = interface(TWSMenuClass)
+    ['{899F0651-E52E-4F97-8A2E-49CEFF04D101}']
     procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
   end;
   {$endif}
@@ -125,6 +128,10 @@ function WSCheckMenuItem(const AMenuItem: TMenuItem;
   procedure RegisterMenu;
   procedure RegisterMainMenu;
   procedure RegisterPopupMenu;
+
+function WSMenuItemClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSMenuItemClass; inline;
+function WSMenuClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSMenuClass; inline;
+function WSPopupMenuClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSPopupMenuClass; inline;
 
 implementation
 
@@ -282,6 +289,33 @@ begin
 //  if not WSRegisterPopupMenu then
 //    RegisterWSComponent(TPopupMenu, TWSPopupMenu);
   Done := True;
+end;
+
+function WSMenuItemClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSMenuItemClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSMenuItemClass);
+  {$else}
+  Result := TWSMenuItemClass(AWidgetSetClass);
+  {$endif}
+end;
+
+function WSMenuClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSMenuClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSMenuClass);
+  {$else}
+  Result := TWSMenuClass(AWidgetSetClass);
+  {$endif}
+end;
+
+function WSPopupMenuClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSPopupMenuClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSPopupMenuClass);
+  {$else}
+  Result := TWSPopupMenuClass(AWidgetSetClass);
+  {$endif}
 end;
 
 finalization

@@ -46,6 +46,7 @@ type
   { TWSCustomCalendar }
   {$ifdef wsintf}
   TWSCustomCalendarClass = interface(TWSWinControlClass)
+    ['{3EF2EEA5-E865-4C85-B569-C7A63BE9BACF}']
     function GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
     function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart;
     function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView;
@@ -72,6 +73,8 @@ type
   { WidgetSetRegistration }
 
   procedure RegisterCustomCalendar;
+
+function WSCustomCalendarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomCalendarClass; inline;
 
 implementation
 
@@ -120,6 +123,15 @@ begin
 //  if not WSRegisterCustomCalendar then
 //    RegisterWSComponent(TCustomCalendar, TWSCustomCalendar);
   Done := True;
+end;
+
+function WSCustomCalendarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomCalendarClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomCalendarClass);
+  {$else}
+  Result := TWSCustomCalendarClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

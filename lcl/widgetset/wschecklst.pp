@@ -46,6 +46,7 @@ type
   { TWSCustomCheckListBox }
   {$ifdef wsintf}
   TWSCustomCheckListBoxClass = interface(TWSCustomListBoxClass)
+    ['{064C5BE7-FAD5-488F-8FEE-558B01B158CB}']
     function GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer;
     function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer): Boolean;
@@ -86,6 +87,8 @@ type
   { WidgetSetRegistration }
 
   procedure RegisterCustomCheckListBox;
+
+function WSCustomCheckListBoxClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomCheckListBoxClass; inline;
 
 implementation
 
@@ -143,6 +146,15 @@ begin
 //  if not WSRegisterCustomCheckListBox then
 //    RegisterWSComponent(TCustomCheckListBox, TWSCustomCheckListBox);
   Done := True;
+end;
+
+function WSCustomCheckListBoxClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomCheckListBoxClass;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomCheckListBoxClass);
+  {$else}
+  Result := TWSCustomCheckListBoxClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

@@ -861,7 +861,7 @@ begin
 
         //debugln('LOWORD(WPARAM)=%d, HIWORD(WPARAM)=%d', [LOWORD(WParam), HIWORD(WPARAM)]);
         {$ifdef wsintf}
-        if TWSTrackBarClass(Info^.WinControl.WidgetSetClass).GetPosition(TCustomTrackBar(Info^.WinControl))<>TCustomTrackBar(Info^.WinControl).Position then
+        if WSTrackBarClass(Info^.WinControl.WidgetSetClass).GetPosition(TCustomTrackBar(Info^.WinControl))<>TCustomTrackBar(Info^.WinControl).Position then
         {$else}
         if TWin32WSTrackBar.GetPosition(TCustomTrackBar(Info^.WinControl))<>TCustomTrackBar(Info^.WinControl).Position then
         {$endif}

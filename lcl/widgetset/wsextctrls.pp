@@ -150,6 +150,7 @@ type
   { TWSCustomTrayIcon }
   {$ifdef wsintf}
   TWSCustomTrayIconClass = interface(TWSLCLComponentClass)
+    ['{EF8A887C-FEA5-414D-939E-22EBD939D5C7}']
     function Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
     function Show(const ATrayIcon: TCustomTrayIcon): Boolean;
     procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon);
@@ -184,6 +185,8 @@ type
   procedure RegisterCustomLabeledEdit;
   procedure RegisterCustomPanel;
   procedure RegisterCustomTrayIcon;
+
+function WSCustomTrayIconClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomTrayIconClass; inline;
 
 implementation
 
@@ -356,6 +359,15 @@ end;
 imptype function TWSCustomPanel.GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor;
 begin
   Result := DefBtnColors[ADefaultColorType];
+end;
+
+function WSCustomTrayIconClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomTrayIconClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomTrayIconClass);
+  {$else}
+  Result := TWSCustomTrayIconClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

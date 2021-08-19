@@ -49,6 +49,7 @@ type
   TWSCustomPageClass = class of TWSCustomPage;
   {$else}
   TWSCustomPageClass = interface(TWSWinControlClass)
+    ['{87CDD0DC-B1C0-46DE-B8FD-B8CD1F22BE25}']
     procedure UpdateProperties(const ACustomPage: TCustomPage);
   end;
   {$endif}
@@ -60,6 +61,7 @@ type
   { TWSCustomTabControl }
   {$ifdef wsintf}
   TWSCustomTabControlClass = interface(TWSWinControlClass)
+    ['{F3E7D950-FFA6-41EE-91FC-7E08E4F6A6C1}']
     procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer);
     procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer);
     procedure RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer);
@@ -105,6 +107,7 @@ type
   TWSStatusBarClass = class of TWSStatusBar;
   {$else}
   TWSStatusBarClass = interface(TWSWinControlClass)
+    ['{1C8822B2-4E15-4B5A-8A08-96BD01B21791}']
     procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer);
     procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer);
     procedure SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean);
@@ -139,6 +142,7 @@ type
   TWSListViewItemChanges = set of TWSListViewItemChange;
   {$ifdef wsintf}
   TWSCustomListViewClass = interface(TWSWinControlClass)
+    ['{04A747A8-F9C0-47E2-AC01-66276CC9AC6C}']
     // Column
     procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer);
     function  ColumnGetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn): Integer;
@@ -300,6 +304,7 @@ type
   TWSProgressBarClass = class of TWSProgressBar;
   {$else}
   TWSProgressBarClass = interface(TWSWinControlClass)
+    ['{FC84910B-CE16-4A1D-89E9-F15F1FB89E62}']
     procedure ApplyChanges(const AProgressBar: TCustomProgressBar);
     procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer);
     procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle);
@@ -315,6 +320,7 @@ type
   { TWSCustomUpDown }
   {$ifdef wsintf}
   TWSCustomUpDownClass = interface(TWSWinControlClass)
+    ['{C45A48BF-9E2C-4864-92E6-3ED04840BE21}']
     procedure SetIncrement(const AUpDown: TCustomUpDown; AValue: Double);
     procedure SetMaxPosition(const AUpDown: TCustomUpDown; AValue: Double);
     procedure SetMinPosition(const AUpDown: TCustomUpDown; AValue: Double);
@@ -365,6 +371,7 @@ type
   { TWSTrackBar }
   {$ifdef wsintf}
   TWSTrackBarClass = interface(TWSWinControlClass)
+    ['{EC452FD4-6450-4239-B4A2-F78462A066F4}']
     procedure ApplyChanges(const ATrackBar: TCustomTrackBar);
     function GetPosition(const ATrackBar: TCustomTrackBar): integer;
     procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation);
@@ -409,6 +416,14 @@ type
   procedure RegisterToolBar;
   procedure RegisterCustomTrackBar;
   procedure RegisterCustomTreeView;
+
+function WSCustomPageClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomPageClass; inline;
+function WSCustomTabControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomTabControlClass; inline;
+function WSStatusBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSStatusBarClass; inline;
+function WSCustomListViewClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomListViewClass; inline;
+function WSProgressBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSProgressBarClass; inline;
+function WSCustomUpDownClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomUpDownClass; inline;
+function WSTrackBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSTrackBarClass; inline;
 
 implementation
 
@@ -1164,6 +1179,69 @@ begin
 //  if not WSRegisterStatusBar then
 //    RegisterWSComponent(TCustomTreeView, TWSCustomTreeView);
   Done := True;
+end;
+
+function WSCustomPageClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomPageClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomPageClass);
+  {$else}
+  Result := TWSCustomPageClass(AWidgetSetClass);
+  {$endif}
+end;
+
+function WSCustomTabControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomTabControlClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomTabControlClass);
+  {$else}
+  Result := TWSCustomTabControlClass(AWidgetSetClass);
+  {$endif}
+end;
+
+function WSStatusBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSStatusBarClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSStatusBarClass);
+  {$else}
+  Result := TWSStatusBarClass(AWidgetSetClass);
+  {$endif}
+end;
+
+function WSCustomListViewClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomListViewClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomListViewClass);
+  {$else}
+  Result := TWSCustomListViewClass(AWidgetSetClass);
+  {$endif}
+end;
+
+function WSProgressBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSProgressBarClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSProgressBarClass);
+  {$else}
+  Result := TWSProgressBarClass(AWidgetSetClass);
+  {$endif}
+end;
+
+function WSCustomUpDownClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomUpDownClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomUpDownClass);
+  {$else}
+  Result := TWSCustomUpDownClass(AWidgetSetClass);
+  {$endif}
+end;
+
+function WSTrackBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSTrackBarClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSTrackBarClass);
+  {$else}
+  Result := TWSTrackBarClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

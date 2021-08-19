@@ -35,13 +35,14 @@ interface
 ////////////////////////////////////////////////////
 uses
   Classes, RubberBand,
-  WsControls, WSFactory;
+  WsControls, WSFactory{$ifdef wsintf}, WSLCLClasses_Intf{$endif};
 
 type
   { TWsCustomRubberBand }
   {$ifdef wsintf}
   TWsCustomRubberBandClass = interface(TWsWinControlclass)
-    procedure SetShapeRubberBand(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape);
+    ['{D2A08602-B885-49D0-8DB3-26B1F83291E7}']
+    procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); overload;
   end;
   {$endif}
   TWsCustomRubberBand = class(TWsWinControl)
@@ -49,7 +50,7 @@ type
     {$ifndef wsintf}
     imptype procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); virtual; overload;
     {$else}
-    imptype procedure SetShapeRubberBand(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); virtual;
+    imptype procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); virtual; overload;
     {$endif}
   end;
   {$ifndef wsintf}TWsCustomRubberBandClass = class of TWsCustomRubberBand;{$endif}
@@ -58,11 +59,13 @@ type
 
   procedure RegisterCustomRubberBand;
 
+function WSCustomRubberBandClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomRubberBandClass; inline;
+
 implementation
 
 { TWsCustomRubberBand }
 {$ifdef wsintf}
-imptype procedure TWsCustomRubberBand.SetShapeRubberBand(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape);
+imptype procedure TWsCustomRubberBand.SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape);
 {$else}
 imptype procedure TWsCustomRubberBand.SetShape(ARubberBand: TCustomRubberBand;
   AShape: TRubberBandShape);
@@ -81,6 +84,15 @@ begin
 //  if not WSRegisterCustomRubberBand then
 //    RegisterWSComponent(TCustomRubberBand, TWSCustomRubberBand);
   Done := True;
+end;
+
+function WSCustomRubberBandClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomRubberBandClass; inline;
+begin
+  {$ifdef wsintf}
+  Result := (AWidgetSetClass as TWSCustomRubberBandClass);
+  {$else}
+  Result := TWSCustomRubberBandClass(AWidgetSetClass);
+  {$endif}
 end;
 
 end.

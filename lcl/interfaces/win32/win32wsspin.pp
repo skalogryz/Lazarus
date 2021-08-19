@@ -193,7 +193,7 @@ begin
     {$ifndef wsintf}
     TWin32WSWinControl.SetText(ASpinEdit, newValueText);
     {$else}
-    TWSCustomFloatSpinEditClass(ASpinEdit.WidgetSetClass).SetText(ASpinEdit, newValueText);
+    WSCustomFloatSpinEditClass(ASpinEdit.WidgetSetClass).SetText(ASpinEdit, newValueText);
     {$endif}
 end;
 

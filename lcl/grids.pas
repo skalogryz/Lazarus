@@ -7315,7 +7315,7 @@ procedure TCustomGrid.DoOnResize;
 begin
   inherited DoOnResize;
   if FUpdateCount=0 then
-    TWSCustomGridClass(WidgetSetClass).Invalidate(Self);
+    WSCustomGridClass(WidgetSetClass).Invalidate(Self);
 end;
 
 procedure TCustomGrid.DoSetBounds(ALeft, ATop, AWidth, AHeight: integer);
@@ -8590,7 +8590,7 @@ begin
 
     if FEditorOptions and EO_AUTOSIZE = EO_AUTOSIZE then begin
       if (FEditor = FStringEditor) and (EditorBorderStyle = bsNone) then
-        CellR := TWSCustomGridClass(WidgetSetClass).
+        CellR := WSCustomGridClass(WidgetSetClass).
           GetEditorBoundsFromCellRect(Canvas, CellR, GetColumnLayout(FCol, False))
       else
         AdjustInnerCellRect(CellR);
@@ -8933,7 +8933,7 @@ begin
   if FEDitor<>nil then begin
     if EditorCanAcceptKey(ch) and not EditorIsReadOnly then begin
       EditorShow(true);
-      TWSCustomGridClass(WidgetSetClass).SendCharToEditor(Editor, Ch);
+      WSCustomGridClass(WidgetSetClass).SendCharToEditor(Editor, Ch);
       //this method bypasses Self.KeyDown and therefore will not reset FRowAutoInserted there
       //So, set it to false, unless pressing a backspace caused the editor to pop-up
       if (Ch <> ^H) then FRowAutoInserted := False;
@@ -13664,7 +13664,7 @@ begin
   Result := 0;
   ActCtrl := GetActiveControl;
   if (ActCtrl<>nil) and ActCtrl.HandleAllocated then begin
-    TWSCustomGridClass(FGrid.WidgetSetClass).SendCharToEditor(ActCtrl, AChar);
+    WSCustomGridClass(FGrid.WidgetSetClass).SendCharToEditor(ActCtrl, AChar);
     Result:=1;
   end;
 end;

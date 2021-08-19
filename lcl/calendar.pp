@@ -194,7 +194,7 @@ end;
 function TCustomCalendar.HitTest(APoint: TPoint): TCalendarPart;
 begin
   if HandleAllocated then
-    Result := TWSCustomCalendarClass(WidgetSetClass).HitTest(Self, APoint)
+    Result := WSCustomCalendarClass(WidgetSetClass).HitTest(Self, APoint)
   else
     Result := cpNoWhere;
 end;
@@ -202,7 +202,7 @@ end;
 function TCustomCalendar.GetCalendarView: TCalendarView;
 begin
   if HandleAllocated then
-    Result := TWSCustomCalendarClass(WidgetSetClass).GetCurrentView(Self)
+    Result := WSCustomCalendarClass(WidgetSetClass).GetCurrentView(Self)
   else
     Result := cvMonth;
 end;
@@ -304,7 +304,7 @@ procedure TCustomCalendar.GetProps;
 begin
   if HandleAllocated and ([csLoading,csDestroying]*ComponentState=[]) then
   begin
-    FDate := TWSCustomCalendarClass(WidgetSetClass).GetDateTime(Self);
+    FDate := WSCustomCalendarClass(WidgetSetClass).GetDateTime(Self);
     FDateAsString := FormatDateTime(DefaultFormatSettings.ShortDateFormat,FDate);
     {$IFDEF VerboseCalenderSetDate}
     DebugLn('TCustomCalendar.GetProps A ',DateToStr(FDate),' ',FDateAsString);
@@ -320,9 +320,9 @@ begin
     {$IFDEF VerboseCalenderSetDate}
     DebugLn('TCustomCalendar.SetProps A ',DateToStr(FDate),' ',FDateAsString);
     {$ENDIF}
-    TWSCustomCalendarClass(WidgetSetClass).SetDateTime(Self, FDate);
-    TWSCustomCalendarClass(WidgetSetClass).SetDisplaySettings(Self, FDisplaySettings);
-    TWSCustomCalendarClass(WidgetSetClass).SetFirstDayOfWeek(Self, FFirstDayOfWeek);
+    WSCustomCalendarClass(WidgetSetClass).SetDateTime(Self, FDate);
+    WSCustomCalendarClass(WidgetSetClass).SetDisplaySettings(Self, FDisplaySettings);
+    WSCustomCalendarClass(WidgetSetClass).SetFirstDayOfWeek(Self, FFirstDayOfWeek);
   end
   else
     FPropsChanged := True;
@@ -334,7 +334,7 @@ var
   OldDay, OldMonth, OldYear: word;
   NewDay, NewMonth, NewYear: word;
 begin
-  NewDate := TWSCustomCalendarClass(WidgetSetClass).GetDateTime(Self);
+  NewDate := WSCustomCalendarClass(WidgetSetClass).GetDateTime(Self);
   if (NewDate=FDate) then exit;
   DecodeDate(NewDate, NewYear, NewMonth, NewDay);
   DecodeDate(FDate, OldYear, OldMonth, OldDay);

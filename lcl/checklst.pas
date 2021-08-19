@@ -278,7 +278,7 @@ end;
 function TCustomCheckListBox.GetCheckWidth: Integer;
 begin
   if HandleAllocated then
-    Result := TWSCustomCheckListBoxClass(WidgetSetClass).GetCheckWidth(Self)
+    Result := WSCustomCheckListBoxClass(WidgetSetClass).GetCheckWidth(Self)
   else
     Result := 0;
 end;
@@ -288,7 +288,7 @@ begin
   CheckIndex(AIndex);
 
   if HandleAllocated then
-    Result := TWSCustomCheckListBoxClass(WidgetSetClass).GetItemEnabled(Self, AIndex)
+    Result := WSCustomCheckListBoxClass(WidgetSetClass).GetItemEnabled(Self, AIndex)
   else
     Result := not PCachedItemData(GetCachedData(AIndex) + FItemDataOffset)^.Disabled;
 end;
@@ -298,7 +298,7 @@ begin
   CheckIndex(AIndex);
 
   if HandleAllocated then
-    Result := TWSCustomCheckListBoxClass(WidgetSetClass).GetState(Self, AIndex)
+    Result := WSCustomCheckListBoxClass(WidgetSetClass).GetState(Self, AIndex)
   else
     Result := PCachedItemData(GetCachedData(AIndex) + FItemDataOffset)^.State;
 end;
@@ -308,7 +308,7 @@ begin
   CheckIndex(AIndex);
 
   if HandleAllocated then
-    Result := TWSCustomCheckListBoxClass(WidgetSetClass).GetHeader(Self, AIndex)
+    Result := WSCustomCheckListBoxClass(WidgetSetClass).GetHeader(Self, AIndex)
   else
     Result := PCachedItemData(GetCachedData(AIndex) + FItemDataOffset)^.Header;
 end;
@@ -383,21 +383,21 @@ procedure TCustomCheckListBox.SendItemState(const AIndex: Integer;
   const AState: TCheckBoxState);
 begin
   if HandleAllocated then
-    TWSCustomCheckListBoxClass(WidgetSetClass).SetState(Self, AIndex, AState);
+    WSCustomCheckListBoxClass(WidgetSetClass).SetState(Self, AIndex, AState);
 end;
 
 procedure TCustomCheckListBox.SendItemEnabled(const AIndex: Integer;
   const AEnabled: Boolean);
 begin
   if HandleAllocated then
-    TWSCustomCheckListBoxClass(WidgetSetClass).SetItemEnabled(Self, AIndex, AEnabled);
+    WSCustomCheckListBoxClass(WidgetSetClass).SetItemEnabled(Self, AIndex, AEnabled);
 end;
 
 procedure TCustomCheckListBox.SendItemHeader(const AIndex: Integer;
 const AHeader: Boolean);
 begin
   if HandleAllocated then
-    TWSCustomCheckListBoxClass(WidgetSetClass).SetHeader(Self, AIndex, AHeader);
+    WSCustomCheckListBoxClass(WidgetSetClass).SetHeader(Self, AIndex, AHeader);
 end;
 
 procedure TCustomCheckListBox.SetChecked(const AIndex: Integer;

@@ -36,8 +36,8 @@ begin
     try
       FUserChoice := mrNone;
       ResetShowCloseFlags;
-      FWSEventCapabilities := TWSCommonDialogClass(WidgetSetClass).QueryWSEventCapabilities(Self);
-      Handle := TWSCommonDialogClass(WidgetSetClass).CreateHandle(Self);
+      FWSEventCapabilities := WSCommonDialogClass(WidgetSetClass).QueryWSEventCapabilities(Self);
+      Handle := WSCommonDialogClass(WidgetSetClass).CreateHandle(Self);
       Result:= DoExecute;
       Close;
     finally
@@ -58,7 +58,7 @@ begin
     FClosing := true;
     if (not FDoCloseCalled) and (not (cdecWSPerformsDoClose in FWSEventCapabilities)) then
       DoClose;
-    TWSCommonDialogClass(WidgetSetClass).DestroyHandle(Self);
+    WSCommonDialogClass(WidgetSetClass).DestroyHandle(Self);
     FHandle := 0;
     FClosing := false;
   end;
@@ -151,7 +151,7 @@ begin
   {$ifdef DebugCommonDialogEvents}
   debugln(['TCommonDialog.DoExecute before WS_ShowModal']);
   {$endif}
-  TWSCommonDialogClass(WidgetSetClass).ShowModal(Self);
+  WSCommonDialogClass(WidgetSetClass).ShowModal(Self);
   {$ifdef DebugCommonDialogEvents}
   debugln(['TCommonDialog.DoExecute after WS_ShowModal, FCanCloseCalled=',FDoCanCloseCalled,' FUserChoice=',ModalResultStr[FUserChoice]]);
   {$endif}

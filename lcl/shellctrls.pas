@@ -1023,7 +1023,7 @@ end;
 function TCustomShellTreeView.DrawBuiltinIcon(ANode: TTreeNode; ARect: TRect): TSize;
 begin
   if FUseBuiltinIcons then
-    Result := TWSCustomShellTreeViewClass(WidgetSetClass).DrawBuiltinIcon(Self, ANode, ARect)
+    Result := WSCustomShellTreeViewClass(WidgetSetClass).DrawBuiltinIcon(Self, ANode, ARect)
   else
     Result := inherited;
 end;
@@ -1031,7 +1031,7 @@ end;
 function TCustomShellTreeView.GetBuiltinIconSize: TSize;
 begin
   if FUseBuiltinIcons then
-    Result := TWSCustomShellTreeViewClass(WidgetsetClass).GetBuiltinIconSize
+    Result := WSCustomShellTreeViewClass(WidgetsetClass).GetBuiltinIconSize
   else
     Result := inherited;
 end;
@@ -1513,7 +1513,7 @@ end;
 function TCustomShellListView.GetBuiltinImageIndex(const AFileName: String;
   ALargeImage: Boolean): Integer;
 begin
-  Result := TWSCustomShellListViewClass(WidgetsetClass).GetBuiltInImageIndex(
+  Result := WSCustomShellListViewClass(WidgetsetClass).GetBuiltInImageIndex(
     self, AFileName, ALargeImage
   );
 end;

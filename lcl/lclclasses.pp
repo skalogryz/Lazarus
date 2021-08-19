@@ -266,7 +266,11 @@ end;
 
 procedure TLCLReferenceComponent.WSDestroyReference;
 begin
+  {$ifndef wsintf}
   TWSLCLReferenceComponentClass(WidgetSetClass).DestroyReference(Self);
+  {$else}
+  (WidgetSetClass as TWSLCLReferenceComponentClass).DestroyReference(Self);
+  {$endif}
 end;
 
 end.

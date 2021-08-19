@@ -201,7 +201,7 @@ end;
 function TDragImageListResolution.BeginDrag(Window: HWND; X,
   Y: Integer): Boolean;
 begin
-  Result := TWSDragImageListResolutionClass(WidgetSetClass).BeginDrag(Self, Window,
+  Result := WSDragImageListResolutionClass(WidgetSetClass).BeginDrag(Self, Window,
     ImageList.FImageIndex, FDragHotspot.X, FDragHotspot.Y);
   FDragging := Result;
   if Result then
@@ -226,7 +226,7 @@ begin
     if FLockedWindow <> NoLockedWindow then
       DragUnlock;
     FLockedWindow := Window;
-    Result := TWSDragImageListResolutionClass(WidgetSetClass).ShowDragImage(Self, Window,
+    Result := WSDragImageListResolutionClass(WidgetSetClass).ShowDragImage(Self, Window,
       XPos, YPos, True);
     if Result then
       FLastDragPos := Point(XPos, YPos);
@@ -235,7 +235,7 @@ end;
 
 function TDragImageListResolution.DragMove(X, Y: Integer): Boolean;
 begin
-  Result := Dragging and TWSDragImageListResolutionClass(WidgetSetClass).DragMove(Self, X, Y);
+  Result := Dragging and WSDragImageListResolutionClass(WidgetSetClass).DragMove(Self, X, Y);
   if Result then
     FLastDragPos := Point(X, Y);
 end;
@@ -244,7 +244,7 @@ procedure TDragImageListResolution.DragUnlock;
 begin
   if Dragging then
   begin
-    TWSDragImageListResolutionClass(WidgetSetClass).HideDragImage(Self, FLockedWindow, True);
+    WSDragImageListResolutionClass(WidgetSetClass).HideDragImage(Self, FLockedWindow, True);
     FLockedWindow := NoLockedWindow;
     FLastDragPos := Point(0, 0);
   end;
@@ -257,7 +257,7 @@ begin
     Exit;
 
   DragUnlock;
-  TWSDragImageListResolutionClass(WidgetSetClass).EndDrag(Self);
+  WSDragImageListResolutionClass(WidgetSetClass).EndDrag(Self);
   FDragging := False;
   Screen.EndTempCursor(ImageList.DragCursor);
 end;
@@ -275,13 +275,13 @@ end;
 procedure TDragImageListResolution.HideDragImage;
 begin
   if Dragging then
-    TWSDragImageListResolutionClass(WidgetSetClass).HideDragImage(Self, 0, False);
+    WSDragImageListResolutionClass(WidgetSetClass).HideDragImage(Self, 0, False);
 end;
 
 procedure TDragImageListResolution.ShowDragImage;
 begin
   if Dragging then
-    TWSDragImageListResolutionClass(WidgetSetClass).ShowDragImage(Self, 0, 0, 0, False);
+    WSDragImageListResolutionClass(WidgetSetClass).ShowDragImage(Self, 0, 0, 0, False);
 end;
 
 class procedure TDragImageListResolution.WSRegisterClass;

@@ -61,7 +61,7 @@ type
   end;
   {$endif}
 
-  TWSCustomImageListResolution = class(TWSLCLReferenceComponent{$ifdef wsintf}, TWSLCLReferenceComponentClass{$endif})
+  TWSCustomImageListResolution = class(TWSLCLReferenceComponent{$ifdef wsintf}, TWSLCLReferenceComponentClass, TWSCustomImageListResolutionClass{$endif})
   impsection
     imptype procedure Clear(AList: TCustomImageListResolution); virtual;
     imptype function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,

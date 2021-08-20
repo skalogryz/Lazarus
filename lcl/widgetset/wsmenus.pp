@@ -113,7 +113,7 @@ type
     procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
   end;
   {$endif}
-  TWSPopupMenu = class(TWSMenu)
+  TWSPopupMenu = class(TWSMenu{$ifdef wsintf}, TWSPopupMenuClass{$endif})
   impsection
     imptype procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); virtual;
   end;

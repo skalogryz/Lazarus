@@ -284,10 +284,8 @@ const
   Done: Boolean = False;
 begin
   if Done then exit;
-  {$ifndef WSINTF}
   if not WSRegisterCustomImageListResolution then
-    RegisterWSComponent(TCustomImageListResolution, TWSCustomImageListResolution);
-  {$endif}
+    RegisterWSComponent(TCustomImageListResolution, TWSCustomImageListResolution{$ifdef wsintf}.Create{$endif});
   Done := True;
 end;
 

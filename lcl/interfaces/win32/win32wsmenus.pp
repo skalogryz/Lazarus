@@ -68,7 +68,7 @@ type
 
   { TWin32WSMainMenu }
 
-  TWin32WSMainMenu = class(TWSMainMenu)
+  TWin32WSMainMenu = class({$ifndef wsintf}TWSMainMenu{$else}TWin32WSMenu{$endif})
   published
   end;
 

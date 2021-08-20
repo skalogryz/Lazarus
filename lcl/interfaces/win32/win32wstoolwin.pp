@@ -30,13 +30,13 @@ uses
 ////////////////////////////////////////////////////
 //  Toolwin,
 ////////////////////////////////////////////////////
-  WSToolwin, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif};
+  WSToolwin, {$ifdef wsintf}WSLCLClasses_Intf, Win32WSControls{$else}WSLCLClasses{$endif};
 
 type
 
   { TWin32WSToolWindow }
 
-  TWin32WSToolWindow = class(TWSToolWindow)
+  TWin32WSToolWindow = class({$ifndef wsintf}TWSToolWindow{$else}TWin32WSWinControl{$endif})
   published
   end;
 

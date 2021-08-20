@@ -208,7 +208,7 @@ type
 
   { TWin32WSListView }
 
-  TWin32WSListView = class(TWSListView)
+  TWin32WSListView = class({$ifndef wsintf}TWSListView{$else}TWin32WSCustomListView{$endif})
   impsection
   end;
 
@@ -226,25 +226,25 @@ type
 
   { TWin32WSCustomUpDown }
 
-  TWin32WSCustomUpDown = class(TWSCustomUpDown)
+  TWin32WSCustomUpDown = class({$ifndef wsintf}TWSCustomUpDown{$else}TWin32WSCustomControl{$endif})
   published
   end;
 
   { TWin32WSUpDown }
 
-  TWin32WSUpDown = class(TWSUpDown)
+  TWin32WSUpDown = class({$ifndef wsintf}TWSUpDown{$else}TWin32WSCustomUpDown{$endif})
   published
   end;
 
   { TWin32WSToolButton }
 
-  TWin32WSToolButton = class(TWSToolButton)
+  TWin32WSToolButton = class({$ifndef wsintf}TWSToolButton{$else}TWin32WSCustomControl{$endif})
   published
   end;
 
   { TWin32WSToolBar }
 
-  TWin32WSToolBar = class(TWSToolBar)
+  TWin32WSToolBar = class({$ifndef wsintf}TWSToolBar{$else}TWin32WSCustomControl{$endif})
   published
 {$ifdef OldToolbar}
     class function  CreateHandle(const AWinControl: TWinControl;
@@ -275,13 +275,13 @@ type
 
   { TWin32WSCustomTreeView }
 
-  TWin32WSCustomTreeView = class(TWSCustomTreeView)
+  TWin32WSCustomTreeView = class({$ifndef wsintf}TWSCustomTreeView{$else}TWin32WSWinControl{$endif})
   published
   end;
 
   { TWin32WSTreeView }
 
-  TWin32WSTreeView = class(TWSTreeView)
+  TWin32WSTreeView = class({$ifndef wsintf}TWSTreeView{$else}TWin32WSCustomTreeView{$endif})
   published
   end;
 

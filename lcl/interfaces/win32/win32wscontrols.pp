@@ -114,22 +114,19 @@ type
 
   { TWin32WSGraphicControl }
 
-  TWin32WSGraphicControl = class(TWSGraphicControl)
+  TWin32WSGraphicControl = class({$ifndef wsintf}TWSGraphicControl{$else}TWin32WSControl{$endif})
   published
   end;
 
   { TWin32WSCustomControl }
-  {$ifdef wsintf}
-  TWin32WSCustomControl = class(TWin32WSWinControl)
-  {$else}
-  TWin32WSCustomControl = class(TWSCustomControl)
-  {$endif}
+
+  TWin32WSCustomControl = class({$ifndef wsintf}TWSCustomControl{$else}TWin32WSWinControl{$endif})
   published
   end;
 
   { TWin32WSImageList }
 
-  TWin32WSImageList = class(TWSImageList)
+  TWin32WSImageList = class({$ifndef wsintf}TWSImageList{$else}TWin32WSDragImageListResolution{$endif})
   published
   end;
 

@@ -59,7 +59,7 @@ type
 
   { TWin32WSSpeedButton }
 
-  TWin32WSSpeedButton = class(TWSSpeedButton)
+  TWin32WSSpeedButton = class({$ifndef wsintf}TWSSpeedButton{$else}TWin32WSControl{$endif})
   published
   end;
 

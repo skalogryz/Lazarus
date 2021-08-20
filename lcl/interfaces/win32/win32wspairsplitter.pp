@@ -28,19 +28,19 @@ uses
 // To get as little as posible circles,
 // uncomment only when needed for registration
 ////////////////////////////////////////////////////
-  WSPairSplitter, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif};
+  WSPairSplitter, {$ifdef wsintf}WSLCLClasses_Intf, Win32WSControls{$else}WSLCLClasses{$endif};
 
 type
 
   { TWin32WSPairSplitterSide }
 
-  TWin32WSPairSplitterSide = class(TWSPairSplitterSide)
+  TWin32WSPairSplitterSide = class({$ifndef wsintf}TWSPairSplitterSide{$else}TWin32WSWinControl{$endif})
   published
   end;
 
   { TWin32WSCustomPairSplitter }
 
-  TWin32WSCustomPairSplitter = class(TWSCustomPairSplitter)
+  TWin32WSCustomPairSplitter = class({$ifndef wsintf}TWSCustomPairSplitter{$else}TWin32WSWinControl{$endif})
   published
   end;
 

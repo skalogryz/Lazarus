@@ -3468,7 +3468,7 @@ procedure TWinControl.DoAllAutoSize;
   // true if a handle was missing
   var
     i: Integer;
-    ChildWinControl: TWinControl;
+    ChildWinControl: TControl;
   begin
     if AWinControl.HandleObjectShouldBeVisible and (not AWinControl.HandleAllocated) then
     begin
@@ -3481,8 +3481,8 @@ procedure TWinControl.DoAllAutoSize;
     Result := False;
     for i := 0 to AWinControl.ControlCount - 1 do
     begin
-      ChildWinControl := TWinControl(AWinControl.Controls[i]);
-      if (ChildWinControl is TWinControl) and CheckHandleAllocated(ChildWinControl) then
+      ChildWinControl := AWinControl.Controls[i];
+      if (ChildWinControl is TWinControl) and CheckHandleAllocated(TWinControl(ChildWinControl)) then
         Result:=true;
     end;
   end;

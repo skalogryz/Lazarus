@@ -132,6 +132,10 @@ function WSCheckMenuItem(const AMenuItem: TMenuItem;
 function WSMenuItemClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSMenuItemClass; inline;
 function WSMenuClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSMenuClass; inline;
 function WSPopupMenuClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSPopupMenuClass; inline;
+{$ifdef wsintf}
+function CreateMenuCommand: LongInt;
+procedure ReleaseMenuCommand(ACommand: LongInt);
+{$endif}
 
 implementation
 
@@ -147,6 +151,19 @@ begin
   Result := CommandPool.OpenBit;
   CommandPool[Result] := True;
 end;
+
+{$ifdef wsintf}
+function CreateMenuCommand: LongInt;
+begin
+  Result := UniqueCommand;
+end;
+
+procedure ReleaseMenuCommand(ACommand: LongInt);
+begin
+  if CommandPool = nil then Exit;
+  CommandPool[ACommand] := False;
+end;
+{$endif}
 
 { TWSMenuItem }
 

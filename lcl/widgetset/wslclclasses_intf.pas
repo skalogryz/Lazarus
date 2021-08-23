@@ -47,7 +47,7 @@ interface
 //    the uses clause of the XXXintf.pp
 ////////////////////////////////////////////////////
 uses
-  Classes, SysUtils, LCLProc;
+  Classes, SysUtils, LCLProc, AVL_Tree;
 
 type
   { TWSPrivate }
@@ -145,77 +145,83 @@ const
   // vmtAutoTable is something Delphi 2 and not used, we 'borrow' the vmt entry
   vmtWSPrivate = vmtAutoTable;
 
-//type
-
   { TWSClassesList }
 
   // Holds list of already registered TWidgetSetClass'es so TLCLComponent.NewInstance
   // can find faster the WidgetSetClass of the newinstance.
 
-  (*TWSClassesList = class(TFPList)
-  private
-    FLastFoundIdx: integer;
-    FLastFoundClass: TClass;
-    function FindWSClass(const AComponent: TComponentClass): TWSLCLComponentClass;
-    function Get(Index: integer): PClassNode; inline;
-    procedure Insert(aIndex: Integer; aItem: Pointer);
-    function Search(const aItem: TClass; Out Index: integer): boolean;
-    procedure UpdatLastFound(aClass: TClass; aIndex: integer);
-    property Items[Index: integer]: PClassNode read Get; { write Put; default; }
-    {$IFDEF VerboseWSBrunoK} {$ENDIF}
-    {$IFDEF VerboseWSBrunoK}
-    procedure DumpNode(aN : integer; aPClassNode : PClassNode);
-    procedure DumpNodes;
-    {$ENDIF}
+type
+
+  { TClassNodeAVLTree }
+
+  TClassNodeAVLTree = class(TAVLTree)
   public
-    constructor Create;
-  end;*)
+    function FindByLCLComponent(AComponent: TClass): TClassNode;
+    function FindAVLByLCLComponent(AComponent: TClass): TAVLTreeNode;
+    procedure DisposeNode(ANode: TAVLTreeNode); override;
+  end;
+
+function ComparePtrUInt(d1, d2: Pointer): integer;
+begin
+  if PtrUInt(d1) = PtrUInt(d2) then Result := 0
+  else if PtrUInt(d1) < PtrUInt(d2) then Result := -1
+  else Result := 1;
+end;
+
+function CompareByClass(Data1, Data2:Pointer): Integer;
+var
+  lcl : TClass;
+  c2  : TClassNode;
+begin
+  lcl := TClass(Data1);
+  c2 := TClassNode(data2);
+  Result := ComparePtrUInt(lcl, TClassNode(data2).LCLClass);
+end;
+
+function CompareClassNodes(Data1, Data2: Pointer): integer;
+var
+  c1, c2: TClassNode;
+begin
+  c1 := TClassNode(Data1);
+  c2 := TClassNode(Data2);
+  Result := ComparePtrUInt(c1.LCLCLass, c2.LCLClass);
+end;
+
+function TClassNodeAVLTree.FindByLCLComponent(AComponent: TClass): TClassNode;
+var
+  avl : TAVLTreeNode;
+begin
+  avl := FindAVLByLCLComponent(AComponent);
+  if not Assigned(avl) then Result := nil
+  else Result := TClassNode(avl.Data);
+end;
+
+function TClassNodeAVLTree.FindAVLByLCLComponent(AComponent: TClass): TAVLTreeNode;
+begin
+  Result := FindKey(AComponent, @CompareByClass);
+end;
+
+procedure TClassNodeAVLTree.DisposeNode(ANode: TAVLTreeNode);
+begin
+  if (ANode = nil) then begin
+    inherited DisposeNode(ANode);
+    Exit;
+  end;
+  if Assigned(ANode.Data) then
+    TClassNode(ANode.Data).Free;
+  inherited DisposeNode(ANode);
+end;
 
 var
-  WSClassesList: TFPList = nil;
+  WSClassesList: TClassNodeAVLTree = nil;
   WSLazAccessibleObjectClass: TWSObjectClass;
   WSLazDeviceAPIsClass: TWSObjectClass;
 
-{function FindNodeParent(AComponent: TClass): TClassNode;
-var
-  idx: integer;
-begin
-  while AComponent <> nil do begin
-    if WSClassesList.Search(AComponent, idx) then
-      Exit(PClassNode(WSClassesList[idx]));
-    AComponent := AComponent.ClassParent;
-  end;
-  Result := nil;
-end;}
-
-function FindClassIndex(const AComponent: TComponentClass): Integer;
-var
-  n : TClassNode;
-  i : integer;
+function FindClassNode(const AComponent: TComponentClass): TClassNode;
 begin
   if not Assigned(WSClassesList) then
     DoInitialization;
-  Result := -1;
-  for i:=0 to WSClassesList.Count-1 do begin
-    n := TClassNode(WSClassesList[i]);
-    if n.LCLClass = AComponent then begin
-      Result := i;
-      Exit;
-    end;
-  end;
-  Result := -1;
-end;
-
-
-function FindClassNode(const AComponent: TComponentClass): TClassNode;
-var
-  idx: integer;
-begin
-  Result := nil;
-  idx := FindClassIndex(AComponent);
-  if (idx>=0) then
-    Exit(TClassNode(WSClassesList[idx]));
-  //Result := FindNodeParent(AComponent.ClassParent);
+  Result := WSClassesList.FindByLCLComponent(AComponent);
 end;
 
 function FindWSComponentClass(const AComponent: TComponentClass): TWSLCLComponentClass;
@@ -224,322 +230,17 @@ begin
   Result := RegisterNewWSComp(AComponent);
 end;
 
-{$ifndef WSINTF}
-function IsWSComponentInheritsFrom(const AComponent: TComponentClass;
-  InheritFromClass: TWSLCLComponentClass): Boolean;
+// doesn't check for duplicated values (existing registrations)
+procedure RegisterWSComponentInt(AComponent: TComponentClass;
+  AWSComponent: TWSLCLComponentClass);
 var
-  Node: PClassNode;
+  p : TClassNode;
 begin
-  Node := FindClassNode(AComponent);
-  if Assigned(Node) then
-    Result := TWSLCLComponentClass(Node^.WSClass).InheritsFrom(InheritFromClass)
-  else
-    Result := false;
+  p := TClassNode.Create;
+  p.WSClass := AWSComponent;
+  p.LCLClass := AComponent;
+  WSClassesList.Add(Pointer(p));
 end;
-{$endif}
-
-
-{function FindParentWSClassNode(const ANode: PClassNode): PClassNode;
-begin
-  Result := ANode^.Parent;
-  while Result <> nil do begin
-    if Result^.WSClass <> nil then Exit;
-    Result := Result^.Parent;
-  end;
-  Result := nil;
-end;}
-
-function FindCommonAncestor(const AClass1, AClass2: TClass): TClass;
-begin
-  Result := AClass1;
-  if AClass2.InheritsFrom(Result) then Exit;
-  Result := AClass2;
-  while Result <> nil do begin
-    if AClass1.InheritsFrom(Result) then Exit;
-    Result := Result.ClassParent;
-  end;
-  Result := nil;
-end;
-
-{$ifndef WSINTF}
-procedure CreateVClass(const ANode: PClassNode;
-  const AWSPrivate: TWSPrivateClass = nil; AOldPrivate: TClass = nil);
-var
-  ParentWSNode: PClassNode;
-  CommonClass: TClass;
-  Vvmt, Cvmt, Pvmt: PPointerArray;
-  Cmnt: PMethodNameTable;
-  SearchAddr: Pointer;
-  n, idx: integer;
-  WSPrivate, OrgPrivate: TClass;
-  Processed: array of boolean;
-  VvmtCount, VvmtSize: integer;
-  {$IFDEF VerboseWSRegistration}
-  Indent: string;
-  {$ENDIF}
-begin
-  if AWSPrivate = nil then WSPrivate := TWSPrivate
-  else WSPrivate := AWSPrivate;
-
-  // Determine VMT count and size => http://wiki.freepascal.org/Compiler-generated_data_and_data_structures
-  VvmtCount := 0;
-  Vvmt := Pointer(ANode^.WSClass) + vmtMethodStart;
-  // AWSComponent is equal to ANode^.WSClass;
-  while (Vvmt^[VvmtCount] <> nil) do
-    Inc(VvmtCount);                                { ~bk 1 more for nil at end }
-  VvmtSize := vmtMethodStart + VvmtCount * SizeOf(Pointer) + SizeOf(Pointer);
-  if ANode^.VClass = nil then begin
-    ANode^.VClass := GetMem(VvmtSize);
-  end
-  else begin
-    // keep original WSPrivate (only when different than default class)
-    OrgPrivate := PClass(ANode^.VClass + vmtWSPrivate)^;
-
-    if (OrgPrivate <> nil) and (OrgPrivate <> AOldPrivate) and
-      OrgPrivate.InheritsFrom(WSPrivate) then begin
-      {$IFDEF VerboseWSRegistration}
-      DebugLn('Keep org private: ', WSPrivate.ClassName, ' -> ', OrgPrivate.ClassName);
-      {$ENDIF}
-      WSPrivate := OrgPrivate;
-    end;
-  end;
-
-  // Initially copy the WSClass
-  Move(Pointer(ANode^.WSClass)^, ANode^.VClass^, VvmtSize);
-
-  // Set WSPrivate class
-  ParentWSNode := FindParentWSClassNode(ANode);
-  if ParentWSNode = nil then begin
-    // nothing to do
-    PClass(ANode^.VClass + vmtWSPrivate)^ := WSPrivate;
-    {$IFDEF VerboseWSRegistration}
-    DebugLn('Virtual parent: nil, WSPrivate: ', PClass(ANode^.VClass +
-      vmtWSPrivate)^.ClassName);
-    {$ENDIF}
-    Exit;
-  end;
-
-  if WSPrivate = TWSPrivate then begin
-    if ParentWSNode^.VClass = nil then begin
-      DebugLN('[WARNING] Missing VClass for: ', ParentWSNode^.WSClass.ClassName);
-      PClass(ANode^.VClass + vmtWSPrivate)^ := TWSPrivate;
-    end
-    else PClass(ANode^.VClass + vmtWSPrivate)^ :=
-        PClass(ParentWSNode^.VClass + vmtWSPrivate)^;
-  end
-  else PClass(ANode^.VClass + vmtWSPrivate)^ := WSPrivate;
-
-  {$IFDEF VerboseWSRegistration}
-  DebugLn('Virtual parent: ', ParentWSNode^.WSClass.ClassName,
-    ', WSPrivate: ', PClass(ANode^.VClass + vmtWSPrivate)^.ClassName);
-  {$ENDIF}
-
-  // Try to find the common ancestor
-  CommonClass := FindCommonAncestor(ANode^.WSClass, ParentWSNode^.WSClass);
-  {$IFDEF VerboseWSRegistration}
-  DebugLn('Common: ', CommonClass.ClassName);
-  Indent := '';
-  {$ENDIF}
-
-  Vvmt := ANode^.VClass + vmtMethodStart;
-  Pvmt := ParentWSNode^.VClass + vmtMethodStart;
-  SetLength(Processed, VvmtCount);
-
-  while CommonClass <> nil do begin
-    Cmnt := PPointer(Pointer(CommonClass) + vmtMethodTable)^;
-    if Cmnt <> nil then begin
-      {$IFDEF VerboseWSRegistration_methods}
-      DebugLn(Indent, '*', CommonClass.ClassName, ' method count: ',
-        IntToStr(Cmnt^.Count));
-      Indent := Indent + ' ';
-      {$ENDIF}
-
-      Cvmt := Pointer(CommonClass) + vmtMethodStart;
-      Assert(Cmnt^.Count < VvmtCount,
-        'MethodTable count is larger than determined VvmtCount');
-
-      // Loop through the VMT to see what is overridden
-      for n := 0 to Cmnt^.Count - 1 do begin
-        SearchAddr := Cmnt^.Entries[n].Addr;
-        {$IFDEF VerboseWSRegistration_methods}
-        DebugLn('%sSearch: %s (%p)', [Indent, Cmnt^.Entries[n].Name^, SearchAddr]);
-        {$ENDIF}
-
-        for idx := 0 to VvmtCount - 1 do begin
-          if Cvmt^[idx] = SearchAddr then begin
-            {$IFDEF VerboseWSRegistration_methods}
-            DebugLn('%sFound at index: %d (v=%p p=%p)',
-              [Indent, idx, Vvmt^[idx], Pvmt^[idx]]);
-            {$ENDIF}
-
-            if Processed[idx] then begin
-              {$IFDEF VerboseWSRegistration_methods}
-              DebugLn(Indent, 'Processed -> skipping');
-              {$ENDIF}
-              Break;
-            end;
-            Processed[idx] := True;
-
-            if (Vvmt^[idx] = SearchAddr)  //original
-              and (Pvmt^[idx] <> SearchAddr) //overridden by parent
-            then begin
-              {$IFDEF VerboseWSRegistration_methods}
-              DebugLn('%sUpdating %p -> %p', [Indent, Vvmt^[idx], Pvmt^[idx]]);
-              {$ENDIF}
-              Vvmt^[idx] := Pvmt^[idx];
-            end;
-
-            Break;
-          end;
-          if idx = VvmtCount - 1 then begin
-            DebugLn('[WARNING] VMT entry "', Cmnt^.Entries[n].Name^,
-              '" not found in "', CommonClass.ClassName, '"');
-            Break;
-          end;
-        end;
-      end;
-    end;
-    CommonClass := Commonclass.ClassParent;
-  end;
-
-  // Adjust classname
-  ANode^.VClassName := '(V)' + ANode^.WSClass.ClassName;
-  PPointer(ANode^.VClass + vmtClassName)^ := @ANode^.VClassName;
-  // Adjust classparent
-  {$IF (FPC_FULLVERSION >= 30101)}
-  PPointer(ANode^.VClass + vmtParent)^ := @ParentWSNode^.WSClass;
-  {$ELSE}
-  PPointer(ANode^.VClass + vmtParent)^ := ParentWSNode^.WSClass;
-  {$ENDIF}
-  // Delete methodtable entry
-  PPointer(ANode^.VClass + vmtMethodTable)^ := nil;
-end;
-{$endif}
-
-{ Get PClass node is recursive, we want to detect if a new node may be an
-  unregistered intermediate in the ancestor class tree }
-{$ifndef WSINTF}
-function GetPClassNode(AClass: TClass; AWSComponent: TWSLCLComponentClass;
-                       aParentGet: boolean; aLeaf: boolean): PClassNode;
-var
-  idx: Integer;
-  lParentNode : PClassNode;
-  lClassNode : TClassNode; { A temp local node to fake normal processing
-                             of a node that won't be stored aParentGet = 0
-                             and TWSLCLComponentClass = nil }
-  lInsertNode : boolean;   { Indicator that New(Result) has been requested }
-begin
-  if (AClass = nil) or not (AClass.InheritsFrom(TLCLComponent)) then
-    Exit(nil);
-
-  if not WSClassesList.Search(AClass, idx) then
-  begin
-    lInsertNode := aParentGet or Assigned(AWSComponent);
-    if lInsertNode then
-      New(Result)
-    else
-      Result := @lClassNode;
-    Result^.LCLClass := TComponentClass(AClass);
-    Result^.WSClass := nil;
-    Result^.VClass := nil;
-    Result^.VClassName := '';
-    Result^.VClassNew := aParentGet;
-    Result^.Child := nil;
-    lParentNode := GetPClassNode(AClass.ClassParent, AWSComponent, True, False);
-    Result^.Parent := lParentNode;
-    { Unregistered Intermediate nodes are patched with the parent information }
-    if aParentGet then
-    begin
-      Result^.WSClass := lParentNode^.WSClass;
-      Result^.VClass := lParentNode^.VClass;
-      PPointer(Result^.VClass + vmtWSPrivate)^ := PPointer(lParentNode^.VClass + vmtWSPrivate)^;
-      // Build a VClassName
-      if aLeaf then        { Node that has an empty WSRegisterClass procedure }
-        Result^.VClassName := '(L)' + Result^.WSClass.ClassName
-      else                 { Internal node needed for tree consistency }
-        Result^.VClassName := '(I)' + Result^.WSClass.ClassName
-    end;
-    if lParentNode = nil then
-    begin
-      Result^.Sibling := nil;
-      if aLeaf then
-        Result^.VClassName := '(ROOT)' + AClass.ClassName;
-    end
-    else if lInsertNode then
-    begin
-      Result^.Sibling := lParentNode^.Child;
-      lParentNode^.Child := Result;
-    end
-    else
-      Result^.Sibling := nil;
-    if lInsertNode then
-    begin
-      WSClassesList.Search(aClass, idx);
-      WSClassesList.Insert(idx, Result);
-    end
-    else
-      Result := nil;
-  end
-  else
-    Result := WSClassesList[idx];
-end;
-{$endif}
-
-// Create VClass at runtime
-{$ifndef WSINTF}
-procedure RegisterWSComponent(AComponent: TComponentClass;
-  AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass = nil);
-
-  procedure UpdateChildren(const ANode: PClassNode; AOldPrivate: TClass);
-  var
-    Node: PClassNode;
-  begin
-    Node := ANode^.Child;
-    while Node <> nil do
-    begin
-      if (Node^.WSClass <> nil) and (not Node^.VClassNew) then
-      begin
-        {$IFDEF VerboseWSRegistration}
-        DebugLn('Update VClass for: ', Node^.WSClass.ClassName);
-        {$ENDIF}
-        CreateVClass(Node, AWSPrivate, AOldPrivate);
-      end;
-      UpdateChildren(Node, AOldPrivate);
-      Node := Node^.Sibling;
-    end;
-  end;
-
-var
-  Node: PClassNode;
-  OldPrivate: TClass;
-begin
-  if not Assigned(WSClassesList) then
-    DoInitialization;
-  Node := GetPClassNode(AComponent, AWSComponent, False, True);
-  if Node = nil then // No node created
-    Exit;
-  { If AWSComponent specified but node already exists, nothing more to do. }
-  if Assigned(AWSComponent) and (Node^.WSClass = AWSComponent) then
-    Exit;
-  Node^.WSClass := AWSComponent;
-
-  // childclasses "inherit" the private from their parent
-  // the child privates should only be updated when their private is still
-  // the same as their parents
-  if Node^.VClass = nil then
-    OldPrivate := nil
-  else
-    OldPrivate := PClass(Node^.VClass + vmtWSPrivate)^;
-
-  {$IFDEF VerboseWSRegistration}
-  DebugLn('Create VClass for: ', AComponent.ClassName, ' -> ', Node^.WSClass.ClassName);
-  {$ENDIF}
-  CreateVClass(Node, AWSPrivate);
-
-  // Since child classes may depend on us, recreate them
-  UpdateChildren(Node, OldPrivate);
-end;
-{$endif}
 
 // Do not create VClass at runtime but use normal Object Pascal class creation.
 function RegisterNewWSComp(AComponent: TComponentClass): TWSLCLComponentClass;
@@ -553,28 +254,12 @@ begin
      => WSClassesList should be created already *)
   Assert(Assigned(WSClassesList), 'RegisterNewWSComp: WSClassesList=Nil');
   Result := FindWSRegistered(AComponent);
-  if (Result = nil) then begin
-    reg := TList.Create;
-    try
-      while not Assigned(Result) do begin
-        p := AComponent;
-        reg.Add(p);
-        c := p.ClassParent;
-        if c.InheritsFrom(TComponent) then
-          AComponent := TComponentClass(c)
-        else
-          Break;
-        Result := FindWSComponentClass(AComponent);
-      end;
-      if Assigned(Result) then
-        for i:=0 to reg.Count-1 do
-          RegisterWSComponent(tComponentClass(reg[i]), Result);
-    finally
-      reg.Free;
-    end;
+  if (Result = nil) and (AComponent.InheritsFrom(TComponent)) then begin
+    Result := FindWSComponentClass(TComponentClass(AComponent.ClassParent));
+    if Assigned(Result) then
+      RegisterWSComponentInt(AComponent, Result);
   end;
 end;
-
 
 function GetWSLazAccessibleObject: TWSObjectClass;
 begin
@@ -598,107 +283,11 @@ end;
 
  { TWSLCLComponent }
 
-  function TWSLCLComponent.DebugName: string;
- begin
-   Result := Self.ClassName;
- end;
-
-{$ifndef WSINTF}
-function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass;
+function TWSLCLComponent.DebugName: string;
 begin
-  if not Assigned(WSClassesList) then
-    DoInitialization;
-  Result := WSClassesList.FindWSClass(AComponent);
-end;
-{$endif}
-
-{$IFDEF VerboseWSBrunoK}
-procedure DumpWSClassesList;
-begin
-  WSClassesList.DumpNodes;
-end;
-{$ENDIF}
-
-{ TWSClassesList }
-
-{$IFDEF VerboseWSBrunoK}
-procedure TWSClassesList.DumpNode(aN: integer; aPClassNode: PClassNode);
-var
-  LCLClassClassName, lWSClassClassName, lVClassName, ParentVClassName: string;
-  lClassNode : PClassNode;
-begin
-  with aPClassNode^ do begin
-    if Assigned(LCLClass) then
-      LCLClassClassName := LCLClass.ClassName
-    else
-      LCLClassClassName := '???';
-    if Assigned(WSClass) then
-      lWSClassClassName := WSClass.ClassName
-    else
-      lWSClassClassName := '???';
-    if Assigned(VClass) then
-      lVClassName := TClass(VClass).ClassName
-    else
-      lVClassName := '???';
-    if Assigned(Parent) and  Assigned(PClassNode(Parent)^.WSClass) then
-      ParentVClassName := PClassNode(Parent)^.WSClass.ClassName
-    else
-      ParentVClassName := '???';
-    writeln(
-      aN, ';',
-      { DbgCreateSeq, ';', }
-      HexStr(aPClassNode), ';',
-      HexStr(LCLClass), ';',  // : TComponentClass;
-      LCLClassClassName, ';',
-      HexStr(WSClass), ';', // : TWSLCLComponentClass;
-      lWSClassClassName, ';',
-      HexStr(VClass), ';', // : Pointer;
-      VClassName, ';',
-      // VVmtCount, ';',
-      lVClassName, ';',
-      VClassNew, ';',    // : Boolean;
-      HexStr(Parent), ';', // Parent: PClassNode;
-      ParentVClassName, ';', // ShortString;
-      HexStr(Child), ';',   // Child: PClassNode;
-      HexStr(Sibling)  // Sibling: PClassNode;
-      );
-  end;
+  Result := Self.ClassName;
 end;
 
-procedure TWSClassesList.DumpNodes;
-var
-  i: integer;
-begin
-  WriteLn('n;',          // aN, ';',
-    { 'CreateSeq;',        // DbgCreateSeq, ';', }
-    'PClassNode;',        // Node
-    'LCLClass;',         // HexStr(LCLClass), ';',  // : TComponentClass;
-    'LCLClassName;',     // LCLClassClassName, ';',
-    'WSClass;',          // HexStr(WSClass), ';', // : TWSLCLComponentClass
-    'WSClassName;',      // lWSClassClassName, ';',
-    'VClass;',           // HexStr(VClass), ';', // : Pointer;
-    'VClassName;',       // VClassName
-  {  'VVmtCount', }      // VVmtCount, ';',
-    'VClassName;',       // lVClassName, ';',
-    'VClassNew;',        // VClassNew,           ';',  // : Boolean;
-    'Parent;',           // HexStr(Parent), ';', // Parent: PClassNode;
-    'Parent.Name;',      // ParentClassName, ';', // ShortString;
-    'Child;',            // HexStr(Child), ';',   // Child: PClassNode;
-    'Sibling'            // HexStr(Sibling)  // Sibling: PClassNode;
-    );
-  for i := 0 to Count - 1 do
-    DumpNode(i, PClassNode(Items[i]));
-end;
-{$ENDIF}
-
-{ TWSLCLComponent }
-
-{$ifndef WSINTF}
-class function TWSLCLComponent.WSPrivate: TWSPrivateClass;
-begin
-  Result := TWSPrivateClass(PClass(Pointer(Self) + vmtWSPrivate)^);
-end;
-{$endif}
 
 { TWSLCLHandleComponent }
 
@@ -708,7 +297,8 @@ end;
 
 procedure DoInitialization;
 begin
-  WSClassesList := TFPList.Create;
+  //WSClassesList := TFPList.Create;
+  WSClassesList := TClassNodeAVLTree.Create(@CompareClassNodes);
 end;
 
 procedure DoFinalization;
@@ -723,11 +313,8 @@ begin
           ' cWSLCLParentHit=', cWSLCLParentHit,
           ' cWSLCLRegister=', cWSLCLRegister);
   {$ENDIF}
-  for n := 0 to WSClassesList.Count - 1 do
-  begin
-    Node := TClassNode(WSClassesList[n]);
-    Node.Free;
-  end;
+  if Assigned(WSClassesList) then
+    WSClassesList.FreeAndClear;
   FreeAndNil(WSClassesList);
   {$IFDEF VerboseWSBrunoK}
   Write('Press enter to quit > '); ReadLn;
@@ -738,13 +325,15 @@ end;
 
 function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
 var
-  idx : integer;
+  nd : TClassNode;
 begin
   if not Assigned(WSClassesList) then
     DoInitialization;
-  idx := FindClassIndex(AComponent);
-  if (idx < 0) then Result:=nil
-  else Result := TClassNode(WSClassesList[idx]).WSClass;
+  nd := FindClassNode(AComponent);
+  if Assigned(nd) then
+    Result := nd.WSClass
+  else
+    Result:=nil;
 end;
 
 procedure RegisterWSComponent(AComponent: TComponentClass;
@@ -752,15 +341,20 @@ procedure RegisterWSComponent(AComponent: TComponentClass;
 var
   idx : integer;
   p : TClassNode;
+  avl : TAVLTreeNode;
 begin
-  idx := FindClassIndex(AComponent);
-  if (idx < 0) then begin
-    p := TClassNode.Create;
-    p.WSClass := AWSComponent;
-    p.LCLClass := AComponent;
-    WSClassesList.Add(p);
-  end else
-    TClassNode(WSClassesList[idx]).WSClass := AWSComponent;
+  if not Assigned(WSClassesList) then
+    DoInitialization;
+  avl := WSClassesList.FindAVLByLCLComponent(AComponent);
+  if Assigned(avl) then
+  begin
+    if (TClassNode(avl.Data).WSClass = AWSComponent) then
+      // it's already registered
+      Exit;
+    // previously was something different
+    WSClassesList.Delete(avl);
+  end;
+  RegisterWSComponentInt(AComponent, AWSComponent);
 end;
 {$endif}
 

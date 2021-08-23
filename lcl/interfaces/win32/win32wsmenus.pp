@@ -1628,12 +1628,12 @@ end;
 {$ifdef wsintf}
 imptype function TWin32WSMenuItem.OpenCommand: LongInt;
 begin
-  Result := -1;
+  Result := CreateMenuCommand;
 end;
 
 imptype procedure TWin32WSMenuItem.CloseCommand(ACommand: LongInt);
 begin
-
+  ReleaseMenuCommand(ACommand)
 end;
 
 imptype procedure TWin32WSMenuItem.SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);

@@ -314,7 +314,7 @@ begin
     {$ifndef wsintf}
     TWin32WSWinControl.SetText(ComboBox, ComboBox.Items[Index]);
     {$else}
-    WSCustomComboBoxClass(ComboBox.WidgetSetClass).SetText(ComboBox, ComboBox.Items[Index]);
+    GetWSCustomComboBox(ComboBox.WidgetSetClass).SetText(ComboBox, ComboBox.Items[Index]);
     {$endif}
 end;
 
@@ -642,7 +642,7 @@ begin
   // check if double buffering is requested
   useDoubleBuffer := (ControlDC = 0) and (
       ((csDesigning in lWinControl.ComponentState) and (GetSystemMetrics(SM_REMOTESESSION)=0)) // force double buffer in the designer
-    or WSWinControlClass(TWinControl(lWinControl).WidgetSetClass).GetDoubleBuffered(lWinControl));
+    or GetWSWinControl(TWinControl(lWinControl).WidgetSetClass).GetDoubleBuffered(lWinControl));
 
   if useDoubleBuffer then
     BufferWasSaved := PrepareDoubleBuffer(DoubleBufferBitmapOld)
@@ -2840,7 +2840,7 @@ begin
       begin
         // Now ask control is it needs mouse messages
         MapWindowPoints(Parent, TWinControl(Control).Handle, P, 1);
-        if WSWinControlClass(TWinControl(Control).WidgetSetClass).GetDesignInteractive(TWinControl(Control), P) then
+        if GetWSWinControl(TWinControl(Control).WidgetSetClass).GetDesignInteractive(TWinControl(Control), P) then
           Result := HTTRANSPARENT
       end;
     end;

@@ -425,7 +425,7 @@ begin
     WM_ERASEBKGND:
       begin
         WindowInfo := GetWin32WindowInfo(Window);
-        if not WSWinControlClass(WindowInfo^.WinControl.WidgetSetClass).GetDoubleBuffered(WindowInfo^.WinControl) then
+        if not GetWSWinControl(WindowInfo^.WinControl.WidgetSetClass).GetDoubleBuffered(WindowInfo^.WinControl) then
         begin
           LMessage.msg := Msg;
           LMessage.wParam := WParam;
@@ -489,7 +489,7 @@ begin
     WM_ERASEBKGND:
       begin
         Control := GetWin32WindowInfo(Window)^.WinControl;
-        if not WSWinControlClass(Control.WidgetSetClass).GetDoubleBuffered(Control) then
+        if not GetWSWinControl(Control.WidgetSetClass).GetDoubleBuffered(Control) then
         begin
           LMessage.msg := Msg;
           LMessage.wParam := WParam;
@@ -1992,7 +1992,7 @@ begin
     WM_ERASEBKGND:
       begin
         Control := GetWin32WindowInfo(Window)^.WinControl;
-        if not WSWinControlClass(Control.WidgetSetClass).GetDoubleBuffered(Control) then
+        if not GetWSWinControl(Control.WidgetSetClass).GetDoubleBuffered(Control) then
         begin
           LMessage.msg := Msg;
           LMessage.wParam := WParam;

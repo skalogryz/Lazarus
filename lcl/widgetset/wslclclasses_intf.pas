@@ -152,13 +152,20 @@ const
 
 type
 
+  { TClassNodeAVLManager }
+
+  TClassNodeAVLManager = class(TBaseAVLTreeNodeManager)
+  public
+    procedure DisposeNode(ANode: TAVLTreeNode); override;
+    function NewNode: TAVLTreeNode; override;
+  end;
+
   { TClassNodeAVLTree }
 
   TClassNodeAVLTree = class(TAVLTree)
   public
     function FindByLCLComponent(AComponent: TClass): TClassNode;
     function FindAVLByLCLComponent(AComponent: TClass): TAVLTreeNode;
-    procedure DisposeNode(ANode: TAVLTreeNode); override;
   end;
 
 function ComparePtrUInt(d1, d2: Pointer): integer;
@@ -187,6 +194,21 @@ begin
   Result := ComparePtrUInt(c1.LCLCLass, c2.LCLClass);
 end;
 
+{ TClassNodeAVLManager }
+
+procedure TClassNodeAVLManager.DisposeNode(ANode: TAVLTreeNode);
+begin
+  if Assigned(ANode) then begin
+    if Assigned(ANode.Data) then TClassNode(ANode.Data).Free;
+    ANode.Free;
+  end;
+end;
+
+function TClassNodeAVLManager.NewNode: TAVLTreeNode;
+begin
+  Result := TAVLTreeNode.Create;
+end;
+
 function TClassNodeAVLTree.FindByLCLComponent(AComponent: TClass): TClassNode;
 var
   avl : TAVLTreeNode;
@@ -199,17 +221,6 @@ end;
 function TClassNodeAVLTree.FindAVLByLCLComponent(AComponent: TClass): TAVLTreeNode;
 begin
   Result := FindKey(AComponent, @CompareByClass);
-end;
-
-procedure TClassNodeAVLTree.DisposeNode(ANode: TAVLTreeNode);
-begin
-  if (ANode = nil) then begin
-    inherited DisposeNode(ANode);
-    Exit;
-  end;
-  if Assigned(ANode.Data) then
-    TClassNode(ANode.Data).Free;
-  inherited DisposeNode(ANode);
 end;
 
 var
@@ -299,6 +310,7 @@ procedure DoInitialization;
 begin
   //WSClassesList := TFPList.Create;
   WSClassesList := TClassNodeAVLTree.Create(@CompareClassNodes);
+  WSClassesList.SetNodeManager(TClassNodeAVLManager.Create, true);
 end;
 
 procedure DoFinalization;

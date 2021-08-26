@@ -269,7 +269,7 @@ begin
   {$ifndef wsintf}
   TWSLCLReferenceComponentClass(WidgetSetClass).DestroyReference(Self);
   {$else}
-  (WidgetSetClass as TWSLCLReferenceComponentClass).DestroyReference(Self);
+  (WidgetSetClass as IWSLCLReferenceComponent).DestroyReference(Self);
   {$endif}
 end;
 

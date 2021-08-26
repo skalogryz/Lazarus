@@ -210,7 +210,7 @@ end;
 constructor TCustomUpDown.Create(AOwner: TComponent);
 {$ifdef wsintf}
 var
-  cls : TWSLCLComponentClass;
+  cls : IWSLCLComponent;
 {$endif}
 begin
   inherited Create(AOwner);
@@ -218,7 +218,7 @@ begin
                   [csClickEvents, csOpaque, csReplicatable, csNoFocus];
   {$ifdef wsintf}
   cls := FindWSRegistered(TCustomUpDown);
-  FUseWS := Assigned(cls) and (cls is TWSCustomUpDownClass);
+  FUseWS := Assigned(cls) and (cls is IWSCustomUpDown);
   {$else}
   FUseWS := IsWSComponentInheritsFrom(TCustomUpDown, TWSCustomUpDown);
   {$endif}

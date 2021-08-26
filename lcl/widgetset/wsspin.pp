@@ -75,7 +75,7 @@ type
 
   procedure RegisterCustomFloatSpinEdit;
 
-function WSCustomFloatSpinEditClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFloatSpinEditClass; inline;
+function GetWSCustomFloatSpinEdit(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFloatSpinEditClass; inline;
 
 implementation
 
@@ -108,7 +108,7 @@ begin
   Done := True;
 end;
 
-function WSCustomFloatSpinEditClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFloatSpinEditClass;
+function GetWSCustomFloatSpinEdit(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFloatSpinEditClass;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomFloatSpinEdit);

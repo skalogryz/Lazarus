@@ -75,7 +75,7 @@ type
 
   procedure RegisterCustomCalendar;
 
-function WSCustomCalendarClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCalendarClass; inline;
+function GetWSCustomCalendar(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCalendarClass; inline;
 
 implementation
 
@@ -126,7 +126,7 @@ begin
   Done := True;
 end;
 
-function WSCustomCalendarClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCalendarClass; inline;
+function GetWSCustomCalendar(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCalendarClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomCalendar);

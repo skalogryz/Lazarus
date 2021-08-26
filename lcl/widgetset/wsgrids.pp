@@ -72,7 +72,7 @@ type
 
   function RegisterCustomGrid: Boolean;
 
-function WSCustomGridClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomGridClass; inline;
+function GetWSCustomGrid(AWidgetSetClass: TWSLCLComponentClass): TWSCustomGridClass; inline;
 
 implementation
 uses
@@ -156,7 +156,7 @@ begin
   Result := True;
 end;
 
-function WSCustomGridClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomGridClass; inline;
+function GetWSCustomGrid(AWidgetSetClass: TWSLCLComponentClass): TWSCustomGridClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomGrid);

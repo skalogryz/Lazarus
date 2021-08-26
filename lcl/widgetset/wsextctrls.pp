@@ -187,7 +187,7 @@ type
   procedure RegisterCustomPanel;
   procedure RegisterCustomTrayIcon;
 
-function WSCustomTrayIconClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTrayIconClass; inline;
+function GetWSCustomTrayIcon(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTrayIconClass; inline;
 
 implementation
 
@@ -362,7 +362,7 @@ begin
   Result := DefBtnColors[ADefaultColorType];
 end;
 
-function WSCustomTrayIconClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTrayIconClass; inline;
+function GetWSCustomTrayIcon(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTrayIconClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomTrayIcon);

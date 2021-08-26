@@ -124,7 +124,7 @@ type
   procedure RegisterColorButton;
   procedure RegisterFontDialog;
 
-function WSCommonDialogClass(AWidgetSetClass: TWSLCLComponentClass): TWSCommonDialogClass; inline;
+function GetWSCommonDialog(AWidgetSetClass: TWSLCLComponentClass): TWSCommonDialogClass; inline;
 
 implementation
 
@@ -155,7 +155,7 @@ end;
 imptype function TWSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 begin
   if WSCommonDialog_WSClass = nil then
-    WSCommonDialog_WSClass := WSCommonDialogClass(FindWSComponentClass(TCommonDialog));
+    WSCommonDialog_WSClass := GetWSCommonDialog(FindWSComponentClass(TCommonDialog));
   if WSCommonDialog_WSClass <> nil then
   begin
     Result := WSCommonDialog_WSClass.CreateHandle(ACommonDialog);
@@ -167,7 +167,7 @@ end;
 imptype procedure TWSFontDialog.ShowModal(const ACommonDialog: TCommonDialog);
 begin
   if WSCommonDialog_WSClass = nil then
-    WSCommonDialog_WSClass := WSCommonDialogClass(FindWSComponentClass(TCommonDialog));
+    WSCommonDialog_WSClass := GetWSCommonDialog(FindWSComponentClass(TCommonDialog));
   if WSCommonDialog_WSClass <> nil then
   begin
     WSCommonDialog_WSClass.ShowModal(ACommonDialog);
@@ -179,7 +179,7 @@ end;
 imptype procedure TWSFontDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
 begin
   if WSCommonDialog_WSClass = nil then
-    WSCommonDialog_WSClass := WSCommonDialogClass(FindWSComponentClass(TCommonDialog));
+    WSCommonDialog_WSClass := GetWSCommonDialog(FindWSComponentClass(TCommonDialog));
   if WSCommonDialog_WSClass <> nil then
   begin
     WSCommonDialog_WSClass.DestroyHandle(ACommonDialog);
@@ -192,7 +192,7 @@ imptype function TWSFontDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   if WSCommonDialog_WSClass = nil then
-    WSCommonDialog_WSClass := WSCommonDialogClass(FindWSComponentClass(TCommonDialog));
+    WSCommonDialog_WSClass := GetWSCommonDialog(FindWSComponentClass(TCommonDialog));
   if WSCommonDialog_WSClass <> nil then
   begin
     Result := WSCommonDialog_WSClass.QueryWSEventCapabilities(ACommonDialog);
@@ -291,7 +291,7 @@ begin
   Done := True;
 end;
 
-function WSCommonDialogClass(AWidgetSetClass: TWSLCLComponentClass): TWSCommonDialogClass; inline;
+function GetWSCommonDialog(AWidgetSetClass: TWSLCLComponentClass): TWSCommonDialogClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCommonDialog);

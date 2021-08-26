@@ -132,9 +132,9 @@ function WSCheckMenuItem(const AMenuItem: TMenuItem;
   procedure RegisterMainMenu;
   procedure RegisterPopupMenu;
 
-function WSMenuItemClass (AWidgetSetClass: TWSLCLComponentClass): TWSMenuItemClass; inline;
-function WSMenuClass     (AWidgetSetClass: TWSLCLComponentClass): TWSMenuClass; inline;
-function WSPopupMenuClass(AWidgetSetClass: TWSLCLComponentClass): TWSPopupMenuClass; inline;
+function GetWSMenuItem (AWidgetSetClass: TWSLCLComponentClass): TWSMenuItemClass; inline;
+function GetWSMenu     (AWidgetSetClass: TWSLCLComponentClass): TWSMenuClass; inline;
+function GetWSPopupMenu(AWidgetSetClass: TWSLCLComponentClass): TWSPopupMenuClass; inline;
 {$ifdef wsintf}
 function CreateMenuCommand: LongInt;
 procedure ReleaseMenuCommand(ACommand: LongInt);
@@ -311,7 +311,7 @@ begin
   Done := True;
 end;
 
-function WSMenuItemClass(AWidgetSetClass: TWSLCLComponentClass): TWSMenuItemClass; inline;
+function GetWSMenuItem(AWidgetSetClass: TWSLCLComponentClass): TWSMenuItemClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSMenuItem);
@@ -320,7 +320,7 @@ begin
   {$endif}
 end;
 
-function WSMenuClass(AWidgetSetClass: TWSLCLComponentClass): TWSMenuClass; inline;
+function GetWSMenu(AWidgetSetClass: TWSLCLComponentClass): TWSMenuClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSMenu);
@@ -329,7 +329,7 @@ begin
   {$endif}
 end;
 
-function WSPopupMenuClass(AWidgetSetClass: TWSLCLComponentClass): TWSPopupMenuClass; inline;
+function GetWSPopupMenu(AWidgetSetClass: TWSLCLComponentClass): TWSPopupMenuClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSPopupMenu);

@@ -425,14 +425,14 @@ type
   procedure RegisterCustomStaticText;
   procedure RegisterCustomLabel;
 
-function WSScrollBarClass       (AWidgetSetClass: TWSLCLComponentClass): TWSScrollBarClass; inline;
-function WSCustomComboBoxClass  (AWidgetSetClass: TWSLCLComponentClass): TWSCustomComboBoxClass; inline;
-function WSCustomListBoxClass   (AWidgetSetClass: TWSLCLComponentClass): TWSCustomListBoxClass; inline;
-function WSCustomEditClass      (AWidgetSetClass: TWSLCLComponentClass): TWSCustomEditClass; inline;
-function WSCustomMemoClass      (AWidgetSetClass: TWSLCLComponentClass): TWSCustomMemoClass; inline;
-function WSCustomStaticTextClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomStaticTextClass; inline;
-function WSButtonClass          (AWidgetSetClass: TWSLCLComponentClass): TWSButtonClass; inline;
-function WSCustomCheckBoxClass  (AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckBoxClass; inline;
+function GetWSScrollBar       (AWidgetSetClass: TWSLCLComponentClass): TWSScrollBarClass; inline;
+function GetWSCustomComboBox  (AWidgetSetClass: TWSLCLComponentClass): TWSCustomComboBoxClass; inline;
+function GetWSCustomListBox   (AWidgetSetClass: TWSLCLComponentClass): TWSCustomListBoxClass; inline;
+function GetWSCustomEdit      (AWidgetSetClass: TWSLCLComponentClass): TWSCustomEditClass; inline;
+function GetWSCustomMemo      (AWidgetSetClass: TWSLCLComponentClass): TWSCustomMemoClass; inline;
+function GetWSCustomStaticText(AWidgetSetClass: TWSLCLComponentClass): TWSCustomStaticTextClass; inline;
+function GetWSButton          (AWidgetSetClass: TWSLCLComponentClass): TWSButtonClass; inline;
+function GetWSCustomCheckBox  (AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckBoxClass; inline;
 
 implementation
 
@@ -1055,7 +1055,7 @@ begin
 end;
 
 
-function WSScrollBarClass(AWidgetSetClass: TWSLCLComponentClass): TWSScrollBarClass; inline;
+function GetWSScrollBar(AWidgetSetClass: TWSLCLComponentClass): TWSScrollBarClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSScrollBar);
@@ -1064,7 +1064,7 @@ begin
   {$endif}
 end;
 
-function WSCustomComboBoxClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomComboBoxClass; inline;
+function GetWSCustomComboBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomComboBoxClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomComboBox);
@@ -1073,7 +1073,7 @@ begin
   {$endif}
 end;
 
-function WSCustomListBoxClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomListBoxClass; inline;
+function GetWSCustomListBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomListBoxClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomListBox);
@@ -1082,7 +1082,7 @@ begin
   {$endif}
 end;
 
-function WSCustomEditClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomEditClass; inline;
+function GetWSCustomEdit(AWidgetSetClass: TWSLCLComponentClass): TWSCustomEditClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomEdit);
@@ -1091,7 +1091,7 @@ begin
   {$endif}
 end;
 
-function WSCustomMemoClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomMemoClass; inline;
+function GetWSCustomMemo(AWidgetSetClass: TWSLCLComponentClass): TWSCustomMemoClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomMemo);
@@ -1100,7 +1100,7 @@ begin
   {$endif}
 end;
 
-function WSCustomStaticTextClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomStaticTextClass; inline;
+function GetWSCustomStaticText(AWidgetSetClass: TWSLCLComponentClass): TWSCustomStaticTextClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomStaticText);
@@ -1109,7 +1109,7 @@ begin
   {$endif}
 end;
 
-function WSButtonClass(AWidgetSetClass: TWSLCLComponentClass): TWSButtonClass; inline;
+function GetWSButton(AWidgetSetClass: TWSLCLComponentClass): TWSButtonClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSButton);
@@ -1118,7 +1118,7 @@ begin
   {$endif}
 end;
 
-function WSCustomCheckBoxClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckBoxClass; inline;
+function GetWSCustomCheckBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckBoxClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomCheckBox);

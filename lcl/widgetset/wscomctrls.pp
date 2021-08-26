@@ -424,13 +424,13 @@ type
   procedure RegisterCustomTrackBar;
   procedure RegisterCustomTreeView;
 
-function WSCustomPageClass      (AWidgetSetClass: TWSLCLComponentClass): TWSCustomPageClass; inline;
-function WSCustomTabControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTabControlClass; inline;
-function WSStatusBarClass       (AWidgetSetClass: TWSLCLComponentClass): TWSStatusBarClass; inline;
-function WSCustomListViewClass  (AWidgetSetClass: TWSLCLComponentClass): TWSCustomListViewClass; inline;
-function WSProgressBarClass     (AWidgetSetClass: TWSLCLComponentClass): TWSProgressBarClass; inline;
-function WSCustomUpDownClass    (AWidgetSetClass: TWSLCLComponentClass): TWSCustomUpDownClass; inline;
-function WSTrackBarClass        (AWidgetSetClass: TWSLCLComponentClass): TWSTrackBarClass; inline;
+function GetWSCustomPage      (AWidgetSetClass: TWSLCLComponentClass): TWSCustomPageClass; inline;
+function GetWSCustomTabControl(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTabControlClass; inline;
+function GetWSStatusBar       (AWidgetSetClass: TWSLCLComponentClass): TWSStatusBarClass; inline;
+function GetWSCustomListView  (AWidgetSetClass: TWSLCLComponentClass): TWSCustomListViewClass; inline;
+function GetWSProgressBar     (AWidgetSetClass: TWSLCLComponentClass): TWSProgressBarClass; inline;
+function GetWSCustomUpDown    (AWidgetSetClass: TWSLCLComponentClass): TWSCustomUpDownClass; inline;
+function GetWSTrackBar        (AWidgetSetClass: TWSLCLComponentClass): TWSTrackBarClass; inline;
 
 implementation
 
@@ -1188,7 +1188,7 @@ begin
   Done := True;
 end;
 
-function WSCustomPageClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPageClass; inline;
+function GetWSCustomPage(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPageClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomPage);
@@ -1197,7 +1197,7 @@ begin
   {$endif}
 end;
 
-function WSCustomTabControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTabControlClass; inline;
+function GetWSCustomTabControl(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTabControlClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomTabControl);
@@ -1206,7 +1206,7 @@ begin
   {$endif}
 end;
 
-function WSStatusBarClass(AWidgetSetClass: TWSLCLComponentClass): TWSStatusBarClass; inline;
+function GetWSStatusBar(AWidgetSetClass: TWSLCLComponentClass): TWSStatusBarClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSStatusBar);
@@ -1215,7 +1215,7 @@ begin
   {$endif}
 end;
 
-function WSCustomListViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomListViewClass; inline;
+function GetWSCustomListView(AWidgetSetClass: TWSLCLComponentClass): TWSCustomListViewClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomListView);
@@ -1224,7 +1224,7 @@ begin
   {$endif}
 end;
 
-function WSProgressBarClass(AWidgetSetClass: TWSLCLComponentClass): TWSProgressBarClass; inline;
+function GetWSProgressBar(AWidgetSetClass: TWSLCLComponentClass): TWSProgressBarClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSProgressBar);
@@ -1233,7 +1233,7 @@ begin
   {$endif}
 end;
 
-function WSCustomUpDownClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomUpDownClass; inline;
+function GetWSCustomUpDown(AWidgetSetClass: TWSLCLComponentClass): TWSCustomUpDownClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomUpDown);
@@ -1242,7 +1242,7 @@ begin
   {$endif}
 end;
 
-function WSTrackBarClass(AWidgetSetClass: TWSLCLComponentClass): TWSTrackBarClass; inline;
+function GetWSTrackBar(AWidgetSetClass: TWSLCLComponentClass): TWSTrackBarClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSTrackBar);

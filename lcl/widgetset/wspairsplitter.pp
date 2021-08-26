@@ -80,7 +80,7 @@ type
   procedure RegisterPairSplitterSide;
   procedure RegisterCustomPairSplitter;
 
-function WSCustomPairSplitterClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPairSplitterClass; inline;
+function GetWSCustomPairSplitter(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPairSplitterClass; inline;
 
 implementation
 uses
@@ -242,7 +242,7 @@ begin
   Done := True;
 end;
 
-function WSCustomPairSplitterClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPairSplitterClass;
+function GetWSCustomPairSplitter(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPairSplitterClass;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomPairSplitter);

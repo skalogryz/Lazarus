@@ -183,7 +183,7 @@ type
   procedure RegisterCustomForm;
   procedure RegisterHintWindow;
 
-function WSCustomFormClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFormClass; inline;
+function GetWSCustomForm(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFormClass; inline;
 
 implementation
 
@@ -383,7 +383,7 @@ begin
   Done := True;
 end;
 
-function WSCustomFormClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFormClass; inline;
+function GetWSCustomForm(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFormClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomForm);

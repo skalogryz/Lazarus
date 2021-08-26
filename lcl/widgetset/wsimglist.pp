@@ -83,7 +83,7 @@ type
 
   procedure RegisterCustomImageListResolution;
 
-function WSCustomImageListResolutionClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomImageListResolutionClass; inline;
+function GetWSCustomImageListResolution(AWidgetSetClass: TWSLCLComponentClass): TWSCustomImageListResolutionClass; inline;
 
 implementation
 
@@ -290,7 +290,7 @@ begin
   Done := True;
 end;
 
-function WSCustomImageListResolutionClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomImageListResolutionClass; inline;
+function GetWSCustomImageListResolution(AWidgetSetClass: TWSLCLComponentClass): TWSCustomImageListResolutionClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomImageListResolution);

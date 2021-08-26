@@ -84,8 +84,8 @@ type
 procedure RegisterCustomShellTreeView;
 procedure RegisterCustomShellListView;
 
-function WSCustomShellTreeViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellTreeViewClass; inline;
-function WSCustomShellListViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellListViewClass; inline;
+function GetWSCustomShellTreeView(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellTreeViewClass; inline;
+function GetWSCustomShellListView(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellListViewClass; inline;
 
 implementation
 
@@ -142,7 +142,7 @@ begin
   Done := True;
 end;
 
-function WSCustomShellTreeViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellTreeViewClass; inline;
+function GetWSCustomShellTreeView(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellTreeViewClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomShellTreeView);
@@ -151,7 +151,7 @@ begin
   {$endif}
 end;
 
-function WSCustomShellListViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellListViewClass; inline;
+function GetWSCustomShellListView(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellListViewClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomShellListView);

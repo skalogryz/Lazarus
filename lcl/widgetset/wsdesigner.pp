@@ -60,7 +60,7 @@ type
 
   procedure RegisterCustomRubberBand;
 
-function WSCustomRubberBandClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomRubberBandClass; inline;
+function GetWSCustomRubberBand(AWidgetSetClass: TWSLCLComponentClass): TWSCustomRubberBandClass; inline;
 
 implementation
 
@@ -87,7 +87,7 @@ begin
   Done := True;
 end;
 
-function WSCustomRubberBandClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomRubberBandClass; inline;
+function GetWSCustomRubberBand(AWidgetSetClass: TWSLCLComponentClass): TWSCustomRubberBandClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomRubberBand);

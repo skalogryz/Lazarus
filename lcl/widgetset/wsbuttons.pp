@@ -77,7 +77,7 @@ type
   procedure RegisterCustomBitBtn;
   procedure RegisterCustomSpeedButton;
 
-function WSBitBtnClass(AWidgetSetClass: TWSLCLComponentClass): TWSBitBtnClass; inline;
+function GetWSBitBtn(AWidgetSetClass: TWSLCLComponentClass): TWSBitBtnClass; inline;
 
 implementation
 
@@ -134,7 +134,7 @@ begin
   Done := True;
 end;
 
-function WSBitBtnClass(AWidgetSetClass: TWSLCLComponentClass): TWSBitBtnClass; inline;
+function GetWSBitBtn(AWidgetSetClass: TWSLCLComponentClass): TWSBitBtnClass; inline;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSBitBtn);

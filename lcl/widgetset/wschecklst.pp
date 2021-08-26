@@ -89,7 +89,7 @@ type
 
   procedure RegisterCustomCheckListBox;
 
-function WSCustomCheckListBoxClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckListBoxClass; inline;
+function GetWSCustomCheckListBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckListBoxClass; inline;
 
 implementation
 
@@ -149,7 +149,7 @@ begin
   Done := True;
 end;
 
-function WSCustomCheckListBoxClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckListBoxClass;
+function GetWSCustomCheckListBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckListBoxClass;
 begin
   {$ifdef wsintf}
   Result := (AWidgetSetClass as IWSCustomCheckListBox);

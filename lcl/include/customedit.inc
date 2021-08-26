@@ -41,17 +41,17 @@ end;
 procedure TCustomEdit.InitializeWnd;
 begin
   inherited InitializeWnd;
-  WSCustomEditClass(WidgetSetClass).SetCharCase(Self, FCharCase);
-  WSCustomEditClass(WidgetSetClass).SetEchoMode(Self, FEchoMode);
-  WSCustomEditClass(WidgetSetClass).SetMaxLength(Self, FMaxLength);
-  WSCustomEditClass(WidgetSetClass).SetPasswordChar(Self, FPasswordChar);
-  WSCustomEditClass(WidgetSetClass).SetReadOnly(Self, FReadOnly);
-  WSCustomEditClass(WidgetSetClass).SetAlignment(Self, FAlignment);
-  WSCustomEditClass(WidgetSetClass).SetCaretPos(Self, fCaretPos);
-  WSCustomEditClass(WidgetSetClass).SetSelStart(Self, FSelStart);
-  WSCustomEditClass(WidgetSetClass).SetSelLength(Self, FSelLength);
+  GetWSCustomEdit(WidgetSetClass).SetCharCase(Self, FCharCase);
+  GetWSCustomEdit(WidgetSetClass).SetEchoMode(Self, FEchoMode);
+  GetWSCustomEdit(WidgetSetClass).SetMaxLength(Self, FMaxLength);
+  GetWSCustomEdit(WidgetSetClass).SetPasswordChar(Self, FPasswordChar);
+  GetWSCustomEdit(WidgetSetClass).SetReadOnly(Self, FReadOnly);
+  GetWSCustomEdit(WidgetSetClass).SetAlignment(Self, FAlignment);
+  GetWSCustomEdit(WidgetSetClass).SetCaretPos(Self, fCaretPos);
+  GetWSCustomEdit(WidgetSetClass).SetSelStart(Self, FSelStart);
+  GetWSCustomEdit(WidgetSetClass).SetSelLength(Self, FSelLength);
   if WidgetSet.GetLCLCapability(lcTextHint) = LCL_CAPABILITY_YES then
-    WSCustomEditClass(WidgetSetClass).SetTextHint(Self, FTextHint)
+    GetWSCustomEdit(WidgetSetClass).SetTextHint(Self, FTextHint)
   else
     ShowEmulatedTextHintIfYouCan;
 end;
@@ -139,7 +139,7 @@ procedure TCustomEdit.SetCaretPos(const Value: TPoint);
 begin
   fCaretPos:=Value;
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).SetCaretPos(Self, Value);
+    GetWSCustomEdit(WidgetSetClass).SetCaretPos(Self, Value);
 end;
 
 {------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ end;
 procedure TCustomEdit.SetSelText(const Val : string);
 begin
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).SetSelText(Self, Val);
+    GetWSCustomEdit(WidgetSetClass).SetSelText(Self, Val);
 end;
 
 {------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ end;
 function TCustomEdit.GetSelStart : integer;
 begin
   if HandleAllocated then
-    FSelStart:= WSCustomEditClass(WidgetSetClass).GetSelStart(Self);
+    FSelStart:= GetWSCustomEdit(WidgetSetClass).GetSelStart(Self);
   Result:= FSelStart;
 end;
 
@@ -180,7 +180,7 @@ procedure TCustomEdit.SetSelStart(Val : integer);
 begin
   FSelStart:= Val;
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).SetSelStart(Self, Val);
+    GetWSCustomEdit(WidgetSetClass).SetSelStart(Self, Val);
 end;
 
 {------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ end;
 function TCustomEdit.GetSelLength : integer;
 begin
   if HandleAllocated then
-    FSelLength := WSCustomEditClass(WidgetSetClass).GetSelLength(Self);
+    FSelLength := GetWSCustomEdit(WidgetSetClass).GetSelLength(Self);
   Result := FSelLength;
 end;
 
@@ -209,7 +209,7 @@ begin
   if Val<0 then Val:=0;
   FSelLength := Val;
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).SetSelLength(Self, Val);
+    GetWSCustomEdit(WidgetSetClass).SetSelLength(Self, Val);
 end;
 
 {------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ end;
 procedure TCustomEdit.CopyToClipboard;
 begin
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).Copy(Self);
+    GetWSCustomEdit(WidgetSetClass).Copy(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -264,7 +264,7 @@ end;
 procedure TCustomEdit.CutToClipboard;
 begin
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).Cut(Self);
+    GetWSCustomEdit(WidgetSetClass).Cut(Self);
 end;
 
 destructor TCustomEdit.Destroy;
@@ -277,13 +277,13 @@ end;
 procedure TCustomEdit.PasteFromClipboard;
 begin
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).Paste(Self);
+    GetWSCustomEdit(WidgetSetClass).Paste(Self);
 end;
 
 procedure TCustomEdit.Undo;
 begin
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).Undo(Self);
+    GetWSCustomEdit(WidgetSetClass).Undo(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ end;
 function TCustomEdit.GetCanUndo: Boolean;
 begin
   if HandleAllocated then
-    Result := WSCustomEditClass(WidgetSetClass).GetCanUndo(Self)
+    Result := GetWSCustomEdit(WidgetSetClass).GetCanUndo(Self)
   else
     Result := False;
 end;
@@ -326,7 +326,7 @@ begin
     FCharCase := Value;
     // update interface, it might do the case conversion itself.
     if HandleAllocated then
-      WSCustomEditClass(WidgetSetClass).SetCharCase(Self, Value);
+      GetWSCustomEdit(WidgetSetClass).SetCharCase(Self, Value);
     case FCharCase of
       ecUpperCase: Text := UTF8UpperCase(Text);
       ecLowerCase: Text := UTF8LowerCase(Text);
@@ -340,7 +340,7 @@ begin
   begin
     FHideSelection := AValue;
     if HandleAllocated then
-      WSCustomEditClass(WidgetSetClass).SetHideSelection(Self, AValue);
+      GetWSCustomEdit(WidgetSetClass).SetHideSelection(Self, AValue);
   end;
 end;
 
@@ -357,7 +357,7 @@ begin
   begin
     FMaxLength := Value;
     if HandleAllocated then
-      WSCustomEditClass(WidgetSetClass).SetMaxLength(Self, Value);
+      GetWSCustomEdit(WidgetSetClass).SetMaxLength(Self, Value);
   end;
 end;
 
@@ -383,7 +383,7 @@ begin
     EchoMode:=emPassword;
   end;
   if HandleAllocated and (FEmulatedTextHintStatus = thsHidden) then
-    WSCustomEditClass(WidgetSetClass).SetPasswordChar(Self, AValue);
+    GetWSCustomEdit(WidgetSetClass).SetPasswordChar(Self, AValue);
 end;
 
 class procedure TCustomEdit.WSRegisterClass;
@@ -421,7 +421,7 @@ begin
       PasswordChar := ' ';
   end;
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).SetEchoMode(Self, Val);
+    GetWSCustomEdit(WidgetSetClass).SetEchoMode(Self, Val);
 end;
 
 procedure TCustomEdit.SetNumbersOnly(Value: Boolean);
@@ -430,7 +430,7 @@ begin
   begin
     FNumbersOnly := Value;
     if HandleAllocated then
-      WSCustomEditClass(WidgetSetClass).SetNumbersOnly(Self, Value);
+      GetWSCustomEdit(WidgetSetClass).SetNumbersOnly(Self, Value);
   end;
 end;
 
@@ -440,7 +440,7 @@ begin
   begin
     FReadOnly := Value;
     if HandleAllocated then
-      WSCustomEditClass(WidgetSetClass).SetReadOnly(Self, Value);
+      GetWSCustomEdit(WidgetSetClass).SetReadOnly(Self, Value);
   end;
 end;
 
@@ -680,7 +680,7 @@ end;
 function TCustomEdit.GetCaretPos: TPoint;
 begin
   if HandleAllocated then
-    fCaretPos := WSCustomEditClass(WidgetSetClass).GetCaretPos(Self);
+    fCaretPos := GetWSCustomEdit(WidgetSetClass).GetCaretPos(Self);
   Result:=fCaretPos;
 end;
 
@@ -691,7 +691,7 @@ begin
   if (FTextHint = AValue) then Exit;
   FTextHint := AValue;
   if (WidgetSet.GetLCLCapability(lcTextHint) = LCL_CAPABILITY_YES) and HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).SetTextHint(Self, AValue);
+    GetWSCustomEdit(WidgetSetClass).SetTextHint(Self, AValue);
   if FTextHint = '' then
     HideEmulatedTextHint
   else
@@ -711,12 +711,12 @@ begin
   FEmulatedTextHintStatus := thsChanging;
   HintFont := CreateEmulatedTextHintFont(Self);
   try
-    WSCustomEditClass(WidgetSetClass).SetFont(Self, HintFont);
+    GetWSCustomEdit(WidgetSetClass).SetFont(Self, HintFont);
   finally
     HintFont.Free;
   end;
-  WSCustomEditClass(WidgetSetClass).SetText(Self, Self.TextHint);
-  WSCustomEditClass(WidgetSetClass).SetPasswordChar(Self, #0);
+  GetWSCustomEdit(WidgetSetClass).SetText(Self, Self.TextHint);
+  GetWSCustomEdit(WidgetSetClass).SetPasswordChar(Self, #0);
   FEmulatedTextHintStatus := thsShowing;
 end;
 
@@ -724,9 +724,9 @@ procedure TCustomEdit.HideEmulatedTextHint;
 begin
   if FEmulatedTextHintStatus<>thsShowing then
     Exit;
-  WSCustomEditClass(WidgetSetClass).SetFont(Self, Font);
-  WSCustomEditClass(WidgetSetClass).SetPasswordChar(Self, PasswordChar);
-  WSCustomEditClass(WidgetSetClass).SetText(Self, '');
+  GetWSCustomEdit(WidgetSetClass).SetFont(Self, Font);
+  GetWSCustomEdit(WidgetSetClass).SetPasswordChar(Self, PasswordChar);
+  GetWSCustomEdit(WidgetSetClass).SetText(Self, '');
   FEmulatedTextHintStatus := thsHidden;
 end;
 
@@ -736,7 +736,7 @@ begin
     exit;
   FAlignment := AValue;
   if HandleAllocated then
-    WSCustomEditClass(WidgetSetClass).SetAlignment(Self, FAlignment);
+    GetWSCustomEdit(WidgetSetClass).SetAlignment(Self, FAlignment);
 end;
 
 

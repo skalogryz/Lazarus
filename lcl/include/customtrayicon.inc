@@ -98,7 +98,7 @@ begin
   begin
     Result := not (csLoading in ComponentState);
     if Result then
-      Result := WSCustomTrayIconClass(WidgetSetClass).Hide(Self);
+      Result := GetWSCustomTrayIcon(WidgetSetClass).Hide(Self);
     FVisible := not Result;
     FAnimateTimer.Enabled := False;
   end
@@ -122,7 +122,7 @@ begin
   FDelayedShowing := csLoading in ComponentState;
   if FDelayedShowing then
     exit(False);
-  Result := WSCustomTrayIconClass(WidgetSetClass).Show(Self);
+  Result := GetWSCustomTrayIcon(WidgetSetClass).Show(Self);
   FVisible := Result;
   FAnimateTimer.Enabled := FAnimate;
 end;
@@ -207,7 +207,7 @@ end;
 procedure TCustomTrayIcon.IconChanged(Sender: TObject);
 begin
   if Handle <> 0 then
-    WSCustomTrayIconClass(WidgetSetClass).InternalUpdate(Self);
+    GetWSCustomTrayIcon(WidgetSetClass).InternalUpdate(Self);
 end;
 
 class procedure TCustomTrayIcon.WSRegisterClass;
@@ -252,7 +252,7 @@ end;
 procedure TCustomTrayIcon.InternalUpdate;
 begin
   if not (csLoading in ComponentState) then
-    WSCustomTrayIconClass(WidgetSetClass).InternalUpdate(Self);
+    GetWSCustomTrayIcon(WidgetSetClass).InternalUpdate(Self);
 end;
 
 {*******************************************************************
@@ -270,7 +270,7 @@ var
   UsePopUpNotifier: Boolean;
   Pt: TPoint;
 begin
-  UsePopUpNotifier := not WSCustomTrayIconClass(WidgetSetClass).ShowBalloonHint(Self);
+  UsePopUpNotifier := not GetWSCustomTrayIcon(WidgetSetClass).ShowBalloonHint(Self);
   
   if UsePopUpNotifier then
   begin
@@ -298,7 +298,7 @@ end;
 *******************************************************************}
 function TCustomTrayIcon.GetPosition: TPoint;
 begin
-  Result := WSCustomTrayIconClass(WidgetSetClass).GetPosition(Self);
+  Result := GetWSCustomTrayIcon(WidgetSetClass).GetPosition(Self);
 end;
 
 {*******************************************************************
@@ -314,7 +314,7 @@ end;
 function TCustomTrayIcon.GetCanvas: TCanvas;
 begin
   //Result := Icon.Canvas;
-  Result := WSCustomTrayIconClass(WidgetSetClass).GetCanvas(Self);
+  Result := GetWSCustomTrayIcon(WidgetSetClass).GetCanvas(Self);
 end;
 
 function TCustomTrayIcon.GetAnimateInterval: Cardinal;

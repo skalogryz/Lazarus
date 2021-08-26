@@ -280,13 +280,13 @@ procedure TCustomUpDown.InitializeWnd;
 begin
   inherited InitializeWnd;
   if not FUseWS then Exit;
-  WSCustomUpDownClass(WidgetSetClass).SetMinPosition(Self, FMin);
-  WSCustomUpDownClass(WidgetSetClass).SetMaxPosition(Self, FMax);
-  WSCustomUpDownClass(WidgetSetClass).SetPosition(Self, FPosition);
-  WSCustomUpDownClass(WidgetSetClass).SetIncrement(Self, FIncrement);
-  WSCustomUpDownClass(WidgetSetClass).SetWrap(Self, FWrap);
-  WSCustomUpDownClass(WidgetSetClass).SetOrientation(Self, FOrientation);
-  WSCustomUpDownClass(WidgetSetClass).SetUseArrowKeys(Self, FArrowKeys);
+  GetWSCustomUpDown(WidgetSetClass).SetMinPosition(Self, FMin);
+  GetWSCustomUpDown(WidgetSetClass).SetMaxPosition(Self, FMax);
+  GetWSCustomUpDown(WidgetSetClass).SetPosition(Self, FPosition);
+  GetWSCustomUpDown(WidgetSetClass).SetIncrement(Self, FIncrement);
+  GetWSCustomUpDown(WidgetSetClass).SetWrap(Self, FWrap);
+  GetWSCustomUpDown(WidgetSetClass).SetOrientation(Self, FOrientation);
+  GetWSCustomUpDown(WidgetSetClass).SetUseArrowKeys(Self, FArrowKeys);
 end;
 
 procedure TCustomUpDown.UpdateOrientation;
@@ -668,7 +668,7 @@ begin
     If FPosition < FMin then
       Position := FMin;
     if FUseWS then
-      WSCustomUpDownClass(WidgetSetClass).SetMinPosition(Self, FMin);
+      GetWSCustomUpDown(WidgetSetClass).SetMinPosition(Self, FMin);
   end;
 end;
 
@@ -687,7 +687,7 @@ begin
     If FPosition > FMax then
       Position := FMax;
     if FUseWS then
-      WSCustomUpDownClass(WidgetSetClass).SetMaxPosition(Self, FMax);
+      GetWSCustomUpDown(WidgetSetClass).SetMaxPosition(Self, FMax);
   end;
 end;
 
@@ -696,7 +696,7 @@ begin
   if Value <> FIncrement then begin
     FIncrement := Value;
     if FUseWS then
-      WSCustomUpDownClass(WidgetSetClass).SetIncrement(Self, FIncrement);
+      GetWSCustomUpDown(WidgetSetClass).SetIncrement(Self, FIncrement);
   end;
 end;
 
@@ -705,7 +705,7 @@ begin
   if FPosition = Value then exit;
   FPosition := Value;
   if FUseWS then
-    WSCustomUpDownClass(WidgetSetClass).SetPosition(Self, FPosition);
+    GetWSCustomUpDown(WidgetSetClass).SetPosition(Self, FPosition);
   UpdateUpDownPositionText;
 end;
 
@@ -714,7 +714,7 @@ begin
   if FOrientation = Value then exit;
   FOrientation := Value;
   if FUseWS then
-    WSCustomUpDownClass(WidgetSetClass).SetOrientation(Self, FOrientation);
+    GetWSCustomUpDown(WidgetSetClass).SetOrientation(Self, FOrientation);
 
   UpdateOrientation;
 end;
@@ -731,7 +731,7 @@ begin
   if Value <> FArrowKeys then begin
     FArrowKeys := Value;
     if FUseWS then
-      WSCustomUpDownClass(WidgetSetClass).SetUseArrowKeys(Self, Value);
+      GetWSCustomUpDown(WidgetSetClass).SetUseArrowKeys(Self, Value);
   end;
 end;
 
@@ -755,7 +755,7 @@ begin
   if Value <> FWrap then
     FWrap := Value;
   if FUseWS then
-    WSCustomUpDownClass(WidgetSetClass).SetWrap(Self, FWrap);
+    GetWSCustomUpDown(WidgetSetClass).SetWrap(Self, FWrap);
 end;
 
 // included by comctrls.pp

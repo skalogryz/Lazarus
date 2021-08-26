@@ -78,7 +78,7 @@ begin
   DestroyHandle;
   CreateHandle;
   if Assigned(OnMenuPopupHandler) then OnMenuPopupHandler(Self);
-  WSPopupMenuClass(WidgetSetClass).Popup(Self, X, Y);
+  GetWSPopupMenu(WidgetSetClass).Popup(Self, X, Y);
 end;
 
 procedure TPopupMenu.Close;

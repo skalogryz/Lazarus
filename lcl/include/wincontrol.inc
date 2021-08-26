@@ -3630,7 +3630,7 @@ end;
 
 procedure TWinControl.DefaultHandler(var AMessage);
 begin
-  WSWinControlClass(WidgetSetClass).DefaultWndHandler(Self, AMessage);
+  GetWSWinControl(WidgetSetClass).DefaultWndHandler(Self, AMessage);
 end;
 
 
@@ -3746,7 +3746,7 @@ begin
   inherited DoConstraintsChange(Sender);
   //debugln('TWinControl.DoConstraintsChange ',DbgSName(Self),' HandleAllocated=',dbgs(HandleAllocated));
   if HandleAllocated then
-    WSWinControlClass(WidgetSetClass).ConstraintsChange(Self);
+    GetWSWinControl(WidgetSetClass).ConstraintsChange(Self);
 end;
 
 {-------------------------------------------------------------------------------
@@ -3888,7 +3888,7 @@ end;
 ------------------------------------------------------------------------------}
 function TWinControl.CanTab: Boolean;
 begin
-  Result := CanFocus and WSWinControlClass(WidgetSetClass).CanFocus(Self);
+  Result := CanFocus and GetWSWinControl(WidgetSetClass).CanFocus(Self);
 end;
 
 function TWinControl.DoDragMsg(ADragMessage: TDragMessage; APosition: TPoint; ADragObject: TDragObject; ATarget: TControl; ADocking: Boolean):LRESULT;
@@ -4020,7 +4020,7 @@ var
 begin
   if wcfClientRectNeedsUpdate in FWinControlFlags then begin
     //DebugLn(['TWinControl.GetClientRect ',DbgSName(Self),' ',HandleAllocated,' ',wcfBoundsRealized in FWinControlFlags]);
-    if WSWinControlClass(WidgetSetClass).GetDefaultClientRect(Self,
+    if GetWSWinControl(WidgetSetClass).GetDefaultClientRect(Self,
       Left, Top, Width, Height, Result)
     then begin
       // the LCL interface provided a ClientRect
@@ -4157,7 +4157,7 @@ begin
   if FBorderStyle = NewStyle then Exit;
   FBorderStyle := NewStyle;
   if HandleAllocated then
-    WSWinControlClass(WidgetSetClass).SetBorderStyle(Self, NewStyle);
+    GetWSWinControl(WidgetSetClass).SetBorderStyle(Self, NewStyle);
 end;
 
 {------------------------------------------------------------------------------
@@ -4242,7 +4242,7 @@ begin
             if i<NewPos then dec(NewPos);
           end;
         end;
-        WSWinControlClass(WidgetSetClass).SetChildZPosition(Self,
+        GetWSWinControl(WidgetSetClass).SetChildZPosition(Self,
                               TWinControl(AChild), OldPos, NewPos, WinControls);
       finally
         WinControls.Free;
@@ -4480,7 +4480,7 @@ end;
 procedure TWinControl.SetTempCursor(Value: TCursor);
 begin
   if not HandleAllocated then exit;
-  WSWinControlClass(WidgetSetClass).SetCursor(Self, Screen.Cursors[Value]);
+  GetWSWinControl(WidgetSetClass).SetCursor(Self, Screen.Cursors[Value]);
 end;
 
 {------------------------------------------------------------------------------
@@ -4778,7 +4778,7 @@ procedure TWinControl.FontChanged(Sender: TObject);
 begin
   if HandleAllocated and ([csLoading, csDestroying] * ComponentState = []) then
   begin
-    WSWinControlClass(WidgetSetClass).SetFont(Self, TFont(Sender));
+    GetWSWinControl(WidgetSetClass).SetFont(Self, TFont(Sender));
     Exclude(FWinControlFlags, wcfFontChanged);
   end
   else
@@ -4798,7 +4798,7 @@ begin
       FBrush.Color := Color;
   if HandleAllocated and ([csLoading,csDestroying]*ComponentState=[]) then
   begin
-    WSWinControlClass(WidgetSetClass).SetColor(Self);
+    GetWSWinControl(WidgetSetClass).SetColor(Self);
     Exclude(FWinControlFlags, wcfColorChanged);
   end
   else
@@ -5079,7 +5079,7 @@ end;
 procedure TWinControl.PaintTo(DC: HDC; X, Y: Integer);
 begin
   if HandleAllocated then
-    WSWinControlClass(WidgetSetClass).PaintTo(Self, DC, X, Y);
+    GetWSWinControl(WidgetSetClass).PaintTo(Self, DC, X, Y);
 end;
 
 procedure TWinControl.PaintTo(ACanvas: TCanvas; X, Y: Integer);
@@ -5094,10 +5094,10 @@ begin
     Exit;
 
   if (AShape <> nil) and (AShape.Width = Width) and (AShape.Height = Height) then
-    WSWinControlClass(WidgetSetClass).SetShape(Self, AShape.Handle)
+    GetWSWinControl(WidgetSetClass).SetShape(Self, AShape.Handle)
   else
   if AShape = nil then
-    WSWinControlClass(WidgetSetClass).SetShape(Self, 0)
+    GetWSWinControl(WidgetSetClass).SetShape(Self, 0)
 end;
 
 procedure TWinControl.SetShape(AShape: TRegion);
@@ -5429,7 +5429,7 @@ end;
 
 procedure TWinControl.WSSetText(const AText: String);
 begin
-  WSWinControlClass(WidgetSetClass).SetText(Self, AText);
+  GetWSWinControl(WidgetSetClass).SetText(Self, AText);
 end;
 
 {------------------------------------------------------------------------------
@@ -6117,7 +6117,7 @@ procedure TWinControl.Invalidate;
 begin
   //DebugLn(['TWinControl.Invalidate ',DbgSName(Self),' HandleAllocated=',HandleAllocated]);
   if HandleAllocated and ([csDestroying,csLoading]*ComponentState=[]) then
-    WSWinControlClass(WidgetSetClass).Invalidate(Self);
+    GetWSWinControl(WidgetSetClass).Invalidate(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -6127,7 +6127,7 @@ end;
 ------------------------------------------------------------------------------}
 procedure TWinControl.AddControl;
 begin
-  WSControlClass(WidgetSetClass).AddControl(Self);
+  GetWSControl(WidgetSetClass).AddControl(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -6140,7 +6140,7 @@ begin
   if csDesigning in ComponentState then
     DebugLn('TWinControl.Repaint A ',Name,':',ClassName);
   {$ENDIF}
-  WSWinControlClass(WidgetSetClass).Repaint(Self);
+  GetWSWinControl(WidgetSetClass).Repaint(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -6195,7 +6195,7 @@ end;
 procedure TWinControl.ScrollBy_WS(DeltaX, DeltaY: Integer);
 begin
   if HandleAllocated then
-    WSWinControlClass(WidgetSetClass).ScrollBy(Self, DeltaX, DeltaY)
+    GetWSWinControl(WidgetSetClass).ScrollBy(Self, DeltaX, DeltaY)
   else
     raise Exception.Create('TWinControl.ScrollBy_WS: Handle not allocated');
 end;
@@ -6739,7 +6739,7 @@ begin
   inherited CMBiDiModeChanged(Message);
   NotifyControls(CM_PARENTBIDIMODECHANGED);
   if HandleAllocated and (Message.wParam = 0) then
-    WSWinControlClass(WidgetSetClass).SetBiDiMode(Self,
+    GetWSWinControl(WidgetSetClass).SetBiDiMode(Self,
        UseRightToLeftAlignment, UseRightToLeftReading, UseRightToLeftScrollBar);
   AdjustSize;
 end;
@@ -6824,7 +6824,7 @@ begin
 
   //if Name='GroupBox1' then
   //  debugln(['TWinControl.WMPaint ',DbgSName(Self),' DoubleBuffered=',DoubleBuffered,' Msg.DC=',dbgs(Msg.DC),' csCustomPaint=',csCustomPaint in ControlState,' ControlCount=',ControlCount,' ClientRect=',dbgs(ClientRect)]);
-  if (Msg.DC <> 0) or not WSWinControlClass(WidgetSetClass).GetDoubleBuffered(Self) then
+  if (Msg.DC <> 0) or not GetWSWinControl(WidgetSetClass).GetDoubleBuffered(Self) then
   begin
     if not (csCustomPaint in ControlState) and (ControlCount = 0) then
       begin
@@ -7540,7 +7540,7 @@ begin
       end;
 
       //DebugLn(['TWinControl.CreateWnd Creating handle ... ',DbgSName(WidgetSetClass),' ',DbgSName(Self)]);
-      FHandle := WSWinControlClass(WidgetSetClass).CreateHandle(Self, Params);
+      FHandle := GetWSWinControl(WidgetSetClass).CreateHandle(Self, Params);
       if not HandleAllocated then
       begin
         if WidgetSet.LCLPlatform=lpNoGUI then
@@ -7549,12 +7549,12 @@ begin
           RaiseGDBException('TWinControl.CreateWnd: Handle creation failed creating '+DbgSName(Self));
       end;
       //debugln('TWinControl.CreateWnd update constraints ... ',DbgSName(Self));
-      WSWinControlClass(WidgetSetClass).SetBiDiMode(Self,
+      GetWSWinControl(WidgetSetClass).SetBiDiMode(Self,
          UseRightToLeftAlignment, UseRightToLeftReading, UseRightToLeftScrollBar);
 
       Constraints.UpdateInterfaceConstraints;
       InvalidateClientRectCache(False);
-      WSWinControlClass(WidgetSetClass).ConstraintsChange(Self);
+      GetWSWinControl(WidgetSetClass).ConstraintsChange(Self);
 
       //WriteClientRect('A');
       if Assigned(Parent) and (Params.Style and WS_POPUP = 0) then
@@ -7646,13 +7646,13 @@ begin
     if wcfColorChanged in FWinControlFlags then
     begin
       // replace by update style call
-      WSWinControlClass(WidgetSetClass).SetColor(Self);
+      GetWSWinControl(WidgetSetClass).SetColor(Self);
       Exclude(FWinControlFlags, wcfColorChanged);
     end;
     if wcfFontChanged in FWinControlFlags then
     begin
       // replace by update style call
-      WSWinControlClass(WidgetSetClass).SetFont(Self,Font);
+      GetWSWinControl(WidgetSetClass).SetFont(Self,Font);
       Exclude(FWinControlFlags, wcfFontChanged);
     end;
 
@@ -7668,9 +7668,9 @@ begin
     end;
 
     if csDesigning in ComponentState then
-      WSWinControlClass(WidgetSetClass).SetCursor(Self, Screen.Cursors[crDefault])
+      GetWSWinControl(WidgetSetClass).SetCursor(Self, Screen.Cursors[crDefault])
     else
-      WSWinControlClass(WidgetSetClass).SetCursor(Self, Screen.Cursors[Cursor]);
+      GetWSWinControl(WidgetSetClass).SetCursor(Self, Screen.Cursors[Cursor]);
   finally
     EnableAutoSizing{$IFDEF DebugDisableAutoSizing}('TWinControl.InitializeWnd'){$ENDIF};
   end;
@@ -7688,7 +7688,7 @@ begin
   if not HandleAllocated then
     RaiseGDBException('TWinControl.FinalizeWnd Handle already destroyed');
   // make sure our text is saved
-  if WSWinControlClass(WidgetSetClass).GetText(Self, S) then
+  if GetWSWinControl(WidgetSetClass).GetText(Self, S) then
     FCaption := S;
   // if color has changed make sure it will be restored
   if FColor <> {$ifdef UseCLDefault}clDefault{$else}clWindow{$endif} then
@@ -7810,13 +7810,13 @@ begin
 
       if wcfColorChanged in FWinControlFlags then
       begin
-        WSWinControlClass(WidgetSetClass).SetColor(Self);
+        GetWSWinControl(WidgetSetClass).SetColor(Self);
         NotifyControls(CM_PARENTCOLORCHANGED);
         Exclude(FWinControlFlags, wcfColorChanged);
       end;
       if wcfFontChanged in FWinControlFlags then
       begin
-        WSWinControlClass(WidgetSetClass).SetFont(Self,Font);
+        GetWSWinControl(WidgetSetClass).SetFont(Self,Font);
         NotifyControls(CM_PARENTFONTCHANGED);
         FWinControlFlags:=FWinControlFlags-[wcfFontChanged];
       end;
@@ -7864,7 +7864,7 @@ begin
         for i := 0 to FControls.Count - 1 do
           TControl(FControls[i]).DoOnParentHandleDestruction;
 
-      WSWinControlClass(WidgetSetClass).DestroyHandle(Self);
+      GetWSWinControl(WidgetSetClass).DestroyHandle(Self);
       Handle := 0;
       Exclude(FWinControlFlags,wcfBoundsRealized);
       // Maybe handle is not needed at moment but later it will be created once
@@ -8214,7 +8214,7 @@ begin
   inherited CalculatePreferredSize(PreferredWidth,PreferredHeight,WithThemeSpace);
   
   if HandleAllocated then begin
-    WSWinControlClass(WidgetSetClass).GetPreferredSize(Self,
+    GetWSWinControl(WidgetSetClass).GetPreferredSize(Self,
                                PreferredWidth, PreferredHeight, WithThemeSpace);
     {$IFDEF VerboseCalculatePreferredSize}
     if IsVerbose then debugln(['TWinControl.CalculatePreferredSize Widget ',DbgSName(Self),' ',DbgSName(WidgetSetClass),' Pref=',PreferredWidth,'x',PreferredHeight]);
@@ -8310,7 +8310,7 @@ begin
   {$ELSE}
   if not HandleAllocated 
   or (csLoading in ComponentState) 
-  or (not WSWinControlClass(WidgetSetClass).GetText(Self, Result))
+  or (not GetWSWinControl(WidgetSetClass).GetText(Self, Result))
   then Result := inherited RealGetText;
   {$ENDIF}
 end;
@@ -8327,7 +8327,7 @@ begin
   Result := 0;
   if not HandleAllocated 
   or (csLoading in ComponentState) 
-  or not WSWinControlClass(WidgetSetClass).GetTextLen(Self, Result)
+  or not GetWSWinControl(WidgetSetClass).GetTextLen(Self, Result)
   then Result := inherited GetTextLen;
 end;
 
@@ -8450,7 +8450,7 @@ begin
     {$IF defined(VerboseNewAutoSize) or defined(VerboseIntfSizing) or defined(VerboseShowing)}
     DebugLn(['TWinControl.DoSendShowHideToInterface ',DbgSName(Self),' FBoundsRealized=',dbgs(FBoundsRealized),' New=',HandleObjectShouldBeVisible]);
     {$ENDIF}
-    WSWinControlClass(WidgetSetClass).ShowHide(Self);
+    GetWSWinControl(WidgetSetClass).ShowHide(Self);
   end;
 end;
 
@@ -8528,7 +8528,7 @@ begin
   Include(FWinControlFlags, wcfBoundsRealized); // Note: set before calling widgetset, because used in WMSize
   //if Parent=nil then DebugLn(['TWinControl.DoSendBoundsToInterface ',DbgSName(Self),' ',dbgs(BoundsRect)]);
   // this can trigger WMSize messages
-  WSWinControlClass(WidgetSetClass).SetBounds(Self, Left, Top, Width, Height);
+  GetWSWinControl(WidgetSetClass).SetBounds(Self, Left, Top, Width, Height);
   NewClientRect := ClientRect;
   if Visible and (not CompareRect(@OldClientRect,@NewClientRect)) then
   begin

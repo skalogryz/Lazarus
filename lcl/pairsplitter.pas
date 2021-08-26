@@ -267,7 +267,7 @@ end;
 procedure TCustomPairSplitter.SetPosition(const AValue: integer);
 begin
   if (FPosition = AValue) and
-    (WSCustomPairSplitterClass(WidgetSetClass).GetPosition(Self) = FPosition)
+    (GetWSCustomPairSplitter(WidgetSetClass).GetPosition(Self) = FPosition)
   then
     Exit;
 
@@ -275,7 +275,7 @@ begin
   if FPosition < 0 then
     FPosition := 0;
   if HandleAllocated and (not (csLoading in ComponentState)) then
-    WSCustomPairSplitterClass(WidgetSetClass).SetPosition(Self, FPosition);
+    GetWSCustomPairSplitter(WidgetSetClass).SetPosition(Self, FPosition);
 end;
 
 procedure TCustomPairSplitter.SetSplitterType(const AValue: TPairSplitterType);
@@ -313,7 +313,7 @@ begin
     begin
       FSides[i] := ASide;
       if HandleAllocated then
-        WSCustomPairSplitterClass(WidgetSetClass).AddSide(Self, ASide, i);
+        GetWSCustomPairSplitter(WidgetSetClass).AddSide(Self, ASide, i);
       break;
     end;
     inc(i);
@@ -332,7 +332,7 @@ begin
     if FSides[i]=ASide then
     begin
       if HandleAllocated and ASide.HandleAllocated then
-        WSCustomPairSplitterClass(WidgetSetClass).RemoveSide(Self, ASide, i);
+        GetWSCustomPairSplitter(WidgetSetClass).RemoveSide(Self, ASide, i);
       FSides[i] := nil;
     end;
   // if the user deletes a side at designtime, autocreate a new one
@@ -354,7 +354,7 @@ begin
   
   // if widgetset class do not want to get cursor (has no internal splitter) then
   // use default lcl handler
-  if not WSCustomPairSplitterClass(WidgetSetClass).GetSplitterCursor(Self, Result) then
+  if not GetWSCustomPairSplitter(WidgetSetClass).GetSplitterCursor(Self, Result) then
     Result := inherited GetCursor;
 end;
 
@@ -365,7 +365,7 @@ begin
     Exit;
   // if widgetset class do not want to set cursor (has no internal splitter) then
   // use default lcl handler
-  if not WSCustomPairSplitterClass(WidgetSetClass).SetSplitterCursor(Self, Value) then
+  if not GetWSCustomPairSplitter(WidgetSetClass).SetSplitterCursor(Self, Value) then
     inherited SetCursor(Value);
 end;
 
@@ -404,9 +404,9 @@ begin
   inherited CreateWnd;
   for i := Low(FSides) to High(FSides) do
     if FSides[i] <> nil then
-      WSCustomPairSplitterClass(WidgetSetClass).AddSide(Self, FSides[i], i);
+      GetWSCustomPairSplitter(WidgetSetClass).AddSide(Self, FSides[i], i);
   APosition := FPosition;
-  WSCustomPairSplitterClass(WidgetSetClass).SetPosition(Self, APosition);
+  GetWSCustomPairSplitter(WidgetSetClass).SetPosition(Self, APosition);
   SetCursor(FLoadCursor);
   if not (csLoading in ComponentState) then
     FPosition := APosition;
@@ -419,7 +419,7 @@ begin
   if HandleAllocated then
   begin
     CurPosition := -1;
-    WSCustomPairSplitterClass(WidgetSetClass).SetPosition(Self, CurPosition);
+    GetWSCustomPairSplitter(WidgetSetClass).SetPosition(Self, CurPosition);
     FPosition := CurPosition;
   end;
 end;
@@ -447,7 +447,7 @@ begin
   inherited Loaded;
   CreateSides;
   if HandleAllocated then
-    WSCustomPairSplitterClass(WidgetSetClass).SetPosition(Self, FPosition);
+    GetWSCustomPairSplitter(WidgetSetClass).SetPosition(Self, FPosition);
 end;
 
 function TCustomPairSplitter.ChildClassAllowed(ChildClass: TClass): boolean;

@@ -287,7 +287,7 @@ begin
       p := @FData[OldCount];
       for n := OldCount to FCount - 1 do
       begin
-        WSCustomImageListResolutionClass(WidgetSetClass).Insert(Self, n, p);
+        GetWSCustomImageListResolution(WidgetSetClass).Insert(Self, n, p);
         Inc(PByte(p), DataSize);
       end;
     end;
@@ -352,7 +352,7 @@ procedure TCustomImageListResolution.Clear;
 begin
   if FCount = 0 then Exit;
   if HandleAllocated
-  then WSCustomImageListResolutionClass(WidgetSetClass).Clear(Self);
+  then GetWSCustomImageListResolution(WidgetSetClass).Clear(Self);
   SetLength(FData, 0);
   FAllocCount := 0;
 end;
@@ -369,7 +369,7 @@ begin
     InternalMove(AIndex, FCount-1, True);
   Dec(FCount);
   if HandleAllocated
-  then WSCustomImageListResolutionClass(WidgetSetClass).Delete(Self, AIndex);
+  then GetWSCustomImageListResolution(WidgetSetClass).Delete(Self, AIndex);
   // TODO: adjust allocated data
 end;
 
@@ -398,7 +398,7 @@ begin
   if (AIndex < 0) or (AIndex >= FCount) then Exit;
 
   ReferenceNeeded;
-  WSCustomImageListResolutionClass(WidgetSetClass).Draw(Self, AIndex, ACanvas, Rect(AX, AY, FWidth, FHeight),
+  GetWSCustomImageListResolution(WidgetSetClass).Draw(Self, AIndex, ACanvas, Rect(AX, AY, FWidth, FHeight),
                           FImageList.BkColor, FImageList.BlendColor, ADrawEffect, ADrawingStyle, AImageType);
 end;
 
@@ -423,13 +423,13 @@ begin
   if (AIndex < 0) or (AIndex >= FCount) then Exit;
 
   ReferenceNeeded;
-  WSCustomImageListResolutionClass(WidgetSetClass).Draw(Self, AIndex, ACanvas, Rect(AX, AY, FWidth, FHeight),
+  GetWSCustomImageListResolution(WidgetSetClass).Draw(Self, AIndex, ACanvas, Rect(AX, AY, FWidth, FHeight),
                           FImageList.BkColor, FImageList.BlendColor, ADrawEffect, ADrawingStyle, AImageType);
 
   OverlayI := FImageList.FOverlays[AOverlay];
   if (OverlayI < 0) or (OverlayI >= FCount) then Exit;
 
-  WSCustomImageListResolutionClass(WidgetSetClass).Draw(Self, OverlayI, ACanvas, Rect(AX, AY, FWidth, FHeight),
+  GetWSCustomImageListResolution(WidgetSetClass).Draw(Self, OverlayI, ACanvas, Rect(AX, AY, FWidth, FHeight),
                           clNone, FImageList.BlendColor, ADrawEffect, ADrawingStyle, AImageType);
 end;
 
@@ -632,7 +632,7 @@ begin
 
   ImgData := InternalSetData(AIndex, AData);
   if HandleAllocated
-  then WSCustomImageListResolutionClass(WidgetSetClass).Insert(Self, AIndex, ImgData);
+  then GetWSCustomImageListResolution(WidgetSetClass).Insert(Self, AIndex, ImgData);
 end;
 
 {------------------------------------------------------------------------------
@@ -688,7 +688,7 @@ begin
 
   ImgData := InternalSetData(AIndex, AData);
   if HandleAllocated
-  then WSCustomImageListResolutionClass(WidgetSetClass).Replace(Self, AIndex, ImgData);
+  then GetWSCustomImageListResolution(WidgetSetClass).Replace(Self, AIndex, ImgData);
 end;
 
 function TCustomImageListResolution.InternalSetData(AIndex: Integer;
@@ -1069,7 +1069,7 @@ var
   ilc: TWSCustomImageListResolutionClass;
   dt: PRGBAQuad;
 begin
-  ilc := WSCustomImageListResolutionClass(WidgetSetClass);
+  ilc := GetWSCustomImageListResolution(WidgetSetClass);
   if FCount = 0 then
     dt := nil
   else
@@ -2100,7 +2100,7 @@ begin
   begin
     R.InternalMove(ACurIndex, ANewIndex, False);
     if R.HandleAllocated
-    then WSCustomImageListResolutionClass(R.WidgetSetClass).Move(R, ACurIndex, ANewIndex);
+    then GetWSCustomImageListResolution(R.WidgetSetClass).Move(R, ACurIndex, ANewIndex);
   end;
 
   FChanged := true;

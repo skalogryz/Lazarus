@@ -28,7 +28,7 @@ begin
   inherited InitializeWnd;
 
   // get the interface based item list
-  NewStrings:= WSCustomComboBoxClass(WidgetSetClass).GetItems(Self);
+  NewStrings:= GetWSCustomComboBox(WidgetSetClass).GetItems(Self);
   // then delete internal list
   if (FItems<>NewStrings) and (FItems<>nil) then
   begin
@@ -39,14 +39,14 @@ begin
   FItems := NewStrings;
 
   if (FItemIndex > -1) and (FItemIndex < FItems.Count) then
-    WSCustomComboBoxClass(WidgetSetClass).SetItemIndex(Self, FItemIndex);
-  WSCustomComboBoxClass(WidgetSetClass).SetStyle(Self, FStyle);
-  WSCustomComboBoxClass(WidgetSetClass).SetArrowKeysTraverseList(Self, FArrowKeysTraverseList);
-  WSCustomComboBoxClass(WidgetSetClass).SetReadOnly(Self, FReadOnly);
-  WSCustomComboBoxClass(WidgetSetClass).SetMaxLength(Self, FMaxLength);
-  WSCustomComboBoxClass(WidgetSetClass).SetDropDownCount(Self, FDropDownCount);
+    GetWSCustomComboBox(WidgetSetClass).SetItemIndex(Self, FItemIndex);
+  GetWSCustomComboBox(WidgetSetClass).SetStyle(Self, FStyle);
+  GetWSCustomComboBox(WidgetSetClass).SetArrowKeysTraverseList(Self, FArrowKeysTraverseList);
+  GetWSCustomComboBox(WidgetSetClass).SetReadOnly(Self, FReadOnly);
+  GetWSCustomComboBox(WidgetSetClass).SetMaxLength(Self, FMaxLength);
+  GetWSCustomComboBox(WidgetSetClass).SetDropDownCount(Self, FDropDownCount);
   if WidgetSet.GetLCLCapability(lcTextHint) = LCL_CAPABILITY_YES then
-    WSCustomComboBoxClass(WidgetSetClass).SetTextHint(Self, FTextHint)
+    GetWSCustomComboBox(WidgetSetClass).SetTextHint(Self, FTextHint)
   else
     ShowEmulatedTextHintIfYouCan;
 
@@ -72,7 +72,7 @@ var
 begin
   if not HandleAllocated then RaiseGDBException('');
   // store itemindex
-  FItemIndex := WSCustomComboBoxClass(WidgetSetClass).GetItemIndex(Self);
+  FItemIndex := GetWSCustomComboBox(WidgetSetClass).GetItemIndex(Self);
   // create an internal list for storing items internally
   NewStrings := TStringList.Create;
   // copy from interface based list
@@ -80,7 +80,7 @@ begin
   begin
     NewStrings.Assign(FItems);
     // delete interface based list
-    WSCustomComboBoxClass(WidgetSetClass).FreeItems(FItems);
+    GetWSCustomComboBox(WidgetSetClass).FreeItems(FItems);
   end;
   // and use the internal list
   FItems := NewStrings;
@@ -175,7 +175,7 @@ begin
   begin
     FMaxlength := AValue;
     if HandleAllocated then
-      WSCustomComboBoxClass(WidgetSetClass).SetMaxLength(Self, AValue);
+      GetWSCustomComboBox(WidgetSetClass).SetMaxLength(Self, AValue);
   end;
 end;
 
@@ -189,7 +189,7 @@ end;
 function TCustomComboBox.GetMaxLength: integer;
 begin
   if HandleAllocated then
-    FMaxLength := WSCustomComboBoxClass(WidgetSetClass).GetMaxLength(Self);
+    FMaxLength := GetWSCustomComboBox(WidgetSetClass).GetMaxLength(Self);
   Result := FMaxLength;
 end;
 
@@ -343,7 +343,7 @@ end;
 function TCustomComboBox.GetSelStart : integer;
 begin
   if HandleAllocated then
-    FSelStart := WSCustomComboBoxClass(WidgetSetClass).GetSelStart(Self);
+    FSelStart := GetWSCustomComboBox(WidgetSetClass).GetSelStart(Self);
   Result := FSelStart;
 end;
 
@@ -358,7 +358,7 @@ procedure TCustomComboBox.SetSelStart(Val : integer);
 begin
   FSelStart := Val;
   if HandleAllocated then
-    WSCustomComboBoxClass(WidgetSetClass).SetSelStart(Self, Val);
+    GetWSCustomComboBox(WidgetSetClass).SetSelStart(Self, Val);
 end;
 
 {------------------------------------------------------------------------------
@@ -371,7 +371,7 @@ end;
 function TCustomComboBox.GetSelLength : integer;
 begin
   if HandleAllocated then
-    FSelLength := WSCustomComboBoxClass(WidgetSetClass).GetSelLength(Self);
+    FSelLength := GetWSCustomComboBox(WidgetSetClass).GetSelLength(Self);
   Result := FSelLength;
 end;
 
@@ -386,7 +386,7 @@ procedure TCustomComboBox.SetSelLength(Val : integer);
 begin
   FSelLength := Val;
   if HandleAllocated then
-    WSCustomComboBoxClass(WidgetSetClass).SetSelLength(Self, Val);
+    GetWSCustomComboBox(WidgetSetClass).SetSelLength(Self, Val);
 end;
 
 {------------------------------------------------------------------------------
@@ -425,7 +425,7 @@ begin
   begin
     FStyle:= Val;
     if HandleAllocated and ([csLoading,csDestroying]*ComponentState=[]) then
-      WSCustomComboBoxClass(WidgetSetClass).SetStyle(Self, Val);
+      GetWSCustomComboBox(WidgetSetClass).SetStyle(Self, Val);
   end;
 end;
 
@@ -461,7 +461,7 @@ begin
   begin
     FArrowKeysTraverseList := Value;
     if HandleAllocated and ([csLoading, csDestroying] * ComponentState=[]) then
-      WSCustomComboBoxClass(WidgetSetClass).SetArrowKeysTraverseList(Self, Value);
+      GetWSCustomComboBox(WidgetSetClass).SetArrowKeysTraverseList(Self, Value);
    end;
 end;
 
@@ -724,7 +724,7 @@ begin
     Result := FItemHeight
   else
   begin
-    Result := WSCustomComboBoxClass(WidgetSetClass).GetItemHeight(Self);
+    Result := GetWSCustomComboBox(WidgetSetClass).GetItemHeight(Self);
     if (FItemHeight = 0) then
       FItemHeight := Result;
   end;
@@ -741,7 +741,7 @@ begin
     exit;
   FDropDownCount := AValue;
   if HandleAllocated then
-    WSCustomComboBoxClass(WidgetSetClass).SetDropDownCount(Self, AValue);
+    GetWSCustomComboBox(WidgetSetClass).SetDropDownCount(Self, AValue);
 end;
 
 {------------------------------------------------------------------------------
@@ -757,7 +757,7 @@ begin
   if not HandleAllocated then
     exit;
   if Style.IsOwnerDrawn then
-    WSCustomComboBoxClass(WidgetSetClass).SetItemHeight(Self, FItemHeight);
+    GetWSCustomComboBox(WidgetSetClass).SetItemHeight(Self, FItemHeight);
 end;
 
 {------------------------------------------------------------------------------
@@ -768,7 +768,7 @@ end;
 function TCustomComboBox.GetDroppedDown: Boolean;
 begin
   if HandleAllocated then
-    Result := WSCustomComboBoxClass(WidgetSetClass).GetDroppedDown(Self)
+    Result := GetWSCustomComboBox(WidgetSetClass).GetDroppedDown(Self)
   else
     Result := FDroppedDown;
 end;
@@ -804,7 +804,7 @@ begin
     Exit;
   if (not HandleAllocated) or (csLoading in ComponentState) then
     Exit;
-  WSCustomComboBoxClass(WidgetSetClass).SetDroppedDown(Self, AValue);
+  GetWSCustomComboBox(WidgetSetClass).SetDroppedDown(Self, AValue);
 end;
 
 {------------------------------------------------------------------------------
@@ -985,7 +985,7 @@ function TCustomComboBox.GetItemIndex : integer;
 begin
   if not (csDestroyingHandle in ControlState) and HandleAllocated then
     // WidgetSet must be called even when csDestroying for at least TIniPropStorage's needs.
-    FItemIndex:= WSCustomComboBoxClass(WidgetSetClass).GetItemIndex(Self);
+    FItemIndex:= GetWSCustomComboBox(WidgetSetClass).GetItemIndex(Self);
   Result := FItemIndex;
 end;
 
@@ -1008,7 +1008,7 @@ begin
   if csLoading in ComponentState then Exit;
   
   if HandleAllocated then
-    WSCustomComboBoxClass(WidgetSetClass).SetItemIndex(Self, FItemIndex)
+    GetWSCustomComboBox(WidgetSetClass).SetItemIndex(Self, FItemIndex)
   else
   begin
     // remember text, in case one reads text without creating handle
@@ -1113,7 +1113,7 @@ begin
   FReadOnly := AValue;
   if (not HandleAllocated) or (csLoading in ComponentState) then
     Exit;
-  WSCustomComboBoxClass(WidgetSetClass).SetReadOnly(Self, FReadOnly);
+  GetWSCustomComboBox(WidgetSetClass).SetReadOnly(Self, FReadOnly);
 end;
 
 // TextHint stuff
@@ -1123,7 +1123,7 @@ begin
   if (FTextHint = AValue) then Exit;
   FTextHint := AValue;
   if (WidgetSet.GetLCLCapability(lcTextHint) = LCL_CAPABILITY_YES) and HandleAllocated then
-    WSCustomComboBoxClass(WidgetSetClass).SetTextHint(Self, AValue);
+    GetWSCustomComboBox(WidgetSetClass).SetTextHint(Self, AValue);
   if FTextHint = '' then
     HideEmulatedTextHint
   else
@@ -1143,11 +1143,11 @@ begin
   FEmulatedTextHintStatus := thsChanging;
   HintFont := CreateEmulatedTextHintFont(Self);
   try
-    WSCustomComboBoxClass(WidgetSetClass).SetFont(Self, HintFont);
+    GetWSCustomComboBox(WidgetSetClass).SetFont(Self, HintFont);
   finally
     HintFont.Free;
   end;
-  WSCustomComboBoxClass(WidgetSetClass).SetText(Self, Self.TextHint);
+  GetWSCustomComboBox(WidgetSetClass).SetText(Self, Self.TextHint);
   FEmulatedTextHintStatus := thsShowing;
 end;
 
@@ -1155,8 +1155,8 @@ procedure TCustomComboBox.HideEmulatedTextHint;
 begin
   if FEmulatedTextHintStatus<>thsShowing then
     Exit;
-  WSCustomComboBoxClass(WidgetSetClass).SetFont(Self, Font);
-  WSCustomComboBoxClass(WidgetSetClass).SetText(Self, '');
+  GetWSCustomComboBox(WidgetSetClass).SetFont(Self, Font);
+  GetWSCustomComboBox(WidgetSetClass).SetText(Self, '');
   FEmulatedTextHintStatus := thsHidden;
 end;
 
@@ -1169,7 +1169,7 @@ var
   lIndex: integer;
 begin
   if HandleAllocated then
-    WSCustomComboBoxClass(WidgetSetClass).Sort(Self, Items, FSorted)
+    GetWSCustomComboBox(WidgetSetClass).Sort(Self, Items, FSorted)
   else if FItems is TStringList then
   begin
     // remember text

@@ -96,7 +96,7 @@ end;
 procedure TMenu.BidiModeChanged;
 begin
   if HandleAllocated then
-    WSMenuClass(WidgetSetClass).SetBiDiMode(Self, UseRightToLeftAlignment, UseRightToLeftReading);
+    GetWSMenu(WidgetSetClass).SetBiDiMode(Self, UseRightToLeftAlignment, UseRightToLeftReading);
 end;
 
 procedure TMenu.ParentBidiModeChanged(AOwner: TComponent);
@@ -149,7 +149,7 @@ end;
  ------------------------------------------------------------------------------}
 procedure TMenu.CreateHandle;
 begin
-  FItems.Handle := WSMenuClass(WidgetSetClass).CreateHandle(Self);
+  FItems.Handle := GetWSMenu(WidgetSetClass).CreateHandle(Self);
   FItems.CheckChildrenHandles;
 end;
 

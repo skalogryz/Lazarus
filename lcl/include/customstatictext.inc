@@ -73,7 +73,7 @@ begin
   if fAlignment <> value then begin
     fAlignment:= value;
     if HandleAllocated then
-      WSCustomStaticTextClass(WidgetSetClass).SetAlignment(Self, Value);
+      GetWSCustomStaticText(WidgetSetClass).SetAlignment(Self, Value);
   end;
 end;
 
@@ -111,7 +111,7 @@ begin
   if Val <> FShowAccelChar then begin
     FShowAccelChar:= Val;
     if HandleAllocated then begin
-      WSWinControlClass(WidgetSetClass).SetText(Self,Caption);
+      GetWSWinControl(WidgetSetClass).SetText(Self,Caption);
       InvalidatePreferredSize;
     end;
   end;
@@ -141,7 +141,7 @@ begin
     FStaticBorderStyle := Value;
     if HandleAllocated then
     begin
-      WSCustomStaticTextClass(WidgetsetClass).SetStaticBorderStyle(Self, Value);
+      GetWSCustomStaticText(WidgetsetClass).SetStaticBorderStyle(Self, Value);
       if AutoSize then
       begin
         InvalidatePreferredSize;

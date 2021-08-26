@@ -109,7 +109,7 @@ begin
   FChecked := False;
   FVisible := True;
   FEnabled := True;
-  FCommand := WSMenuItemClass(WidgetSetClass).OpenCommand;
+  FCommand := GetWSMenuItem(WidgetSetClass).OpenCommand;
   FImageIndex := -1;
   FBitmapIsValid := True;
   FRightJustify := False;
@@ -133,7 +133,7 @@ begin
   //DebugLn('TMenuItem.CreateHandle ',dbgsName(Self),' ',dbgs(Self));
   //DebugLn('TMenuItem.CreateHandle START ',Name,':',ClassName);
   if not FVisible then RaiseGDBException('');
-  FHandle := WSMenuItemClass(WidgetSetClass).CreateHandle(Self);
+  FHandle := GetWSMenuItem(WidgetSetClass).CreateHandle(Self);
   CheckChildrenHandles;
 
   if MergedParent <> nil then
@@ -141,7 +141,7 @@ begin
     MergedParent.HandleNeeded;
     //DebugLn('TMenuItem.CreateHandle Attaching ... ',Name,':',ClassName);
     if MergedParent.HandleAllocated then
-      WSMenuItemClass(WidgetSetClass).AttachMenu(Self);
+      GetWSMenuItem(WidgetSetClass).AttachMenu(Self);
 
     if HandleAllocated then
     begin
@@ -210,7 +210,7 @@ begin
     FreeAndNil(FMenuItemHandlers[HandlerType]);
   if FParent <> nil then
     FParent.FItems.Remove(Self);
-  if FCommand <> 0 then WSMenuItemClass(WidgetSetClass).CloseCommand(FCommand);
+  if FCommand <> 0 then GetWSMenuItem(WidgetSetClass).CloseCommand(FCommand);
   //debugln('TMenuItem.Destroy B ',dbgsName(Self));
   FreeAndNil(FMergedItems);
   inherited Destroy;
@@ -812,7 +812,7 @@ begin
   if Assigned(FMerged) then
     for i := FMerged.Count - 1 downto 0 do
       FMerged[i].DestroyHandle;
-  WSMenuItemClass(WidgetSetClass).DestroyHandle(Self);
+  GetWSMenuItem(WidgetSetClass).DestroyHandle(Self);
   FHandle := 0;
 end;
 
@@ -1170,7 +1170,7 @@ begin
   if FCaption = AValue then exit;
   FCaption := AValue;
   if HandleAllocated and ((Parent <> nil) or (FMenu = nil)) then
-    WSMenuItemClass(WidgetSetClass).SetCaption(Self, AValue);
+    GetWSMenuItem(WidgetSetClass).SetCaption(Self, AValue);
   OwnerFormDesignerModified(Self);
 end;
 
@@ -1189,7 +1189,7 @@ begin
     if AValue and FRadioItem then
       TurnSiblingsOff;
     if (FParent <> nil) and not (csReading in ComponentState) and HandleAllocated then
-      WSMenuItemClass(WidgetSetClass).SetCheck(Self, AValue);
+      GetWSMenuItem(WidgetSetClass).SetCheck(Self, AValue);
     OwnerFormDesignerModified(Self);
   end;
 end;
@@ -1220,7 +1220,7 @@ begin
   begin
     FEnabled := AValue;
     if HandleAllocated and (Parent <> nil) then
-      WSMenuItemClass(WidgetSetClass).SetEnable(Self, AValue);
+      GetWSMenuItem(WidgetSetClass).SetEnable(Self, AValue);
     MenuChanged(False);
   end;
 end;
@@ -1317,7 +1317,7 @@ begin
       end;
     end;
     if (FParent <> nil) and not (csReading in ComponentState) and (HandleAllocated) then
-      WSMenuItemClass(WidgetSetClass).SetRadioItem(Self, AValue);
+      GetWSMenuItem(WidgetSetClass).SetRadioItem(Self, AValue);
   end;
 end;
 
@@ -1331,7 +1331,7 @@ begin
   if FRightJustify = AValue then Exit;
   FRightJustify := AValue;
   if HandleAllocated then
-    WSMenuItemClass(WidgetSetClass).SetRightJustify(Self, AValue);
+    GetWSMenuItem(WidgetSetClass).SetRightJustify(Self, AValue);
 end;
 
 {------------------------------------------------------------------------------
@@ -1500,12 +1500,12 @@ begin
     and Parent.HandleAllocated then
       HandleNeeded;
     if HandleAllocated then
-      WSMenuItemClass(WidgetSetClass).SetVisible(Self, True);
+      GetWSMenuItem(WidgetSetClass).SetVisible(Self, True);
   end else
   begin
     if HandleAllocated then
     begin
-      WSMenuItemClass(WidgetSetClass).SetVisible(Self, False);
+      GetWSMenuItem(WidgetSetClass).SetVisible(Self, False);
       DestroyHandle;
     end;
     FVisible := AValue;
@@ -1558,9 +1558,9 @@ procedure TMenuItem.UpdateWSIcon;
 begin
   if HandleAllocated then
     if HasIcon then // prevent creating bitmap
-      WSMenuItemClass(WidgetSetClass).UpdateMenuIcon(Self, HasIcon, Bitmap)
+      GetWSMenuItem(WidgetSetClass).UpdateMenuIcon(Self, HasIcon, Bitmap)
     else
-      WSMenuItemClass(WidgetSetClass).UpdateMenuIcon(Self, HasIcon, nil);
+      GetWSMenuItem(WidgetSetClass).UpdateMenuIcon(Self, HasIcon, nil);
 end;
 
 procedure TMenuItem.ImageListChange(Sender: TObject);
@@ -1579,7 +1579,7 @@ end;
 procedure TMenuItem.ShortcutChanged;
 begin
   if HandleAllocated then
-    WSMenuItemClass(WidgetSetClass).SetShortCut(Self, FShortCut, FShortCutKey2);
+    GetWSMenuItem(WidgetSetClass).SetShortCut(Self, FShortCut, FShortCutKey2);
 end;
 
 {------------------------------------------------------------------------------

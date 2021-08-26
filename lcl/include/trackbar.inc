@@ -115,7 +115,7 @@ end;
 procedure TCustomTrackBar.SetTick(Value: Integer);
 begin
   if HandleAllocated then
-    WSTrackBarClass(WidgetSetClass).SetTick(Self, Value);
+    GetWSTrackBar(WidgetSetClass).SetTick(Self, Value);
 end;
 
 {------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ begin
       Constraints.UpdateInterfaceConstraints;
       SetBounds(Left,Top,OldHeight,OldWidth);
       if HandleAllocated then
-        WSTrackBarClass(WidgetSetClass).SetOrientation(Self, FOrientation);
+        GetWSTrackBar(WidgetSetClass).SetOrientation(Self, FOrientation);
     end;
   end;
 end;
@@ -184,7 +184,7 @@ begin
   begin
     FPosition := Value;
     if HandleAllocated then
-      WSTrackBarClass(WidgetSetClass).SetPosition(Self, FPosition);
+      GetWSTrackBar(WidgetSetClass).SetPosition(Self, FPosition);
     if not (csLoading in ComponentState) then 
       Changed;
   end;
@@ -255,7 +255,7 @@ begin
     Constraints.UpdateInterfaceConstraints;
     DoAutoSize;
     if HandleAllocated then
-      WSTrackBarClass(WidgetSetClass).SetTickStyle(Self, FTickStyle);
+      GetWSTrackBar(WidgetSetClass).SetTickStyle(Self, FTickStyle);
   end;
 end;
 
@@ -333,7 +333,7 @@ end;
 procedure TCustomTrackBar.ApplyChanges;
 begin
   if HandleAllocated and (not (csLoading in ComponentState)) then
-    WSTrackBarClass(WidgetSetClass).ApplyChanges(Self);
+    GetWSTrackBar(WidgetSetClass).ApplyChanges(Self);
 end;
 
 procedure TCustomTrackBar.Changed;
@@ -351,7 +351,7 @@ end;
  ------------------------------------------------------------------------------}
 procedure TCustomTrackBar.DoChange(var msg);
 begin
-  FPosition := WSTrackBarClass(WidgetSetClass).GetPosition(Self);
+  FPosition := GetWSTrackBar(WidgetSetClass).GetPosition(Self);
   Assert(True, 'Trace:Trackbar received a message -CHANGE');
   if [csLoading,csDestroying,csDesigning]*ComponentState<>[] then
     Exit;

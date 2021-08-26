@@ -188,7 +188,7 @@ end;
 procedure TCustomBitBtn.GlyphChanged(Sender: TObject);
 begin
   if HandleAllocated then
-    WSBitBtnClass(WidgetSetClass).SetGlyph(Self, FButtonGlyph);
+    GetWSBitBtn(WidgetSetClass).SetGlyph(Self, FButtonGlyph);
   InvalidatePreferredSize;
   AdjustSize;
 end;
@@ -239,7 +239,7 @@ begin
   FLayout := AValue;
   if HandleAllocated then
   begin
-    WSBitBtnClass(WidgetSetClass).SetLayout(Self, FLayout);
+    GetWSBitBtn(WidgetSetClass).SetLayout(Self, FLayout);
     InvalidatePreferredSize;
   end;
   AdjustSize;
@@ -250,7 +250,7 @@ begin
   if FMargin = AValue then Exit;
   FMargin := AValue;
   if HandleAllocated  then
-    WSBitBtnClass(WidgetSetClass).SetMargin(Self, FMargin);
+    GetWSBitBtn(WidgetSetClass).SetMargin(Self, FMargin);
   AdjustSize;
   if csDesigning in ComponentState then
     Invalidate;
@@ -273,7 +273,7 @@ begin
   if (FSpacing = AValue) or (AValue < -1) then Exit;
   FSpacing := AValue;
   if HandleAllocated then
-    WSBitBtnClass(WidgetSetClass).SetSpacing(Self, FSpacing);
+    GetWSBitBtn(WidgetSetClass).SetSpacing(Self, FSpacing);
   AdjustSize;
   if csDesigning in ComponentState then
     Invalidate;
@@ -378,10 +378,10 @@ end;
 procedure TCustomBitBtn.InitializeWnd;
 begin
   inherited InitializeWnd;
-  WSBitBtnClass(WidgetSetClass).SetGlyph(Self, FButtonGlyph);
-  WSBitBtnClass(WidgetSetClass).SetLayout(Self, FLayout);
-  WSBitBtnClass(WidgetSetClass).SetMargin(Self, FMargin);
-  WSBitBtnClass(WidgetSetClass).SetSpacing(Self, FSpacing);
+  GetWSBitBtn(WidgetSetClass).SetGlyph(Self, FButtonGlyph);
+  GetWSBitBtn(WidgetSetClass).SetLayout(Self, FLayout);
+  GetWSBitBtn(WidgetSetClass).SetMargin(Self, FMargin);
+  GetWSBitBtn(WidgetSetClass).SetSpacing(Self, FSpacing);
 end;
 
 function TCustomBitBtn.IsCaptionStored: Boolean;

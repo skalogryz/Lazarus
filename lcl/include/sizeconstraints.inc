@@ -40,7 +40,7 @@ end;
 procedure TSizeConstraints.UpdateInterfaceConstraints;
 begin
   if (Control is TWinControl) and TWinControl(Control).HandleAllocated then
-    WSControlClass(Control.WidgetSetClass).GetConstraints(Control, Self);
+    GetWSControl(Control.WidgetSetClass).GetConstraints(Control, Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ begin
   MaxW:=EffectiveMaxWidth;
   if (MaxW>0) and (Result>MaxW) then Result:=MaxW;
   if (Control is TWinControl) and TWinControl(Control).HandleAllocated then
-    WSControlClass(Control.WidgetSetClass).ConstraintWidth(Control, Self, Result);
+    GetWSControl(Control.WidgetSetClass).ConstraintWidth(Control, Self, Result);
 end;
 
 function TSizeConstraints.MinMaxHeight(Height: integer): integer;
@@ -149,7 +149,7 @@ begin
   MaxH:=EffectiveMaxHeight;
   if (MaxH>0) and (Result>MaxH) then Result:=MaxH;
   if (Control is TWinControl) and TWinControl(Control).HandleAllocated then
-    WSControlClass(Control.WidgetSetClass).ConstraintHeight(Control, Self, Result);
+    GetWSControl(Control.WidgetSetClass).ConstraintHeight(Control, Self, Result);
 end;
 
 {------------------------------------------------------------------------------

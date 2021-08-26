@@ -1424,7 +1424,7 @@ const
   { dctFont  } clWindowText
   );
 begin
-  Result := WSControlClass(WidgetSetClass).GetDefaultColor(Self, DefaultColorType);
+  Result := GetWSControl(WidgetSetClass).GetDefaultColor(Self, DefaultColorType);
   if (Result = clDefault) then
     if ParentColor and Assigned(Parent) then
       Result := Parent.GetDefaultColor(DefaultColorType)
@@ -5612,7 +5612,7 @@ end;
 
 function TControl.GetCanvasScaleFactor: Double;
 begin
-  Result := WSControlClass(WidgetSetClass).GetCanvasScaleFactor(Self);
+  Result := GetWSControl(WidgetSetClass).GetCanvasScaleFactor(Self);
 end;
 
 {------------------------------------------------------------------------------

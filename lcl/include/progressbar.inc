@@ -215,7 +215,7 @@ begin
   begin
     FStyle := AValue;
     if HandleAllocated then
-      WSProgressBarClass(WidgetSetClass).SetStyle(Self, AValue);
+      GetWSProgressBar(WidgetSetClass).SetStyle(Self, AValue);
   end;
 end;
 
@@ -238,7 +238,7 @@ begin
   if FPosition > FMax then FPosition := FMax;
   if FPosition < FMin then FPosition := FMin;
   if HandleAllocated then
-    WSProgressBarClass(WidgetSetClass).SetPosition(Self, FPosition);
+    GetWSProgressBar(WidgetSetClass).SetPosition(Self, FPosition);
 end;
 
 
@@ -274,7 +274,7 @@ begin
     if Position < Min then FPosition := Min;
     if Position > Max then FPosition := Max;
     if HandleAllocated then
-      WSProgressBarClass(WidgetSetClass).ApplyChanges(Self);
+      GetWSProgressBar(WidgetSetClass).ApplyChanges(Self);
   end;
 end;
 

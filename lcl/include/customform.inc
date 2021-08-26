@@ -222,9 +222,9 @@ begin
   begin
     FreeIconHandles;
     if BorderStyle <> bsDialog then
-      WSCustomFormClass(WidgetSetClass).SetIcon(Self, SmallIconHandle, BigIconHandle)
+      GetWSCustomForm(WidgetSetClass).SetIcon(Self, SmallIconHandle, BigIconHandle)
     else
-      WSCustomFormClass(WidgetSetClass).SetIcon(Self, 0, 0);
+      GetWSCustomForm(WidgetSetClass).SetIcon(Self, 0, 0);
   end;
 end;
 
@@ -294,7 +294,7 @@ begin
       PopupParent := nil
     else
     if not (csDesigning in ComponentState) and HandleAllocated then
-      WSCustomFormClass(WidgetSetClass).SetRealPopupParent(Self, GetRealPopupParent);
+      GetWSCustomForm(WidgetSetClass).SetRealPopupParent(Self, GetRealPopupParent);
   end;
 end;
 
@@ -311,7 +311,7 @@ begin
       FPopupMode := pmExplicit;
     end;
     if not (csDesigning in ComponentState) and HandleAllocated then
-      WSCustomFormClass(WidgetSetClass).SetRealPopupParent(Self, GetRealPopupParent);
+      GetWSCustomForm(WidgetSetClass).SetRealPopupParent(Self, GetRealPopupParent);
   end;
 end;
 
@@ -878,7 +878,7 @@ begin
   if (Assigned(Application) and (Application.MainForm = Self)) or
      (not HandleAllocated) or Assigned(Parent) or
      (FormStyle = fsMDIChild) or not Showing then Exit;
-  WSCustomFormClass(WidgetSetClass).SetShowInTaskbar(Self, GetEffectiveShowInTaskBar);
+  GetWSCustomForm(WidgetSetClass).SetShowInTaskbar(Self, GetEffectiveShowInTaskBar);
 end;
 
 class procedure TCustomForm.WSRegisterClass;
@@ -1084,9 +1084,9 @@ begin
   if not (csDesigning in ComponentState) then
   begin
     // set alpha value
-    WSCustomFormClass(WidgetSetClass).SetAlphaBlend(Self, AlphaBlend, AlphaBlendValue);
+    GetWSCustomForm(WidgetSetClass).SetAlphaBlend(Self, AlphaBlend, AlphaBlendValue);
     // set allow drop files
-    WSCustomFormClass(WidgetSetClass).SetAllowDropFiles(Self, FAllowDropFiles);
+    GetWSCustomForm(WidgetSetClass).SetAllowDropFiles(Self, FAllowDropFiles);
   end;
   inherited InitializeWnd;
 end;
@@ -1753,7 +1753,7 @@ end;
 procedure TCustomForm.SetModalResult(Value: TModalResult);
 begin
   if HandleAllocated and (Value <> FModalResult) then
-    WSCustomFormClass(WidgetSetClass).SetModalResult(Self, Value);
+    GetWSCustomForm(WidgetSetClass).SetModalResult(Self, Value);
   FModalResult := Value;
 end;
 
@@ -1765,7 +1765,7 @@ begin
   if FBorderIcons = NewIcons then exit;
   FBorderIcons := NewIcons;
   if HandleAllocated then
-    WSCustomFormClass(WidgetSetClass).SetBorderIcons(Self, NewIcons);
+    GetWSCustomForm(WidgetSetClass).SetBorderIcons(Self, NewIcons);
 end;
 
 {------------------------------------------------------------------------------
@@ -1797,7 +1797,7 @@ begin
     // because TBorderStyle <> TFormBorderStyle;
     if HandleAllocated then
     begin
-      WSCustomFormClass(WidgetSetClass).SetFormBorderStyle(Self, NewStyle);
+      GetWSCustomForm(WidgetSetClass).SetFormBorderStyle(Self, NewStyle);
       Perform(CM_ICONCHANGED, 0, 0);
       UpdateMenu;
     end;
@@ -1935,7 +1935,7 @@ begin
   FAllowDropFiles := AValue;
   
   if HandleAllocated and not (csDesigning in ComponentState) then
-    WSCustomFormClass(WidgetSetClass).SetAllowDropFiles(Self, AValue);
+    GetWSCustomForm(WidgetSetClass).SetAllowDropFiles(Self, AValue);
 end;
 
 procedure TCustomForm.SetAlphaBlend(const AValue: Boolean);
@@ -1944,7 +1944,7 @@ begin
     Exit;
   FAlphaBlend := AValue;
   if not (csDesigning in ComponentState) and HandleAllocated then
-    WSCustomFormClass(WidgetSetClass).SetAlphaBlend(Self, AlphaBlend, AlphaBlendValue);
+    GetWSCustomForm(WidgetSetClass).SetAlphaBlend(Self, AlphaBlend, AlphaBlendValue);
 end;
 
 procedure TCustomForm.SetAlphaBlendValue(const AValue: Byte);
@@ -1953,7 +1953,7 @@ begin
     Exit;
   FAlphaBlendValue := AValue;
   if not (csDesigning in ComponentState) and HandleAllocated then
-    WSCustomFormClass(WidgetSetClass).SetAlphaBlend(Self, AlphaBlend, AlphaBlendValue);
+    GetWSCustomForm(WidgetSetClass).SetAlphaBlend(Self, AlphaBlend, AlphaBlendValue);
 end;
 
 {------------------------------------------------------------------------------
@@ -1975,7 +1975,7 @@ Begin
   if OldFormStyle = fsSplash then
     BorderStyle := bsSizeable;
   if HandleAllocated then
-    WSCustomFormClass(WidgetSetClass).SetFormStyle(Self, Value, OldFormStyle);
+    GetWSCustomForm(WidgetSetClass).SetFormStyle(Self, Value, OldFormStyle);
 end;
 
 {------------------------------------------------------------------------------
@@ -2067,7 +2067,7 @@ begin
   FAlphaBlend := False;
   FAlphaBlendValue := 255;
   case Application.DoubleBuffered of
-    adbDefault: FDoubleBuffered := WSCustomFormClass(WidgetSetClass).GetDefaultDoubleBuffered;
+    adbDefault: FDoubleBuffered := GetWSCustomForm(WidgetSetClass).GetDefaultDoubleBuffered;
     adbTrue: FDoubleBuffered := True;
     adbFalse: FDoubleBuffered := False;
   end;
@@ -2388,7 +2388,7 @@ begin
     if HandleAllocated then begin
       // ensure widgetset has latest coordinates // invisible forms are not updated by DoSendBoundsToInterface
       if (not HandleObjectShouldBeVisible) then
-        WSWinControlClass(WidgetSetClass).SetBounds(Self, Left, Top, Width, Height);
+        GetWSWinControl(WidgetSetClass).SetBounds(Self, Left, Top, Width, Height);
       Result := Screen.MonitorFromWindow(Handle, mdNearest);
     end
     else
@@ -2819,7 +2819,7 @@ begin
   if not (FormStyle in [fsMDIForm, fsMDIChild]) then
     exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    Result := WSCustomFormClass(WidgetSetClass).GetClientHandle(Self);
+    Result := GetWSCustomForm(WidgetSetClass).GetClientHandle(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -2837,7 +2837,7 @@ begin
   if not (FormStyle in [fsMDIForm, fsMDIChild]) then
     exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    Result := WSCustomFormClass(WidgetSetClass).ActiveMDIChild(Self);
+    Result := GetWSCustomForm(WidgetSetClass).ActiveMDIChild(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -2856,7 +2856,7 @@ begin
   if not (FormStyle in [fsMDIForm, fsMDIChild]) then
     exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    Result := WSCustomFormClass(WidgetSetClass).MDIChildCount(Self);
+    Result := GetWSCustomForm(WidgetSetClass).MDIChildCount(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -2874,7 +2874,7 @@ begin
   if not (FormStyle in [fsMDIForm, fsMDIChild]) then
     exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    Result := WSCustomFormClass(WidgetSetClass).GetMDIChildren(Self, AIndex);
+    Result := GetWSCustomForm(WidgetSetClass).GetMDIChildren(Self, AIndex);
 end;
 
 
@@ -2975,7 +2975,7 @@ begin
       try
         // activate must happen after show
         Perform(CM_ACTIVATE, 0, 0);
-        WSCustomFormClass(WidgetSetClass).ShowModal(Self);
+        GetWSCustomForm(WidgetSetClass).ShowModal(Self);
         repeat
           { Delphi calls Application.HandleMessage
             But HandleMessage processes all pending events and then calls idle,
@@ -3006,7 +3006,7 @@ begin
           ActiveWindow := 0;
       finally
         { guarantee execution of widgetset CloseModal }
-        WSCustomFormClass(WidgetSetClass).CloseModal(Self);
+        GetWSCustomForm(WidgetSetClass).CloseModal(Self);
         // set our modalresult to mrCancel before hiding.
         if ModalResult = 0 then
           ModalResult := mrCancel;
@@ -3177,7 +3177,7 @@ begin
   if (FormStyle <> fsMDIForm) then
     exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    WSCustomFormClass(WidgetSetClass).Cascade(Self);
+    GetWSCustomForm(WidgetSetClass).Cascade(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -3196,7 +3196,7 @@ begin
   if (FormStyle <> fsMDIForm) then
     exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    WSCustomFormClass(WidgetSetClass).Next(Self);
+    GetWSCustomForm(WidgetSetClass).Next(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -3212,7 +3212,7 @@ begin
   if (FormStyle <> fsMDIForm) then
     exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    WSCustomFormClass(WidgetSetClass).Previous(Self);
+    GetWSCustomForm(WidgetSetClass).Previous(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -3232,7 +3232,7 @@ begin
   if (FormStyle <> fsMDIForm) then
     exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    WSCustomFormClass(WidgetSetClass).Tile(Self);
+    GetWSCustomForm(WidgetSetClass).Tile(Self);
 end;
 
 {------------------------------------------------------------------------------
@@ -3248,7 +3248,7 @@ begin
   if (FormStyle <> fsMDIForm) then
     Exit;
   if HandleAllocated and not (csDesigning in ComponentState) then
-    WSCustomFormClass(WidgetSetClass).ArrangeIcons(Self);
+    GetWSCustomForm(WidgetSetClass).ArrangeIcons(Self);
 end;
 
 //==============================================================================

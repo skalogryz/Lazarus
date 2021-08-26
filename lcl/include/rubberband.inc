@@ -25,7 +25,7 @@ begin
     Exit;
   FShape := AValue;
   if HandleAllocated then
-    WsCustomRubberBandClass(WidgetsetClass).SetShape(Self, FShape);
+    GetWSCustomRubberBand(WidgetsetClass).SetShape(Self, FShape);
 end;
 
 class procedure TCustomRubberBand.WSRegisterClass;

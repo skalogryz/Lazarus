@@ -20,7 +20,7 @@ begin
     FUpdatePending := True
   else
   begin
-    WSCustomFloatSpinEditClass(WidgetSetClass).UpdateControl(Self);
+    GetWSCustomFloatSpinEdit(WidgetSetClass).UpdateControl(Self);
     FValueChanged := True;
     FUpdatePending := False;
   end;
@@ -153,7 +153,7 @@ begin
   if HandleAllocated and FValueChanged 
     and not (wcfCreatingHandle in FWinControlFlags) then 
   begin
-    FValue := WSCustomFloatSpinEditClass(WidgetSetClass).GetValue(Self);
+    FValue := GetWSCustomFloatSpinEdit(WidgetSetClass).GetValue(Self);
     FValueChanged := False;
   end;
   Result := FValue;
@@ -165,7 +165,7 @@ begin
   begin
     FEditorEnabled := AValue;
     if HandleAllocated then
-      WSCustomFloatSpinEditClass(WidgetSetClass).SetEditorEnabled(Self, AValue);
+      GetWSCustomFloatSpinEdit(WidgetSetClass).SetEditorEnabled(Self, AValue);
   end;
 end;
 

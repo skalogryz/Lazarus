@@ -38,7 +38,7 @@ begin
   begin
     FSimpleText := Value;
     if HandleAllocated and FSimplePanel then 
-      WSStatusBarClass(WidgetSetClass).SetPanelText(Self, 0);
+      GetWSStatusBar(WidgetSetClass).SetPanelText(Self, 0);
   end;
 end;
 
@@ -58,7 +58,7 @@ begin
     Exit;
   FSizeGrip := AValue;
   if HandleAllocated then
-    WSStatusBarClass(WidgetSetClass).SetSizeGrip(Self, AValue);
+    GetWSStatusBar(WidgetSetClass).SetSizeGrip(Self, AValue);
 end;
 
 class procedure TStatusBar.WSRegisterClass;
@@ -113,7 +113,7 @@ procedure TStatusBar.BoundsChanged;
 begin
   inherited BoundsChanged;
   if HandleAllocated then
-    WSStatusBarClass(WidgetSetClass).SetSizeGrip(Self, SizeGrip);
+    GetWSStatusBar(WidgetSetClass).SetSizeGrip(Self, SizeGrip);
 end;
 
 procedure TStatusBar.SetPanels(Value: TStatusPanels);
@@ -200,12 +200,12 @@ begin
   if (FHandlePanelCount > PanelIndex) and (PanelIndex >= 0) then
   begin
     // update one panel
-    WSStatusBarClass(WidgetSetClass).PanelUpdate(Self, PanelIndex);
+    GetWSStatusBar(WidgetSetClass).PanelUpdate(Self, PanelIndex);
   end else
   begin
     // update all panels
     //DebugLn('TStatusBar.UpdateHandleObject C update all panels');
-    WSStatusBarClass(WidgetSetClass).Update(Self);
+    GetWSStatusBar(WidgetSetClass).Update(Self);
     if SimplePanel then
       FHandlePanelCount := 1
     else

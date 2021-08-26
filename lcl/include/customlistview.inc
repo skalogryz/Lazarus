@@ -16,7 +16,7 @@ begin
   begin
     FArrangement := Value;
     if FListView.HandleAllocated then
-      WSCustomListViewClass(FListView.WidgetSetClass).SetIconArrangement(FListView, Arrangement);
+      GetWSCustomListView(FListView.WidgetSetClass).SetIconArrangement(FListView, Arrangement);
   end;
 end;
 
@@ -536,7 +536,7 @@ var
 begin
   inherited InitializeWnd;
   
-  LVC := WSCustomListViewClass(WidgetSetClass);
+  LVC := GetWSCustomListView(WidgetSetClass);
 
   // set the style first
   LVC.SetViewStyle(Self, FViewStyle);
@@ -643,7 +643,7 @@ var
   B: Boolean;
 begin
   if (not HandleAllocated) or (csLoading in ComponentState) then exit;
-  B := WSCustomListViewClass(WidgetSetClass).ItemGetChecked(Self,
+  B := GetWSCustomListView(WidgetSetClass).ItemGetChecked(Self,
     AItem.Index, AItem);
   if B <> AItem.GetCheckedInternal then
   begin
@@ -776,7 +776,7 @@ procedure TCustomListView.SetItemVisible(const AValue : TListItem;
                                                      const APartialOK: Boolean);
 begin
   if (not HandleAllocated) or (csLoading in ComponentState) then exit;
-  WSCustomListViewClass(WidgetSetClass).ItemShow(
+  GetWSCustomListView(WidgetSetClass).ItemShow(
                                         Self, AValue.Index, AValue, APartialOK);
 end;
 
@@ -912,7 +912,7 @@ begin
   if AValue.Y < 0 then AValue.Y := 0;
   if HandleAllocated
   then begin
-    WSCustomListViewClass(WidgetSetClass).SetViewOrigin(Self, AValue);
+    GetWSCustomListView(WidgetSetClass).SetViewOrigin(Self, AValue);
   end
   else begin
     FViewOriginCache := AValue;
@@ -927,7 +927,7 @@ begin
   if FViewStyle = AValue then Exit;
   FViewStyle := AValue;
   if not HandleAllocated then Exit;
-  WSCustomListViewClass(WidgetSetClass).SetViewStyle(Self, AValue);
+  GetWSCustomListView(WidgetSetClass).SetViewStyle(Self, AValue);
 end;
 
 {------------------------------------------------------------------------------}
@@ -1060,7 +1060,7 @@ begin
             if Items[i].Selected and (Items[i] <> Selected) then
               FSavedSelection.Add(Items[i]);
       end;
-      if (WSCustomListViewClass(WidgetSetClass).RestoreItemCheckedAfterSort(Self))
+      if (GetWSCustomListView(WidgetSetClass).RestoreItemCheckedAfterSort(Self))
         and Items.WSUpdateAllowed
         and not OwnerData then
       begin
@@ -1074,7 +1074,7 @@ begin
       Items.FCacheItem := nil;
 
       FListItems.FItems.Sort(ACompareFunc);
-      WSCustomListViewClass(WidgetSetClass).SetSort(Self, FSortType,
+      GetWSCustomListView(WidgetSetClass).SetSort(Self, FSortType,
         FSortColumn, FSortDirection);
 
       if (FSavedSelection.Count > 0) or Assigned(FSavedFocused) then
@@ -1082,14 +1082,14 @@ begin
         Selected := nil; // unselect all
 
         if FSavedFocused <> nil then
-          WSCustomListViewClass(WidgetSetClass).ItemSetState(Self,
+          GetWSCustomListView(WidgetSetClass).ItemSetState(Self,
             FSavedFocused.Index, FSavedFocused, lisFocused, True);
 
         for i := FSavedSelection.Count - 1 downto 0 do
         begin
           AItemIndex := Items.IndexOf(TListItem(FSavedSelection.Items[i]));
           if AItemIndex <> -1 then
-            WSCustomListViewClass(WidgetSetClass).ItemSetState(Self,
+            GetWSCustomListView(WidgetSetClass).ItemSetState(Self,
               AItemIndex, Items[AItemIndex], lisSelected, True);
         end;
 
@@ -1099,7 +1099,7 @@ begin
           begin
             FSavedCheckItem := TListItem( FSavedChecked[i] );
             // todo: this is inefficient, because FSavedCheckItem.Index must be called again
-            WSCustomListViewClass(WidgetSetClass).ItemSetChecked(Self,
+            GetWSCustomListView(WidgetSetClass).ItemSetChecked(Self,
               FSavedCheckItem.Index, FSavedCheckItem, True);
           end;
           FSavedChecked.Free;
@@ -1204,7 +1204,7 @@ begin
   Inc(FUpdateCount);
   Include(FFlags, lffPreparingSorting);
   if (FUpdateCount = 1) and HandleAllocated
-  then WSCustomListViewClass(WidgetSetClass).BeginUpdate(Self);
+  then GetWSCustomListView(WidgetSetClass).BeginUpdate(Self);
 end;
 
 function TCustomListView.CanEdit(Item: TListItem): Boolean;
@@ -1230,7 +1230,7 @@ begin
   Dec(FUpdateCount);
   if FUpdateCount=0 then Exclude(FFlags, lffPreparingSorting);
   if (FUpdateCount = 0) and HandleAllocated
-  then WSCustomListViewClass(WidgetSetClass).EndUpdate(Self);
+  then GetWSCustomListView(WidgetSetClass).EndUpdate(Self);
 end;
 
 procedure TCustomListView.Repaint;
@@ -1245,7 +1245,7 @@ procedure TCustomListView.FinalizeWnd;
 begin
   FShowEditorQueued:=false;
   // store origin
-  FViewOriginCache := WSCustomListViewClass(WidgetSetClass).GetViewOrigin(Self);
+  FViewOriginCache := GetWSCustomListView(WidgetSetClass).GetViewOrigin(Self);
   if not OwnerData then
     FListItems.DoFinalizeWnd;
   Columns.DoFinalizeWnd;
@@ -1268,7 +1268,7 @@ function TCustomListView.GetBoundingRect: TRect;
 begin
   if not HandleAllocated
   then Result := Rect(0,0,0,0)
-  else Result := WSCustomListViewClass(WidgetSetClass).GetBoundingRect(Self);
+  else Result := GetWSCustomListView(WidgetSetClass).GetBoundingRect(Self);
 end;
 
 function TCustomListView.GetColumnCount: Integer;
@@ -1287,7 +1287,7 @@ var
 begin
   if not HandleAllocated
   then idx := -1
-  else idx := WSCustomListViewClass(WidgetSetClass).GetDropTarget(Self);
+  else idx := GetWSCustomListView(WidgetSetClass).GetDropTarget(Self);
   if idx = -1
   then Result := nil
   else Result := FListItems[idx];
@@ -1311,7 +1311,7 @@ end;
 function TCustomListView.GetHoverTime: Integer;
 begin
   if HandleAllocated
-  then Result := WSCustomListViewClass(WidgetSetClass).GetHoverTime(Self)
+  then Result := GetWSCustomListView(WidgetSetClass).GetHoverTime(Self)
   else Result := FHoverTime;
 end;
 
@@ -1329,7 +1329,7 @@ function TCustomListView.GetHitTestInfoAt(X, Y: Integer): THitTests;
 begin
   Result := [];
   if HandleAllocated then
-    Result := WSCustomListViewClass(WidgetSetClass).GetHitTestInfoAt( Self, X, Y );
+    Result := GetWSCustomListView(WidgetSetClass).GetHitTestInfoAt( Self, X, Y );
 end;
 
 function TCustomListView.GetItemAt(x, y: integer): TListItem;
@@ -1339,7 +1339,7 @@ begin
   Result := nil; 
   if HandleAllocated
   then begin
-    Item := WSCustomListViewClass(WidgetSetClass).GetItemAt(Self,x,y);
+    Item := GetWSCustomListView(WidgetSetClass).GetItemAt(Self,x,y);
     if Item <> -1 
     then Result := Items[Item];
   end;
@@ -1369,7 +1369,7 @@ function TCustomListView.GetNextItem(StartItem: TListItem;
 begin
   Result := nil;
   if HandleAllocated then
-     Result := WSCustomListViewClass(WidgetSetClass).GetNextItem(Self, StartItem, Direction, States);
+     Result := GetWSCustomListView(WidgetSetClass).GetNextItem(Self, StartItem, Direction, States);
 end;
 
 procedure TCustomListView.ClearSelection;
@@ -1378,7 +1378,7 @@ begin
   if MultiSelect then
   begin
     if HandleAllocated then
-      WSCustomListViewClass(WidgetSetClass).SelectAll(Self, False);
+      GetWSCustomListView(WidgetSetClass).SelectAll(Self, False);
     Items.ClearSelection;
   end else
   if (ItemIndex >= 0) and (ItemIndex < Items.Count) then
@@ -1392,7 +1392,7 @@ begin
     exit;
   Self.BeginUpdate;
   if HandleAllocated then
-    WSCustomListViewClass(WidgetSetClass).SelectAll(Self, True);
+    GetWSCustomListView(WidgetSetClass).SelectAll(Self, True);
   Items.SelectAll;
   Self.EndUpdate;
 end;
@@ -1412,7 +1412,7 @@ var
   i: integer;
 begin
   if HandleAllocated
-  then Result := WSCustomListViewClass(WidgetSetClass).GetSelCount(Self)
+  then Result := GetWSCustomListView(WidgetSetClass).GetSelCount(Self)
   else
   begin
     Result := 0;
@@ -1463,7 +1463,7 @@ var
 begin
   if ViewStyle in [vsSmallIcon, vsIcon]
   then idx := -1
-  else idx := WSCustomListViewClass(WidgetSetClass).GetTopItem(Self);
+  else idx := GetWSCustomListView(WidgetSetClass).GetTopItem(Self);
   if idx = -1
   then Result := nil
   else Result := FListItems[idx];
@@ -1476,7 +1476,7 @@ function TCustomListView.GetViewOrigin: TPoint;
 begin
   if HandleAllocated
   then begin
-    Result := WSCustomListViewClass(WidgetSetClass).GetViewOrigin(Self);
+    Result := GetWSCustomListView(WidgetSetClass).GetViewOrigin(Self);
   end
   else begin
     Result := FViewOriginCache;
@@ -1487,7 +1487,7 @@ end;
 function TCustomListView.GetVisibleRowCount: Integer;
 begin
   if ViewStyle in [vsReport, vsList]
-  then Result := WSCustomListViewClass(WidgetSetClass).GetVisibleRowCount(Self)
+  then Result := GetWSCustomListView(WidgetSetClass).GetVisibleRowCount(Self)
   else Result := 0;
 end;
 
@@ -1496,7 +1496,7 @@ begin
   if FAllocBy = AValue then Exit;
   FAllocBy := AValue;
   if not HandleAllocated then Exit;
-  WSCustomListViewClass(WidgetSetClass).SetAllocBy(Self, AValue);
+  GetWSCustomListView(WidgetSetClass).SetAllocBy(Self, AValue);
 end;
 
 procedure TCustomListView.ResizeLastColumn;
@@ -1558,13 +1558,13 @@ begin
   if AValue = FDefaultItemHeight then Exit;
   FDefaultItemHeight := AValue;
   if not HandleAllocated then Exit;
-  WSCustomListViewClass(WidgetSetClass).SetDefaultItemHeight(Self, AValue);
+  GetWSCustomListView(WidgetSetClass).SetDefaultItemHeight(Self, AValue);
 end;
 
 procedure TCustomListView.SetDropTarget(const AValue: TListItem);
 begin
   if not HandleAllocated then Exit;
-  WSCustomListViewClass(WidgetSetClass).ItemSetState(Self, AValue.Index, AValue, lisDropTarget, True);
+  GetWSCustomListView(WidgetSetClass).ItemSetState(Self, AValue.Index, AValue, lisDropTarget, True);
 end;
 
 procedure TCustomListView.SetFocused(const AValue: TListItem);
@@ -1574,7 +1574,7 @@ begin
   if not HandleAllocated then
     Exit;
   if FFocused <> nil then
-    WSCustomListViewClass(WidgetSetClass).ItemSetState(Self, FFocused.Index, FFocused, lisFocused, True);
+    GetWSCustomListView(WidgetSetClass).ItemSetState(Self, FFocused.Index, FFocused, lisFocused, True);
 end;
 
 procedure TCustomListView.SetHotTrackStyles(const AValue: TListHotTrackStyles);
@@ -1582,7 +1582,7 @@ begin
   if FHotTrackStyles = AValue then Exit;
   FHotTrackStyles := AValue;
   if not HandleAllocated then Exit;
-  WSCustomListViewClass(WidgetSetClass).SetHotTrackStyles(Self, AValue);
+  GetWSCustomListView(WidgetSetClass).SetHotTrackStyles(Self, AValue);
 end;
 
 procedure TCustomListView.SetHoverTime(const AValue: Integer);
@@ -1590,7 +1590,7 @@ begin
   if FHoverTime = AValue then Exit;
   FHoverTime := AValue;
   if not HandleAllocated then Exit;
-  WSCustomListViewClass(WidgetSetClass).SetHoverTime(Self, FHoverTime);
+  GetWSCustomListView(WidgetSetClass).SetHoverTime(Self, FHoverTime);
 end;
 
 procedure TCustomListView.SetIconOptions(const AValue: TIconOptions);
@@ -1649,7 +1649,7 @@ begin
     R := FImages[ALvil].ResolutionForPPI[FImagesWidth[ALvil], Font.PixelsPerInch, 1].Resolution // to-do: support scaling factor
   else
     R := nil;
-  WSCustomListViewClass(WidgetSetClass).SetImageList(Self, ALvil, R)
+  GetWSCustomListView(WidgetSetClass).SetImageList(Self, ALvil, R)
 end;
 
 procedure TCustomListView.SetItemIndex(const AValue: Integer);
@@ -1707,7 +1707,7 @@ begin
   begin
     FSelected := AValue;
     if HandleAllocated then
-      WSCustomListViewClass(WidgetSetClass).ItemSetState(Self, FSelected.Index,
+      GetWSCustomListView(WidgetSetClass).ItemSetState(Self, FSelected.Index,
           FSelected, lisSelected, True);
   end;
 end;
@@ -1735,7 +1735,7 @@ begin
     FListItems := CreateListItems;
 
   if HandleAllocated then 
-    WSCustomListViewClass(WidgetSetClass).SetOwnerData(Self, AValue);
+    GetWSCustomListView(WidgetSetClass).SetOwnerData(Self, AValue);
   FOwnerDataItem.SetOwner(FListItems);
 end;
 
@@ -1752,7 +1752,7 @@ begin
   else Exclude(FProperties, AProp);
 
   if not HandleAllocated then Exit;
-  WSCustomListViewClass(WidgetSetClass).SetProperty(Self, AProp, AIsSet);
+  GetWSCustomListView(WidgetSetClass).SetProperty(Self, AProp, AIsSet);
 end;
 
 procedure TCustomListView.ImageChanged(Sender : TObject);
@@ -1778,7 +1778,7 @@ begin
   for lvil in TListViewImageList do
     if Sender = FImages[lvil] then
     begin
-      WSCustomListViewClass(WidgetSetClass).SetImageList(Self, lvil, nil);
+      GetWSCustomListView(WidgetSetClass).SetImageList(Self, lvil, nil);
       Application.QueueAsyncCall(@SetImageListAsync, Ord(lvil));
     end;
 end;
@@ -1806,7 +1806,7 @@ begin
   if (FScrollBars = AValue) then exit;
   FScrollBars := AValue;
   if not HandleAllocated then Exit;
-  WSCustomListViewClass(WidgetSetClass).SetScrollBars(Self, AValue);
+  GetWSCustomListView(WidgetSetClass).SetScrollBars(Self, AValue);
   UpdateScrollBars;
 end;
 

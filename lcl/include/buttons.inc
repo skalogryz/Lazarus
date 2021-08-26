@@ -290,7 +290,7 @@ begin
     if AccelIndex > -1 then
     begin
       FShortCut := Menus.ShortCut(Char2VK(ParseStr[AccelIndex]), [ssCtrl]);
-      WSButtonClass(WidgetSetClass).SetShortCut(Self, FShortCut, FShortCutKey2);
+      GetWSButton(WidgetSetClass).SetShortCut(Self, FShortCut, FShortCutKey2);
     end;
   end;
   inherited WSSetText(AText);
@@ -342,6 +342,6 @@ begin
   // In run time Active actually shows us if this button is a default button
   // (will be clicked on enter)
   if HandleAllocated then
-    WSButtonClass(WidgetSetClass).SetDefault(Self, FActive);
+    GetWSButton(WidgetSetClass).SetDefault(Self, FActive);
 end;
 

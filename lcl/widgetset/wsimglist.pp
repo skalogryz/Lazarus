@@ -42,7 +42,7 @@ type
   { TWSCustomImageListResolution }
 
   {$ifdef WSINTF}
-  TWSCustomImageListResolutionClass = interface (TWSLCLReferenceComponentClass)
+  IWSCustomImageListResolution = interface (IWSLCLReferenceComponent)
     ['{93C64993-2F06-42AA-9F17-1602C8928D90}']
     procedure Clear(AList: TCustomImageListResolution);
     function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
@@ -59,9 +59,10 @@ type
 
     procedure Replace(AList: TCustomImageListResolution; AIndex: Integer; AData: PRGBAQuad);
   end;
+  TWSCustomImageListResolutionClass = IWSCustomImageListResolution; // for LCL compatibility
   {$endif}
 
-  TWSCustomImageListResolution = class(TWSLCLReferenceComponent{$ifdef wsintf}, TWSLCLReferenceComponentClass, TWSCustomImageListResolutionClass{$endif})
+  TWSCustomImageListResolution = class(TWSLCLReferenceComponent{$ifdef wsintf}, IWSLCLReferenceComponent, IWSCustomImageListResolution{$endif})
   impsection
     imptype procedure Clear(AList: TCustomImageListResolution); virtual;
     imptype function  CreateReference(AList: TCustomImageListResolution; ACount, AGrow, AWidth,
@@ -82,7 +83,7 @@ type
 
   procedure RegisterCustomImageListResolution;
 
-function WSCustomImageListResolutionClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomImageListResolutionClass; inline;
+function WSCustomImageListResolutionClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomImageListResolutionClass; inline;
 
 implementation
 
@@ -289,10 +290,10 @@ begin
   Done := True;
 end;
 
-function WSCustomImageListResolutionClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomImageListResolutionClass; inline;
+function WSCustomImageListResolutionClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomImageListResolutionClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomImageListResolutionClass);
+  Result := (AWidgetSetClass as IWSCustomImageListResolution);
   {$else}
   Result := TWSCustomImageListResolutionClass(AWidgetSetClass);
   {$endif}

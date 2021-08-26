@@ -46,15 +46,16 @@ uses
 type
   { TWSCustomFloatSpinEdit }
   {$ifdef wsintf}
-  TWSCustomFloatSpinEditClass = interface(TWSCustomEditClass)
+  IWSCustomFloatSpinEdit = interface(IWSCustomEdit)
     ['{E879A434-9543-46B1-B880-004E0C72A1EF}']
     function  GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): double;
     procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
     procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean);
   end;
+  TWSCustomFloatSpinEditClass = IWSCustomFloatSpinEdit;
   {$endif}
 
-  TWSCustomFloatSpinEdit = class(TWSCustomEdit)
+  TWSCustomFloatSpinEdit = class(TWSCustomEdit{$ifdef wsintf},IWSCustomFloatSpinEdit{$endif})
   impsection
     imptype function  GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): double; virtual;
 
@@ -74,7 +75,7 @@ type
 
   procedure RegisterCustomFloatSpinEdit;
 
-function WSCustomFloatSpinEditClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomFloatSpinEditClass; inline;
+function WSCustomFloatSpinEditClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFloatSpinEditClass; inline;
 
 implementation
 
@@ -107,10 +108,10 @@ begin
   Done := True;
 end;
 
-function WSCustomFloatSpinEditClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomFloatSpinEditClass;
+function WSCustomFloatSpinEditClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFloatSpinEditClass;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomFloatSpinEditClass);
+  Result := (AWidgetSetClass as IWSCustomFloatSpinEdit);
   {$else}
   Result := TWSCustomFloatSpinEditClass(AWidgetSetClass);
   {$endif}

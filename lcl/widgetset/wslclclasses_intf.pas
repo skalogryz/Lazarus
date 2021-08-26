@@ -64,37 +64,38 @@ type
   TWSObjectClass = class of TWSObject;
 
   { TWSLCLComponent }
-  TWSLCLComponentClass = interface
+  IWSLCLComponent = interface
     ['{3B826F70-BEA2-4F4D-B6EE-A10335918977}']
-    function DebugName: string;
+    function DebugName: shortstring;
   end;
-  TWSLCLComponent = class(TInterfacedObject, TWSLCLComponentClass)
-    function DebugName: string;
+  TWSLCLComponent = class(TInterfacedObject, IWSLCLComponent)
+    function DebugName: shortstring;
   end;
+  TWSLCLComponentClass = IWSLCLComponent; // for LCL compatibility
 
   { TWSLCLHandleComponent }
 
-  TWSLCLReferenceComponentClass = interface(TWSLCLComponentClass)
+  IWSLCLReferenceComponent = interface(IWSLCLComponent)
     ['{789375CC-3B5B-43AB-AC4B-CAF21BAA9322}']
     procedure DestroyReference(AComponent: TComponent);
   end;
 
   { TWSLCLReferenceComponent }
 
-  TWSLCLReferenceComponent = class(TWSLCLComponent, TWSLCLReferenceComponentClass)
+  TWSLCLReferenceComponent = class(TWSLCLComponent, IWSLCLReferenceComponent)
   impsection
     imptype procedure DestroyReference(AComponent: TComponent); virtual;
   end;
 
 
-function FindWSComponentClass(const AComponent: TComponentClass): TWSLCLComponentClass;
+function FindWSComponentClass(const AComponent: TComponentClass): IWSLCLComponent;
 {$ifndef WSINTF}
 function IsWSComponentInheritsFrom(const AComponent: TComponentClass;
   InheritFromClass: TWSLCLComponentClass): Boolean;
 procedure RegisterWSComponent(AComponent: TComponentClass;
   AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass = nil);
 {$endif}
-function RegisterNewWSComp(AComponent: TComponentClass): TWSLCLComponentClass; //inline;
+function RegisterNewWSComp(AComponent: TComponentClass): IWSLCLComponent; //inline;
 
 // Only for non-TComponent based objects
 function GetWSLazAccessibleObject: TWSObjectClass;
@@ -103,9 +104,9 @@ procedure RegisterWSLazAccessibleObject(const AWSObject: TWSObjectClass);
 function GetWSLazDeviceAPIs: TWSObjectClass;
 procedure RegisterWSLazDeviceAPIs(const AWSObject: TWSObjectClass);
 // ~bk Search for already registered classes
-function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
+function FindWSRegistered(const AComponent: TComponentClass): IWSLCLComponent; //inline;
 procedure RegisterWSComponent(AComponent: TComponentClass;
-    AWSComponent: TWSLCLComponentClass);
+    AWSComponent: IWSLCLComponent);
 
 
 { Debug : Dump the WSClassesList nodes }
@@ -131,7 +132,7 @@ procedure DoInitialization; forward;
 type
   TClassNode = class(TObject)
     LCLClass: TComponentClass;     { Class of the created instances }
-    WSClass: TWSLCLComponentClass; { WidgetSet specific implementation class }
+    WSClass: IWSLCLComponent; { WidgetSet specific implementation class }
     //VClass: Pointer;               { Adjusted vmt table to handle WS virtual methods }
     //VClassName: ShortString;       { Class name attibuted when node was create }
     //VClassNew: Boolean;            { True Indicates that VClass=Parent.VClass.
@@ -235,7 +236,7 @@ begin
   Result := WSClassesList.FindByLCLComponent(AComponent);
 end;
 
-function FindWSComponentClass(const AComponent: TComponentClass): TWSLCLComponentClass;
+function FindWSComponentClass(const AComponent: TComponentClass): IWSLCLComponent;
 begin
   //Result := FindWSRegistered(AComponent);
   Result := RegisterNewWSComp(AComponent);
@@ -243,7 +244,7 @@ end;
 
 // doesn't check for duplicated values (existing registrations)
 procedure RegisterWSComponentInt(AComponent: TComponentClass;
-  AWSComponent: TWSLCLComponentClass);
+  AWSComponent: IWSLCLComponent);
 var
   p : TClassNode;
 begin
@@ -254,7 +255,7 @@ begin
 end;
 
 // Do not create VClass at runtime but use normal Object Pascal class creation.
-function RegisterNewWSComp(AComponent: TComponentClass): TWSLCLComponentClass;
+function RegisterNewWSComp(AComponent: TComponentClass): IWSLCLComponent;
 var
   p : TComponentClass;
   reg : TList;
@@ -294,7 +295,7 @@ end;
 
  { TWSLCLComponent }
 
-function TWSLCLComponent.DebugName: string;
+function TWSLCLComponent.DebugName: shortstring;
 begin
   Result := Self.ClassName;
 end;
@@ -335,7 +336,7 @@ end;
 
 {$ifdef WSINTF}
 
-function FindWSRegistered(const AComponent: TComponentClass): TWSLCLComponentClass; //inline;
+function FindWSRegistered(const AComponent: TComponentClass): IWSLCLComponent; //inline;
 var
   nd : TClassNode;
 begin
@@ -349,7 +350,7 @@ begin
 end;
 
 procedure RegisterWSComponent(AComponent: TComponentClass;
-  AWSComponent: TWSLCLComponentClass);
+  AWSComponent: IWSLCLComponent);
 var
   idx : integer;
   p : TClassNode;

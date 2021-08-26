@@ -48,15 +48,16 @@ type
   {$ifndef wsintf}
   TWSBitBtnClass = class of TWSBitBtn;
   {$else}
-  TWSBitBtnClass = interface(TWSButtonClass)
+  IWSBitBtn = interface(IWSButton)
     ['{EF40D0DA-42AA-49BF-B433-D3F88B1AB218}']
     procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph);
     procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout);
     procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer);
     procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer);
   end;
+  TWSBitBtnClass = IWSBitBtn;
   {$endif}
-  TWSBitBtn = class(TWSButton{$ifdef wsintf}, TWSBitBtnClass{$endif})
+  TWSBitBtn = class(TWSButton{$ifdef wsintf}, IWSBitBtn{$endif})
   impsection
     imptype procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); virtual;
     imptype procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); virtual;
@@ -76,7 +77,7 @@ type
   procedure RegisterCustomBitBtn;
   procedure RegisterCustomSpeedButton;
 
-function WSBitBtnClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSBitBtnClass; inline;
+function WSBitBtnClass(AWidgetSetClass: TWSLCLComponentClass): TWSBitBtnClass; inline;
 
 implementation
 
@@ -133,10 +134,10 @@ begin
   Done := True;
 end;
 
-function WSBitBtnClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSBitBtnClass; inline;
+function WSBitBtnClass(AWidgetSetClass: TWSLCLComponentClass): TWSBitBtnClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSBitBtnClass);
+  Result := (AWidgetSetClass as IWSBitBtn);
   {$else}
   Result := TWSBitBtnClass(AWidgetSetClass);
   {$endif}

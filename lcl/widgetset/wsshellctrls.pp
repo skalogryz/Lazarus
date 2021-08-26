@@ -48,15 +48,16 @@ type
 
   { TWSCustomShellTreeView }
   {$ifdef wsintf}
-  TWSCustomShellTreeViewClass = interface(TWSWinControlClass)
+  IWSCustomShellTreeView = interface(IWSWinControl)
     ['{C5451984-00E2-41AD-B25E-25DAF38E0DA5}']
     function DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
       ANode: TTreeNode; ARect: TRect): TSize;
     function GetBuiltinIconSize: TSize;
   end;
+  TWSCustomShellTreeViewClass = IWSCustomShellTreeView;
   {$endif}
 
-  TWSCustomShellTreeView = class(TWSCustomTreeView{$ifdef wsintf},TWSCustomShellTreeViewClass{$endif})
+  TWSCustomShellTreeView = class(TWSCustomTreeView{$ifdef wsintf},IWSCustomShellTreeView{$endif})
   impsection
     imptype function DrawBuiltInIcon(ATreeView: TCustomShellTreeView;
       ANode: TTreeNode; ARect: TRect): TSize; virtual;
@@ -66,13 +67,14 @@ type
 
   { TWSCustomShellListView }
   {$ifdef wsintf}
-  TWSCustomShellListViewClass = interface(TWSCustomListViewClass)
+  IWSCustomShellListView = interface(IWSCustomListView)
     ['{BEFE27CD-DAC3-410E-84C0-F55D33FE31F5}']
     function GetBuiltInImageIndex(AListView: TCustomShellListView;
       const AFileName: String; ALargeImage: Boolean): Integer;
   end;
+  TWSCustomShellListViewClass = IWSCustomShellListView;
   {$endif}
-  TWSCustomShellListView = class(TWSCustomListView{$ifdef wsintf},TWSCustomShellListViewClass{$endif})
+  TWSCustomShellListView = class(TWSCustomListView{$ifdef wsintf},IWSCustomShellListView{$endif})
   impsection
     imptype function GetBuiltInImageIndex(AListView: TCustomShellListView;
       const AFileName: String; ALargeImage: Boolean): Integer; virtual;
@@ -82,8 +84,8 @@ type
 procedure RegisterCustomShellTreeView;
 procedure RegisterCustomShellListView;
 
-function WSCustomShellTreeViewClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomShellTreeViewClass; inline;
-function WSCustomShellListViewClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomShellListViewClass; inline;
+function WSCustomShellTreeViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellTreeViewClass; inline;
+function WSCustomShellListViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellListViewClass; inline;
 
 implementation
 
@@ -140,19 +142,19 @@ begin
   Done := True;
 end;
 
-function WSCustomShellTreeViewClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomShellTreeViewClass; inline;
+function WSCustomShellTreeViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellTreeViewClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomShellTreeViewClass);
+  Result := (AWidgetSetClass as IWSCustomShellTreeView);
   {$else}
   Result := TWSCustomShellTreeViewClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSCustomShellListViewClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomShellListViewClass; inline;
+function WSCustomShellListViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellListViewClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomShellListViewClass);
+  Result := (AWidgetSetClass as IWSCustomShellListView);
   {$else}
   Result := TWSCustomShellListViewClass(AWidgetSetClass);
   {$endif}

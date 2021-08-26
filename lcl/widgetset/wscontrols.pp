@@ -51,7 +51,8 @@ const
  { dctFont  } clBtnText
   );
 type
-  {$ifdef WSINTF}TWSDragImageListResolutionClass = interface (TWSCustomImageListResolutionClass)
+  {$ifdef WSINTF}
+  IWSDragImageListResolution = interface (IWSCustomImageListResolution)
     ['{26748686-E425-47A8-B050-9C2B26BD2948}']
     function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer): Boolean;
     function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean;
@@ -60,11 +61,13 @@ type
     ALockedWindow: HWND; DoUnLock: Boolean): Boolean;
     function ShowDragImage(const ADragImageList: TDragImageListResolution;
       ALockedWindow: HWND; X, Y: Integer; DoLock: Boolean): Boolean;
-  end;{$endif}
+  end;
+  TWSDragImageListResolutionClass = IWSDragImageListResolution; // for LCL compatibility
+  {$endif}
 
   { TWSDragImageListResolution }
 
-  TWSDragImageListResolution = class(TWSCustomImageListResolution {$ifdef WSINTF},TWSDragImageListResolutionClass{$endif})
+  TWSDragImageListResolution = class(TWSCustomImageListResolution {$ifdef WSINTF},IWSDragImageListResolution{$endif})
   impsection
     imptype function BeginDrag(const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer): Boolean; virtual;
     imptype function DragMove(const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; virtual;
@@ -94,7 +97,7 @@ type
 
   { TWSControl }
   {$ifdef WSINTF}
-  TWSControlClass = interface(TWSLCLComponentClass)
+  IWSControl = interface(IWSLCLComponent)
     ['{F0A3885B-D555-40E6-82D6-177297B0D5AE}']
     procedure AddControl(const AControl: TControl);
     function GetConstraints(const AControl: TControl; const AConstraints: TObject): Boolean;
@@ -103,9 +106,10 @@ type
     procedure ConstraintHeight(const AControl: TControl; const AConstraints: TObject; var aHeight: integer);
     function GetCanvasScaleFactor(const AControl: TControl): Double;
   end;
+  TWSControlClass = IWSControl; // for LCL compatibility
   {$endif}
 
-  TWSControl = class(TWSLCLComponent{$ifdef WSINTF}, TWSControlClass{$endif})
+  TWSControl = class(TWSLCLComponent{$ifdef WSINTF}, IWSControl{$endif})
   impsection
     imptype procedure AddControl(const AControl: TControl); virtual;
     imptype function GetConstraints(const AControl: TControl; const AConstraints: TObject): Boolean; virtual;
@@ -123,7 +127,7 @@ type
   
   { TWSWinControl }
   {$ifdef WSINTF}
-  TWSWinControlClass = interface(TWSControlClass)
+  IWSWinControl = interface(IWSControl)
     ['{8E124F9B-064C-4D8A-AB5D-3E105119DC2C}']
     function  CanFocus(const AWincontrol: TWinControl): Boolean;
     function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
@@ -162,9 +166,10 @@ type
     procedure ShowHide(const AWinControl: TWinControl);
     procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer);
   end;
+  TWSWinControlClass = IWSWinControl; // for LCL compatibility
   {$endif}
 
-  TWSWinControl = class(TWSControl{$ifdef WSINTF},TWSWinControlClass{$endif})
+  TWSWinControl = class(TWSControl{$ifdef WSINTF},IWSWinControl{$endif})
   impsection
     imptype function  CanFocus(const AWincontrol: TWinControl): Boolean; virtual;
     imptype function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; virtual;
@@ -230,9 +235,9 @@ procedure RegisterWinControl;
 procedure RegisterGraphicControl;
 procedure RegisterCustomControl;
 
-function WSDragImageListResolutionClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSDragImageListResolutionClass; inline;
-function WSControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSControlClass; inline;
-function WSWinControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSWinControlClass; inline;
+function WSDragImageListResolutionClass(AWidgetSetClass: TWSLCLComponentClass): TWSDragImageListResolutionClass; inline;
+function WSControlClass   (AWidgetSetClass: TWSLCLComponentClass): TWSControlClass; inline;
+function WSWinControlClass(AWidgetSetClass: {$ifndef wsintf}TClass{$else}TWSLCLComponentClass{$endif}): TWSWinControlClass; inline;
 
 implementation
 
@@ -582,28 +587,28 @@ begin
   Done := True;
 end;
 
-function WSDragImageListResolutionClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSDragImageListResolutionClass; inline;
+function WSDragImageListResolutionClass(AWidgetSetClass: TWSLCLComponentClass): TWSDragImageListResolutionClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSDragImageListResolutionClass);
+  Result := (AWidgetSetClass as IWSDragImageListResolution);
   {$else}
   Result := TWSDragImageListResolutionClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSControlClass; inline;
+function WSControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSControlClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSControlClass);
+  Result := (AWidgetSetClass as IWSControl);
   {$else}
   Result := TWSControlClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSWinControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSWinControlClass; inline;
+function WSWinControlClass(AWidgetSetClass: {$ifndef wsintf}TClass{$else}TWSLCLComponentClass{$endif}): TWSWinControlClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSWinControlClass);
+  Result := (AWidgetSetClass as IWSWinControl);
   {$else}
   Result := TWSWinControlClass(AWidgetSetClass);
   {$endif}

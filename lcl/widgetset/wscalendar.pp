@@ -45,7 +45,7 @@ uses
 type
   { TWSCustomCalendar }
   {$ifdef wsintf}
-  TWSCustomCalendarClass = interface(TWSWinControlClass)
+  IWSCustomCalendar = interface(IWSWinControl)
     ['{3EF2EEA5-E865-4C85-B569-C7A63BE9BACF}']
     function GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
     function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart;
@@ -56,8 +56,9 @@ type
     procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
       const ADayOfWeek: TCalDayOfWeek);
   end;
+  TWSCustomCalendarClass = IWSCustomCalendar;
   {$endif}
-  TWSCustomCalendar = class(TWSWinControl{$ifdef wsintf},TWSCustomCalendarClass{$endif})
+  TWSCustomCalendar = class(TWSWinControl{$ifdef wsintf},IWSCustomCalendar{$endif})
   impsection
     imptype function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; virtual;
     imptype function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; virtual;
@@ -74,7 +75,7 @@ type
 
   procedure RegisterCustomCalendar;
 
-function WSCustomCalendarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomCalendarClass; inline;
+function WSCustomCalendarClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCalendarClass; inline;
 
 implementation
 
@@ -125,10 +126,10 @@ begin
   Done := True;
 end;
 
-function WSCustomCalendarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomCalendarClass; inline;
+function WSCustomCalendarClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCalendarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomCalendarClass);
+  Result := (AWidgetSetClass as IWSCustomCalendar);
   {$else}
   Result := TWSCustomCalendarClass(AWidgetSetClass);
   {$endif}

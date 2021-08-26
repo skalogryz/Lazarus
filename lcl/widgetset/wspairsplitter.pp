@@ -49,7 +49,7 @@ type
 
   { TWSCustomPairSplitter }
   {$ifdef wsintf}
-  TWSCustomPairSplitterClass = interface(TWSWinControlClass)
+  IWSCustomPairSplitter = interface(IWSWinControl)
     ['{E6DA4A54-F7FD-4777-A1E1-3B6FC9DBAA27}']
     function AddSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean;
     function RemoveSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean;
@@ -60,8 +60,9 @@ type
     function GetSplitterCursor(ASplitter: TCustomPairSplitter; var ACursor: TCursor): Boolean;
     function SetSplitterCursor(ASplitter: TCustomPairSplitter; ACursor: TCursor): Boolean;
   end;
+  TWSCustomPairSplitterClass = IWSCustomPairSplitter;
   {$endif}
-  TWSCustomPairSplitter = class(TWSWinControl{$ifdef wsintf},TWSCustomPairSplitterClass{$endif})
+  TWSCustomPairSplitter = class(TWSWinControl{$ifdef wsintf},IWSCustomPairSplitter{$endif})
   impsection
     imptype function AddSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean; virtual;
     imptype function RemoveSide(ASplitter: TCustomPairSplitter; ASide: TPairSplitterSide; Side: integer): Boolean; virtual;
@@ -79,7 +80,7 @@ type
   procedure RegisterPairSplitterSide;
   procedure RegisterCustomPairSplitter;
 
-function WSCustomPairSplitterClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomPairSplitterClass; inline;
+function WSCustomPairSplitterClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPairSplitterClass; inline;
 
 implementation
 uses
@@ -241,10 +242,10 @@ begin
   Done := True;
 end;
 
-function WSCustomPairSplitterClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomPairSplitterClass;
+function WSCustomPairSplitterClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPairSplitterClass;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomPairSplitterClass);
+  Result := (AWidgetSetClass as IWSCustomPairSplitter);
   {$else}
   Result := TWSCustomPairSplitterClass(AWidgetSetClass);
   {$endif}

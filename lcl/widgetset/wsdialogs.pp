@@ -48,15 +48,16 @@ type
   {$ifndef wsintf}
   TWSCommonDialogClass = class of TWSCommonDialog;
   {$else}
-  TWSCommonDialogClass = interface(TWSLCLComponentClass)
+  IWSCommonDialog = interface(IWSLCLComponent)
     ['{977D5FA4-8595-4F76-8317-641230768055}']
     function  CreateHandle(const ACommonDialog: TCommonDialog): THandle;
     procedure ShowModal(const ACommonDialog: TCommonDialog);
     procedure DestroyHandle(const ACommonDialog: TCommonDialog);
     function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
   end;
+  TWSCommonDialogClass = IWSCommonDialog; // for LCL compatibility
   {$endif}
-  TWSCommonDialog = class(TWSLCLComponent{$ifdef wsintf},TWSCommonDialogClass{$endif})
+  TWSCommonDialog = class(TWSLCLComponent{$ifdef wsintf},IWSCommonDialog{$endif})
   public class var
     WSCommonDialog_WSClass: TWSCommonDialogClass;
   impsection
@@ -123,7 +124,7 @@ type
   procedure RegisterColorButton;
   procedure RegisterFontDialog;
 
-function WSCommonDialogClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCommonDialogClass; inline;
+function WSCommonDialogClass(AWidgetSetClass: TWSLCLComponentClass): TWSCommonDialogClass; inline;
 
 implementation
 
@@ -290,10 +291,10 @@ begin
   Done := True;
 end;
 
-function WSCommonDialogClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCommonDialogClass; inline;
+function WSCommonDialogClass(AWidgetSetClass: TWSLCLComponentClass): TWSCommonDialogClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCommonDialogClass);
+  Result := (AWidgetSetClass as IWSCommonDialog);
   {$else}
   Result := TWSCommonDialogClass(AWidgetSetClass);
   {$endif}

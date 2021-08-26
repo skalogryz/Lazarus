@@ -48,19 +48,20 @@ type
   {$ifndef wsintf}
   TWSCustomPageClass = class of TWSCustomPage;
   {$else}
-  TWSCustomPageClass = interface(TWSWinControlClass)
+  IWSCustomPage = interface(IWSWinControl)
     ['{87CDD0DC-B1C0-46DE-B8FD-B8CD1F22BE25}']
     procedure UpdateProperties(const ACustomPage: TCustomPage);
   end;
+  TWSCustomPageClass = IWSCustomPage; // for LCL compatibility
   {$endif}
-  TWSCustomPage = class(TWSWinControl{$ifdef wsintf},TWSCustomPageClass{$endif})
+  TWSCustomPage = class(TWSWinControl{$ifdef wsintf},IWSCustomPage{$endif})
   impsection
     imptype procedure UpdateProperties(const ACustomPage: TCustomPage); virtual;
   end;
 
   { TWSCustomTabControl }
   {$ifdef wsintf}
-  TWSCustomTabControlClass = interface(TWSWinControlClass)
+  IWSCustomTabControl = interface(IWSWinControl)
     ['{F3E7D950-FFA6-41EE-91FC-7E08E4F6A6C1}']
     procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer);
     procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer);
@@ -79,9 +80,10 @@ type
     procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean);
     procedure UpdateProperties(const ATabControl: TCustomTabControl);
   end;
+  TWSCustomTabControlClass = IWSCustomTabControl; // for LCL compatibility
   {$endif}
 
-  TWSCustomTabControl = class(TWSWinControl{$ifdef wsintf},TWSCustomTabControlClass{$endif})
+  TWSCustomTabControl = class(TWSWinControl{$ifdef wsintf},IWSCustomTabControl{$endif})
   impsection
     imptype procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer); virtual;
     imptype procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer); virtual;
@@ -106,15 +108,16 @@ type
   {$ifndef wsintf}
   TWSStatusBarClass = class of TWSStatusBar;
   {$else}
-  TWSStatusBarClass = interface(TWSWinControlClass)
+  IWSStatusBar = interface(IWSWinControl)
     ['{1C8822B2-4E15-4B5A-8A08-96BD01B21791}']
     procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer);
     procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer);
     procedure SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean);
     procedure Update(const AStatusBar: TStatusBar);
   end;
+  TWSStatusBarClass = IWSStatusBar; // for LCL compatibility
   {$endif}
-  TWSStatusBar = class(TWSWinControl{$ifdef wsintf},TWSStatusBarClass{$endif})
+  TWSStatusBar = class(TWSWinControl{$ifdef wsintf},IWSStatusBar{$endif})
   impsection
     imptype procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); virtual;
     imptype procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); virtual;
@@ -141,7 +144,7 @@ type
   TWSListViewItemChange = (lvicText, lvicImage);
   TWSListViewItemChanges = set of TWSListViewItemChange;
   {$ifdef wsintf}
-  TWSCustomListViewClass = interface(TWSWinControlClass)
+  IWSCustomListView = interface(IWSWinControl)
     ['{04A747A8-F9C0-47E2-AC01-66276CC9AC6C}']
     // Column
     procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer);
@@ -215,8 +218,9 @@ type
     // AND/OR that don't support native checkboxes should have this method return true
     function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean;
   end;
+  TWSCustomListViewClass = IWSCustomListView; // for LCL compatibility
   {$endif}
-  TWSCustomListView = class(TWSWinControl{$ifdef wsintf}, TWSCustomListViewClass{$endif})
+  TWSCustomListView = class(TWSWinControl{$ifdef wsintf}, IWSCustomListView{$endif})
   impsection
     // Column
     imptype procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); virtual;
@@ -303,14 +307,15 @@ type
   {$ifndef wsintf}
   TWSProgressBarClass = class of TWSProgressBar;
   {$else}
-  TWSProgressBarClass = interface(TWSWinControlClass)
+  IWSProgressBar = interface(IWSWinControl)
     ['{FC84910B-CE16-4A1D-89E9-F15F1FB89E62}']
     procedure ApplyChanges(const AProgressBar: TCustomProgressBar);
     procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer);
     procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle);
   end;
+  TWSProgressBarClass = IWSProgressBar;
   {$endif}
-  TWSProgressBar = class(TWSWinControl{$ifdef wsintf},TWSProgressBarClass{$endif})
+  TWSProgressBar = class(TWSWinControl{$ifdef wsintf},IWSProgressBar{$endif})
   impsection
     imptype procedure ApplyChanges(const AProgressBar: TCustomProgressBar); virtual;
     imptype procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); virtual;
@@ -319,7 +324,7 @@ type
 
   { TWSCustomUpDown }
   {$ifdef wsintf}
-  TWSCustomUpDownClass = interface(TWSWinControlClass)
+  IWSCustomUpDown = interface(IWSWinControl)
     ['{C45A48BF-9E2C-4864-92E6-3ED04840BE21}']
     procedure SetIncrement(const AUpDown: TCustomUpDown; AValue: Double);
     procedure SetMaxPosition(const AUpDown: TCustomUpDown; AValue: Double);
@@ -330,8 +335,9 @@ type
     procedure SetUseArrowKeys(const AUpDown: TCustomUpDown; AUseArrow: Boolean);
     procedure SetWrap(const AUpDown: TCustomUpDown; ADoWrap: Boolean);
   end;
+  TWSCustomUpDownClass = IWSCustomUpDown; // for LCL-compatbility
   {$endif}
-  TWSCustomUpDown = class(TWSCustomControl{$ifdef wsintf},TWSCustomUpDownClass{$endif})
+  TWSCustomUpDown = class(TWSCustomControl{$ifdef wsintf},IWSCustomUpDown{$endif})
   impsection
     imptype procedure SetIncrement(const AUpDown: TCustomUpDown; AValue: Double); virtual;
     imptype procedure SetMaxPosition(const AUpDown: TCustomUpDown; AValue: Double); virtual;
@@ -370,7 +376,7 @@ type
 
   { TWSTrackBar }
   {$ifdef wsintf}
-  TWSTrackBarClass = interface(TWSWinControlClass)
+  IWSTrackBar = interface(IWSWinControl)
     ['{EC452FD4-6450-4239-B4A2-F78462A066F4}']
     procedure ApplyChanges(const ATrackBar: TCustomTrackBar);
     function GetPosition(const ATrackBar: TCustomTrackBar): integer;
@@ -379,9 +385,10 @@ type
     procedure SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer);
     procedure SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle);
   end;
+  TWSTrackBarClass = IWSTrackBar;
   {$endif}
 
-  TWSTrackBar = class(TWSWinControl{$ifdef wsintf},TWSTrackBarClass{$endif})
+  TWSTrackBar = class(TWSWinControl{$ifdef wsintf},IWSTrackBar{$endif})
   impsection
     imptype procedure ApplyChanges(const ATrackBar: TCustomTrackBar); virtual;
     imptype function GetPosition(const ATrackBar: TCustomTrackBar): integer; virtual;
@@ -417,13 +424,13 @@ type
   procedure RegisterCustomTrackBar;
   procedure RegisterCustomTreeView;
 
-function WSCustomPageClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomPageClass; inline;
-function WSCustomTabControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomTabControlClass; inline;
-function WSStatusBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSStatusBarClass; inline;
-function WSCustomListViewClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomListViewClass; inline;
-function WSProgressBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSProgressBarClass; inline;
-function WSCustomUpDownClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomUpDownClass; inline;
-function WSTrackBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSTrackBarClass; inline;
+function WSCustomPageClass      (AWidgetSetClass: TWSLCLComponentClass): TWSCustomPageClass; inline;
+function WSCustomTabControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTabControlClass; inline;
+function WSStatusBarClass       (AWidgetSetClass: TWSLCLComponentClass): TWSStatusBarClass; inline;
+function WSCustomListViewClass  (AWidgetSetClass: TWSLCLComponentClass): TWSCustomListViewClass; inline;
+function WSProgressBarClass     (AWidgetSetClass: TWSLCLComponentClass): TWSProgressBarClass; inline;
+function WSCustomUpDownClass    (AWidgetSetClass: TWSLCLComponentClass): TWSCustomUpDownClass; inline;
+function WSTrackBarClass        (AWidgetSetClass: TWSLCLComponentClass): TWSTrackBarClass; inline;
 
 implementation
 
@@ -1181,64 +1188,64 @@ begin
   Done := True;
 end;
 
-function WSCustomPageClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomPageClass; inline;
+function WSCustomPageClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPageClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomPageClass);
+  Result := (AWidgetSetClass as IWSCustomPage);
   {$else}
   Result := TWSCustomPageClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSCustomTabControlClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomTabControlClass; inline;
+function WSCustomTabControlClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTabControlClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomTabControlClass);
+  Result := (AWidgetSetClass as IWSCustomTabControl);
   {$else}
   Result := TWSCustomTabControlClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSStatusBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSStatusBarClass; inline;
+function WSStatusBarClass(AWidgetSetClass: TWSLCLComponentClass): TWSStatusBarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSStatusBarClass);
+  Result := (AWidgetSetClass as IWSStatusBar);
   {$else}
   Result := TWSStatusBarClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSCustomListViewClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomListViewClass; inline;
+function WSCustomListViewClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomListViewClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomListViewClass);
+  Result := (AWidgetSetClass as IWSCustomListView);
   {$else}
   Result := TWSCustomListViewClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSProgressBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSProgressBarClass; inline;
+function WSProgressBarClass(AWidgetSetClass: TWSLCLComponentClass): TWSProgressBarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSProgressBarClass);
+  Result := (AWidgetSetClass as IWSProgressBar);
   {$else}
   Result := TWSProgressBarClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSCustomUpDownClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomUpDownClass; inline;
+function WSCustomUpDownClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomUpDownClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomUpDownClass);
+  Result := (AWidgetSetClass as IWSCustomUpDown);
   {$else}
   Result := TWSCustomUpDownClass(AWidgetSetClass);
   {$endif}
 end;
 
-function WSTrackBarClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSTrackBarClass; inline;
+function WSTrackBarClass(AWidgetSetClass: TWSLCLComponentClass): TWSTrackBarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSTrackBarClass);
+  Result := (AWidgetSetClass as IWSTrackBar);
   {$else}
   Result := TWSTrackBarClass(AWidgetSetClass);
   {$endif}

@@ -46,14 +46,15 @@ uses
 type
   { TWSScrollingWinControl }
 
-  TWSScrollingWinControlClass = {$ifdef wsintf}
-  interface(TWSWinControlClass)
+  {$ifdef wsintf}
+  IWSScrollingWinControl = interface(IWSWinControl)
     ['{D63FAD67-4280-4610-94F6-ABA927F62817}']
   end;
+  TWSScrollingWinControlClass = IWSScrollingWinControl;
   {$else}
-  class of TWSScrollingWinControl;
+  TWSScrollingWinControlClass = class of TWSScrollingWinControl;
   {$endif}
-  TWSScrollingWinControl = class(TWSWinControl{$ifdef wnintf},TWSScrollingWinControlClass{$endif})
+  TWSScrollingWinControl = class(TWSWinControl{$ifdef wsintf},IWSScrollingWinControl{$endif})
   impsection
     // procedure ScrollBy is moved to TWSWinControl.
     imptype function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
@@ -80,7 +81,7 @@ type
   { TWSCustomForm }
 
   {$ifdef wsintf}
-  TWSCustomFormClass = interface(TWSScrollingWinControlClass)
+  IWSCustomForm = interface(IWSScrollingWinControl)
     ['{E543CD56-7CF2-4967-B399-65F430B16063}']
     procedure CloseModal(const ACustomForm: TCustomForm);
     procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean);
@@ -111,9 +112,10 @@ type
     function ArrangeIcons(const AForm: TCustomForm): Boolean;
     function MDIChildCount(const AForm: TCustomForm): Integer;
   end;
+  TWSCustomFormClass = IWSCustomForm;
   {$endif}
 
-  TWSCustomForm = class(TWSScrollingWinControl{$ifdef wsintf},TWSCustomFormClass{$endif})
+  TWSCustomForm = class(TWSScrollingWinControl{$ifdef wsintf},IWSCustomForm{$endif})
   impsection
     imptype procedure CloseModal(const ACustomForm: TCustomForm); virtual;
     imptype procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); virtual;
@@ -384,7 +386,7 @@ end;
 function WSCustomFormClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFormClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomFormClass);
+  Result := (AWidgetSetClass as IWSCustomForm);
   {$else}
   Result := TWSCustomFormClass(AWidgetSetClass);
   {$endif}

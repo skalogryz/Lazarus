@@ -46,16 +46,17 @@ uses
 type
   { TWSCustomGrid }
   {$ifdef wsintf}
-  TWSCustomGridClass = interface(TWSWinControlClass)
+  IWSCustomGrid = interface(IWSWinControl)
     ['{6DB8361C-C1A0-44E4-B0FB-12C965BA1082}']
     procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char);
     function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer;
     function GetEditorBoundsFromCellRect(ACanvas: TCanvas;
       const ACellRect: TRect; const AColumnLayout: TTextLayout): TRect;
   end;
+  TWSCustomGridClass = IWSCustomGrid;
   {$endif}
 
-  TWSCustomGrid = class(TWSCustomControl{$ifdef wsintf},TWSCustomGridClass{$endif})
+  TWSCustomGrid = class(TWSCustomControl{$ifdef wsintf},IWSCustomGrid{$endif})
   impsection
     imptype procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char); virtual;
     imptype function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer; virtual;
@@ -71,7 +72,7 @@ type
 
   function RegisterCustomGrid: Boolean;
 
-function WSCustomGridClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomGridClass; inline;
+function WSCustomGridClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomGridClass; inline;
 
 implementation
 uses
@@ -155,10 +156,10 @@ begin
   Result := True;
 end;
 
-function WSCustomGridClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomGridClass; inline;
+function WSCustomGridClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomGridClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomGridClass);
+  Result := (AWidgetSetClass as IWSCustomGrid);
   {$else}
   Result := TWSCustomGridClass(AWidgetSetClass);
   {$endif}

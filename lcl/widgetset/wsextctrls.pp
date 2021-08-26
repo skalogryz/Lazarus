@@ -149,7 +149,7 @@ type
 
   { TWSCustomTrayIcon }
   {$ifdef wsintf}
-  TWSCustomTrayIconClass = interface(TWSLCLComponentClass)
+  IWSCustomTrayIcon = interface(IWSLCLComponent)
     ['{EF8A887C-FEA5-414D-939E-22EBD939D5C7}']
     function Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
     function Show(const ATrayIcon: TCustomTrayIcon): Boolean;
@@ -158,9 +158,10 @@ type
     function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
     function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
   end;
+  TWSCustomTrayIconClass = IWSCustomTrayIcon;
   {$endif}
 
-  TWSCustomTrayIcon = class(TWSLCLComponent)
+  TWSCustomTrayIcon = class(TWSLCLComponent{$ifdef wsintf},IWSCustomTrayIcon{$endif})
   impsection
     imptype function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; virtual;
     imptype function Show(const ATrayIcon: TCustomTrayIcon): Boolean; virtual;
@@ -186,7 +187,7 @@ type
   procedure RegisterCustomPanel;
   procedure RegisterCustomTrayIcon;
 
-function WSCustomTrayIconClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomTrayIconClass; inline;
+function WSCustomTrayIconClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTrayIconClass; inline;
 
 implementation
 
@@ -361,10 +362,10 @@ begin
   Result := DefBtnColors[ADefaultColorType];
 end;
 
-function WSCustomTrayIconClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomTrayIconClass; inline;
+function WSCustomTrayIconClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTrayIconClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomTrayIconClass);
+  Result := (AWidgetSetClass as IWSCustomTrayIcon);
   {$else}
   Result := TWSCustomTrayIconClass(AWidgetSetClass);
   {$endif}

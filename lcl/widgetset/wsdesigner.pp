@@ -35,17 +35,18 @@ interface
 ////////////////////////////////////////////////////
 uses
   Classes, RubberBand,
-  WsControls, WSFactory{$ifdef wsintf}, WSLCLClasses_Intf{$endif};
+  WsControls, WSFactory{$ifdef wsintf}, WSLCLClasses_Intf{$else}, WSLCLClasses{$endif};
 
 type
   { TWsCustomRubberBand }
   {$ifdef wsintf}
-  TWsCustomRubberBandClass = interface(TWsWinControlclass)
+  IWSCustomRubberBand = interface(IWSWinControl)
     ['{D2A08602-B885-49D0-8DB3-26B1F83291E7}']
     procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); overload;
   end;
+  TWSCustomRubberBandClass = IWSCustomRubberBand;
   {$endif}
-  TWsCustomRubberBand = class(TWsWinControl)
+  TWsCustomRubberBand = class(TWsWinControl{$ifdef wsintf},IWSCustomRubberBand{$endif})
   impsection
     {$ifndef wsintf}
     imptype procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); virtual; overload;
@@ -59,7 +60,7 @@ type
 
   procedure RegisterCustomRubberBand;
 
-function WSCustomRubberBandClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomRubberBandClass; inline;
+function WSCustomRubberBandClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomRubberBandClass; inline;
 
 implementation
 
@@ -86,10 +87,10 @@ begin
   Done := True;
 end;
 
-function WSCustomRubberBandClass(AWidgetSetClass: {$ifdef wsintf}TWSLCLComponentClass{$else}TClass{$endif}): TWSCustomRubberBandClass; inline;
+function WSCustomRubberBandClass(AWidgetSetClass: TWSLCLComponentClass): TWSCustomRubberBandClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as TWSCustomRubberBandClass);
+  Result := (AWidgetSetClass as IWSCustomRubberBand);
   {$else}
   Result := TWSCustomRubberBandClass(AWidgetSetClass);
   {$endif}

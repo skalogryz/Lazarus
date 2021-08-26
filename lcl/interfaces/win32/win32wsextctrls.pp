@@ -140,7 +140,7 @@ type
 
   { TWin32WSCustomTrayIcon }
 
-  TWin32WSCustomTrayIcon = class({$ifndef wsintf}TWSCustomTrayIcon{$else}TWSLCLComponent, TWSCustomTrayIconClass, TWSLCLComponentClass{$endif})
+  TWin32WSCustomTrayIcon = class({$ifndef wsintf}TWSCustomTrayIcon{$else}TWSLCLComponent, IWSCustomTrayIcon, IWSLCLComponent{$endif})
   protected
     class function AddIcon(ATrayIcon: TCustomTrayIcon): Boolean;
   impsection

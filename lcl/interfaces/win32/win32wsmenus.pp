@@ -39,7 +39,7 @@ type
 
   { TWin32WSMenuItem }
 
-  TWin32WSMenuItem = class({$ifndef wsintf}TWSMenuItem{$else}TWSLCLComponent, TWSMenuItemClass{$endif})
+  TWin32WSMenuItem = class({$ifndef wsintf}TWSMenuItem{$else}TWSLCLComponent, IWSMenuItem{$endif})
   impsection
     imptype procedure AttachMenu(const AMenuItem: TMenuItem); rootoverride;
     imptype function CreateHandle(const AMenuItem: TMenuItem): HMENU; rootoverride;
@@ -60,7 +60,7 @@ type
 
   { TWin32WSMenu }
 
-  TWin32WSMenu = class({$ifndef wsintf}TWSMenu{$else}TWSLCLComponent, TWSMenuClass{$endif})
+  TWin32WSMenu = class({$ifndef wsintf}TWSMenu{$else}TWSLCLComponent, IWSMenu{$endif})
   impsection
     imptype function CreateHandle(const AMenu: TMenu): HMENU; rootoverride;
     imptype procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); rootoverride;
@@ -74,7 +74,7 @@ type
 
   { TWin32WSPopupMenu }
 
-  TWin32WSPopupMenu = class({$ifndef wsintf}TWSPopupMenu{$else}TWin32WSMenu, TWSPopupMenuClass{$endif})
+  TWin32WSPopupMenu = class({$ifndef wsintf}TWSPopupMenu{$else}TWin32WSMenu, IWSPopupMenu{$endif})
   impsection
     imptype function CreateHandle(const AMenu: TMenu): HMENU; override;
     imptype procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); rootoverride;

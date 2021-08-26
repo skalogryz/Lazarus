@@ -324,7 +324,7 @@ var
   EditText: string;
   lItemIndex: integer;
   {$ifdef wsintf}
-  intf: TWSCustomComboBoxClass;
+  intf: IWSCustomComboBox;
   {$endif}
  begin
   if Source is TStrings then

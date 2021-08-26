@@ -42,7 +42,7 @@ type
 
   { TWin32WSCustomImageListResolution }
 
-  TWin32WSCustomImageListResolution = class(TWSCustomImageListResolution{$ifdef wsintf}, TWSLCLReferenceComponentClass{$endif})
+  TWin32WSCustomImageListResolution = class(TWSCustomImageListResolution{$ifdef wsintf}, IWSLCLReferenceComponent{$endif})
   protected
     imptype procedure AddData(AListHandle: TLCLIntfHandle;
       ACount, AReplaceIndex, AWidth, AHeight: Integer; AData: PRGBAQuad);

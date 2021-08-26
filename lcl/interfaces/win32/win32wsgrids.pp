@@ -36,7 +36,7 @@ uses
 type
   { TWin32WSCustomGrid }
 
-  TWin32WSCustomGrid = class({$ifndef wsintf}TWSCustomGrid{$else}TWin32WSWinControl, TWSCustomGridClass{$endif})
+  TWin32WSCustomGrid = class({$ifndef wsintf}TWSCustomGrid{$else}TWin32WSWinControl, IWSCustomGrid{$endif})
   impsection
     imptype procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char); rootoverride;
     imptype function GetEditorBoundsFromCellRect(ACanvas: TCanvas;

@@ -63,7 +63,7 @@ type
   {$ifndef wsintf}
   TWin32WSWinControl = class(TWSWinControl)
   {$else}
-  TWin32WSWinControl = class(TWin32WSControl, TWSWinControlClass)
+  TWin32WSWinControl = class(TWin32WSControl, IWSWinControl)
   {$endif}
   impsection
     imptype procedure AddControl(const AControl: TControl); override;

@@ -36,7 +36,7 @@ type
 
   { TWin32WSCustomCheckListBox }
 
-  TWin32WSCustomCheckListBox = class({$ifndef wsintf}TWSCustomCheckListBox{$else}TWin32WSCustomListBox, TWSCustomCheckListBoxClass{$endif})
+  TWin32WSCustomCheckListBox = class({$ifndef wsintf}TWSCustomCheckListBox{$else}TWin32WSCustomListBox, IWSCustomCheckListBox{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
        const AParams: TCreateParams): TLCLIntfHandle; override;

@@ -63,7 +63,7 @@ type
 
   { TWin32WSCustomForm }
 
-  TWin32WSCustomForm = class({$ifndef wsintf}TWSCustomForm{$else}TWin32WSScrollingWinControl, TWSCustomFormClass{$endif})
+  TWin32WSCustomForm = class({$ifndef wsintf}TWSCustomForm{$else}TWin32WSScrollingWinControl, IWSCustomForm{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;

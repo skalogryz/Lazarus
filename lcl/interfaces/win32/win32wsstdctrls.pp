@@ -39,7 +39,7 @@ type
 
   { TWin32WSScrollBar }
 
-  TWin32WSScrollBar = class({$ifndef wsintf}TWSScrollBar{$else}TWin32WSWinControl, TWSScrollBarClass{$endif})
+  TWin32WSScrollBar = class({$ifndef wsintf}TWSScrollBar{$else}TWin32WSWinControl, IWSScrollBar{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
@@ -73,7 +73,7 @@ type
 
   { TWin32WSCustomComboBox }
 
-  TWin32WSCustomComboBox = class({$ifndef wsintf}TWSCustomComboBox{$else}TWin32WSWinControl, TWSCustomComboBoxClass{$endif})
+  TWin32WSCustomComboBox = class({$ifndef wsintf}TWSCustomComboBox{$else}TWin32WSWinControl, IWSCustomComboBox{$endif})
   private
     imptype function GetStringList(const ACustomComboBox: TCustomComboBox): TWin32ComboBoxStringList;
   impsection
@@ -124,7 +124,7 @@ type
 
   { TWin32WSCustomListBox }
 
-  TWin32WSCustomListBox = class({$ifndef wsintf}TWSCustomListBox{$else}TWin32WSWinControl, TWSCustomListBoxClass{$endif})
+  TWin32WSCustomListBox = class({$ifndef wsintf}TWSCustomListBox{$else}TWin32WSWinControl, IWSCustomListBox{$endif})
   impsection
     imptype procedure AdaptBounds(const AWinControl: TWinControl;
           var Left, Top, Width, Height: integer; var SuppressMove: boolean); override;
@@ -168,7 +168,7 @@ type
 
   { TWin32WSCustomEdit }
 
-  TWin32WSCustomEdit = class({$ifndef wsintf}TWSCustomEdit{$else}TWin32WSWinControl, TWSCustomEditClass{$endif})
+  TWin32WSCustomEdit = class({$ifndef wsintf}TWSCustomEdit{$else}TWin32WSWinControl, IWSCustomEdit{$endif})
   private
     imptype procedure ApplyMargins(const AWinControl: TWinControl);
   impsection
@@ -208,7 +208,7 @@ type
 
   { TWin32WSCustomMemo }
 
-  TWin32WSCustomMemo = class({$ifndef wsintf}TWSCustomMemo{$else}TWin32WSCustomEdit, TWSCustomMemoClass{$endif})
+  TWin32WSCustomMemo = class({$ifndef wsintf}TWSCustomMemo{$else}TWin32WSCustomEdit, IWSCustomMemo{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
@@ -243,7 +243,7 @@ type
 
   { TWin32WSCustomStaticText }
 
-  TWin32WSCustomStaticText = class({$ifndef wsintf}TWSCustomStaticText{$else}TWin32WSWinControl, TWSCustomStaticTextClass{$endif})
+  TWin32WSCustomStaticText = class({$ifndef wsintf}TWSCustomStaticText{$else}TWin32WSWinControl, IWSCustomStaticText{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
@@ -266,7 +266,7 @@ type
 
   { TWin32WSButtonControl }
 
-  TWin32WSButtonControl = class({$ifndef wsintf}TWSButtonControl{$else}TWin32WSWinControl, TWSButtonControlClass{$endif})
+  TWin32WSButtonControl = class({$ifndef wsintf}TWSButtonControl{$else}TWin32WSWinControl, IWSButtonControl{$endif})
   impsection
     imptype procedure GetPreferredSize(const AWinControl: TWinControl;
           var PreferredWidth, PreferredHeight: integer;
@@ -275,7 +275,7 @@ type
 
   { TWin32WSButton }
 
-  TWin32WSButton = class({$ifndef wsintf}TWSButton{$else}TWin32WSButtonControl, TWSButtonClass{$endif})
+  TWin32WSButton = class({$ifndef wsintf}TWSButton{$else}TWin32WSButtonControl, IWSButton{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
@@ -286,7 +286,7 @@ type
 
   { TWin32WSCustomCheckBox }
 
-  TWin32WSCustomCheckBox = class({$ifndef wsintf}TWSCustomCheckBox{$else}TWin32WSButtonControl, TWSCustomCheckBoxClass{$endif})
+  TWin32WSCustomCheckBox = class({$ifndef wsintf}TWSCustomCheckBox{$else}TWin32WSButtonControl, IWSCustomCheckBox{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
@@ -1958,7 +1958,7 @@ begin
   {$ifdef wsintf}
   inherited SetText(AWinControl, AText);
   {$else}
-  WSWinControlClass(ClassParent).SetText(AWinControl, AText);
+  WSWinControlClass( ClassParent).SetText(AWinControl, AText);
   {$endif}
 end;
 

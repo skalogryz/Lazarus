@@ -36,7 +36,7 @@ uses
 type
   { TWin32WSCustomPage }
 
-  TWin32WSCustomPage = class({$ifndef wsintf}TWSCustomPage{$else}TWin32WSWinControl, TWSCustomPageClass{$endif})
+  TWin32WSCustomPage = class({$ifndef wsintf}TWSCustomPage{$else}TWin32WSWinControl, IWSCustomPage{$endif})
   public
     class procedure ThemeChange(Wnd: HWND);
   impsection
@@ -49,7 +49,7 @@ type
 
   { TWin32WSCustomTabControl }
 
-  TWin32WSCustomTabControl = class({$ifndef wsintf}TWSCustomTabControl{$else}TWin32WSWinControl, TWSCustomTabControlClass{$endif})
+  TWin32WSCustomTabControl = class({$ifndef wsintf}TWSCustomTabControl{$else}TWin32WSWinControl, IWSCustomTabControl{$endif})
   public
     class procedure DeletePage(const ATabControl: TCustomTabControl; const AIndex: integer);
   impsection
@@ -84,7 +84,7 @@ type
 
   { TWin32WSStatusBar }
 
-  TWin32WSStatusBar = class({$ifndef wsintf}TWSStatusBar{$else}TWin32WSWinControl, TWSStatusBarClass{$endif})
+  TWin32WSStatusBar = class({$ifndef wsintf}TWSStatusBar{$else}TWin32WSWinControl, IWSStatusBar{$endif})
   public
     class procedure DoUpdate(const AStatusBar: TStatusBar);
     class procedure DoSetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer);
@@ -118,7 +118,7 @@ type
 
   { TWin32WSCustomListView }
 
-  TWin32WSCustomListView = class({$ifndef wsintf}TWSCustomListView{$else}TWin32WSWinControl, TWSCustomListViewClass{$endif})
+  TWin32WSCustomListView = class({$ifndef wsintf}TWSCustomListView{$else}TWin32WSWinControl, IWSCustomListView{$endif})
   private
     imptype procedure ColumnDoAutosize(const ALV: TCustomListView; const AIndex: Integer);
     imptype function  GetHeader(const AHandle: THandle): THandle;
@@ -214,7 +214,7 @@ type
 
   { TWin32WSProgressBar }
 
-  TWin32WSProgressBar = class({$ifndef wsintf}TWSProgressBar{$else}TWin32WSWinControl, TWSProgressBarClass{$endif})
+  TWin32WSProgressBar = class({$ifndef wsintf}TWSProgressBar{$else}TWin32WSWinControl, IWSProgressBar{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
@@ -257,7 +257,7 @@ type
 
   { TWin32WSTrackBar }
 
-  TWin32WSTrackBar = class({$ifndef wsintf}TWSTrackBar{$else}TWin32WSWinControl, TWSTrackBarClass{$endif})
+  TWin32WSTrackBar = class({$ifndef wsintf}TWSTrackBar{$else}TWin32WSWinControl, IWSTrackBar{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;

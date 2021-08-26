@@ -59,7 +59,7 @@ type
 
   { TWin32WSCommonDialog }
 
-  TWin32WSCommonDialog = class({$ifndef wsintf}TWSCommonDialog{$else}TWSLCLComponent, TWSCommonDialogClass{$endif})
+  TWin32WSCommonDialog = class({$ifndef wsintf}TWSCommonDialog{$else}TWSLCLComponent, IWSCommonDialog{$endif})
   impsection
     imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; rootoverride;
     imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); rootoverride;

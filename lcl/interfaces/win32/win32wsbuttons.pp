@@ -38,7 +38,7 @@ type
 
   { TWin32WSBitBtn }
 
-  TWin32WSBitBtn = class({$ifndef wsintf}TWSBitBtn{$else}TWin32WSButton, TWSBitBtnClass{$endif})
+  TWin32WSBitBtn = class({$ifndef wsintf}TWSBitBtn{$else}TWin32WSButton, IWSBitBtn{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;

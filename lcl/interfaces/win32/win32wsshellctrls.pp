@@ -34,7 +34,7 @@ type
 
   { TWin32WSCustomShellTreeView }
 
-  TWin32WSCustomShellTreeView = class({$ifndef wsintf}TWSCustomShellTreeView{$else}TWin32WSWinControl, TWSCustomShellTreeViewClass{$endif})
+  TWin32WSCustomShellTreeView = class({$ifndef wsintf}TWSCustomShellTreeView{$else}TWin32WSWinControl, IWSCustomShellTreeView{$endif})
   impsection
     imptype function DrawBuiltInIcon(ATreeView: TCustomShellTreeView; ANode: TTreeNode;
       ARect: TRect): TSize; rootoverride;
@@ -42,7 +42,7 @@ type
   end;
 
   { TWin32WSCustomShellListView }
-  TWin32WSCustomShellListView = class({$ifndef wsintf}TWSCustomShellListView{$else}TWin32WSCustomListView, TWSCustomShellListViewClass{$endif})
+  TWin32WSCustomShellListView = class({$ifndef wsintf}TWSCustomShellListView{$else}TWin32WSCustomListView, IWSCustomShellListView{$endif})
   impsection
     imptype function GetBuiltInImageIndex(AListView: TCustomShellListView;
       const AFileName: String; ALargeImage: Boolean): Integer; rootoverride;

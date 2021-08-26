@@ -38,7 +38,7 @@ type
 
   { TWin32WSCustomFloatSpinEdit }
 
-  TWin32WSCustomFloatSpinEdit = class({$ifndef wsintf}TWSCustomFloatSpinEdit{$else}TWin32WSCustomEdit, TWSCustomFloatSpinEditClass{$endif})
+  TWin32WSCustomFloatSpinEdit = class({$ifndef wsintf}TWSCustomFloatSpinEdit{$else}TWin32WSCustomEdit, IWSCustomFloatSpinEdit{$endif})
   private
     class procedure ApplyMargins(const AWinControl: TWinControl);
     class function GetUpDownWidth(const AWinControl: TWinControl): Integer;

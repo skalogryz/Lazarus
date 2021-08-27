@@ -5,7 +5,7 @@ unit NoGUIWSFactory;
 interface
 
 uses
-  Classes, WSLCLClasses;
+  Classes;
 
 // imglist
 function RegisterCustomImageListResolution: Boolean;

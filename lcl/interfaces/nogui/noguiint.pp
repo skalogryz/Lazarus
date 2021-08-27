@@ -29,9 +29,7 @@ uses
   Dialogs, Controls, Forms,
   LCLProc, LCLIntf, LCLType, LCLPlatformDef, Graphics, Menus, Themes,
   // LazUtils
-  GraphType,
-  // widgetset
-  WSLCLClasses;
+  GraphType;
 
 type
 

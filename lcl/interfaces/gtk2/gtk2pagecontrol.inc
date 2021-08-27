@@ -710,7 +710,9 @@ begin
   if (AWinControl.Parent <> nil) and (AWinControl.Parent is TTabControl) then begin
     // call inherited; need to do it this way,
     // because the compile time ancestor class is TWSCustomListView
+    {$ifndef wsintf}
     TWSWinControlClass(ClassParent).SetBounds(AWinControl, ALeft, ATop, AWidth, AHeight);
+    {$endif}
     inherited;
     exit;
   end;
@@ -723,7 +725,11 @@ imptype procedure TGtk2WSCustomPage.SetFont(const AWinControl: TWinControl;
 begin
   if (AWinControl.Parent <> nil) and (AWinControl.Parent is TTabControl) then begin
     // runtime inherited
+    {$ifdef wsintf}
+    inherited SetFont(AWinControl, AFont);
+    {$else}
     TWSWinControlClass(ClassParent).SetFont(AWinControl, AFont);
+    {$endif}
     exit;
   end;
 
@@ -752,8 +758,12 @@ imptype function TGtk2WSCustomPage.GetDefaultClientRect(
 begin
   if (AWinControl.Parent <> nil) and (AWinControl.Parent is TTabControl) then begin
     // runtime inherited
+    {$ifdef wsintf}
+    Result := inherited GetDefaultClientRect(AWinControl, aLeft, aTop, aWidth, aHeight, aClientRect);
+    {$else}
     Result := TWSWinControlClass(ClassParent).GetDefaultClientRect(
       AWinControl, aLeft, aTop, aWidth, aHeight, aClientRect);
+    {$endif}
     exit;
   end;
 

@@ -100,7 +100,7 @@
   {$OPTIMIZATION NOREMOVEEMPTYPROCS}
 {$ENDIF}
 
-{.$define WSINTF}
+{$define WSINTF}
 
 {$macro on}
 {$ifdef wsintf}

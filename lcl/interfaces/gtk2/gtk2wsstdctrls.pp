@@ -2339,7 +2339,11 @@ begin
 
   // inherited DestroyHandle doesn't work, because that is determined at
   // compile time, while the WS class hierarchy is created at runtime
-  TWSWinControlClass(Classparent).DestroyHandle(AWinControl);
+  {$ifdef wsintf}
+  inherited DestroyHandle(AWinControl);
+  {$else}
+  GetWSWinControl(Classparent).DestroyHandle(AWinControl);
+  {$endif}
 end;
 {$ifdef wsintf}
 imptype procedure TGtk2WSCustomComboBox.SetDropDownCount(const ACustomComboBox: TCustomComboBox; NewCount: Integer);

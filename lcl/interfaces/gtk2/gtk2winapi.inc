@@ -138,7 +138,7 @@ begin
   else Control := nil;
 
   if (Control <> nil)
-  and TWSWinControlClass(Control.WidgetSetClass).GetDoubleBuffered(Control)
+  and GetWSWinControl(Control.WidgetSetClass).GetDoubleBuffered(Control)
   and not GTK_WIDGET_DOUBLE_BUFFERED({%H-}PGTKWidget(Handle))
   then begin
     //DebugLn(['TGtk2WidgetSet.BeginPaint ',DbgSName(Control)]);
@@ -2862,7 +2862,7 @@ begin
   else Control := nil;
 
   if (Control <> nil)
-  and TWSWinControlClass(Control.WidgetSetClass).GetDoubleBuffered(Control)
+  and GetWSWinControl(Control.WidgetSetClass).GetDoubleBuffered(Control)
   and not GTK_WIDGET_DOUBLE_BUFFERED({%H-}PGTKWidget(Handle))
   then begin
     gdk_window_thaw_updates(TGtkDeviceContext(PS.HDC).Drawable);

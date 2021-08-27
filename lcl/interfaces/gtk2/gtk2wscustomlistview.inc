@@ -1821,7 +1821,11 @@ begin
         gdk_pixbuf_unref(PGDKPixBuf(Widgets^.Images.Items[i]));
     FreeAndNil(Widgets^.Images);
   end;
+  {$ifdef wsintf}
+  inherited DestroyHandle(AWinControl);
+  {$else}
   TWSWinControlClass(ClassParent).DestroyHandle(AWinControl);
+  {$endif}
 end;
 
 imptype procedure TGtk2WSCustomListView.BeginUpdate(const ALV: TCustomListView);

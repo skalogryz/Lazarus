@@ -138,7 +138,7 @@ type
 
   { TGtk2WSCustomListView }
 
-  TGtk2WSCustomListView = class({$ifndef wsintf}TWSCustomListView{$else}TGtk2WSWinControl{$endif})
+  TGtk2WSCustomListView = class({$ifndef wsintf}TWSCustomListView{$else}TGtk2WSWinControl, IWSCustomListView{$endif})
   private
     class procedure SetPropertyInternal(const ALV: TCustomListView; const Widgets: PTVWidgets; const AProp: TListViewProperty; const AIsSet: Boolean);
     class procedure SetNeedDefaultColumn(const ALV: TCustomListView; const AValue: Boolean);
@@ -215,6 +215,17 @@ type
       const {%H-}ASortDirection: TSortDirection); rootoverride;
     imptype procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); rootoverride;
     imptype procedure SetViewStyle(const ALV: TCustomListView; const AValue: TViewStyle); rootoverride;
+    {$ifdef wsintf}
+    imptype function  ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean; rootoverride;
+    imptype function ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean; rootoverride;
+    imptype procedure ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer); rootoverride;
+    imptype function GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests; rootoverride;
+    imptype function GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem; rootoverride;
+    imptype procedure SetHoverTime(const ALV: TCustomListView; const AValue: Integer); rootoverride;
+    imptype procedure SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement); rootoverride;
+    imptype procedure SetOwnerData(const ALV: TCustomListView; const AValue: Boolean); rootoverride;
+    imptype function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean; rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSListView }
@@ -265,17 +276,22 @@ type
 
   { TGtk2WSTrackBar }
 
-  TGtk2WSTrackBar = class(TWSTrackBar)
+  TGtk2WSTrackBar = class({$ifndef wsintf}TWSTrackBar{$else}TGtk2WSWinControl, IWSTrackBar{$endif})
   protected
     class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    imptype procedure ApplyChanges(const ATrackBar: TCustomTrackBar); override;
-    imptype function  GetPosition(const ATrackBar: TCustomTrackBar): integer; override;
-    imptype procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer); override;
+    imptype procedure ApplyChanges(const ATrackBar: TCustomTrackBar); rootoverride;
+    imptype function  GetPosition(const ATrackBar: TCustomTrackBar): integer; rootoverride;
+    imptype procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer); rootoverride;
     imptype procedure GetPreferredSize(const {%H-}AWinControl: TWinControl;
                         var {%H-}PreferredWidth, PreferredHeight: integer;
                         {%H-}WithThemeSpace: Boolean); override;
+    {$ifdef wsintf}
+    imptype procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation); rootoverride;
+    imptype procedure SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer); rootoverride;
+    imptype procedure SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSCustomTreeView }
@@ -717,5 +733,22 @@ begin
   Set_RC_Name(AWinControl, Widget);
   SetCallbacks(Widget, WidgetInfo);
 end;
+
+{$ifdef wsintf}
+imptype procedure TGtk2WSTrackBar.SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation);
+begin
+  RecreateWnd(ATrackBar);
+end;
+
+imptype procedure TGtk2WSTrackBar.SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer);
+begin
+end;
+
+imptype procedure TGtk2WSTrackBar.SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle);
+begin
+  RecreateWnd(ATrackBar);
+end;
+
+{$endif}
 
 end.

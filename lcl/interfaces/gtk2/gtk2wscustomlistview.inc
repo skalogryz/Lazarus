@@ -2450,3 +2450,82 @@ begin
   end;
 //  inherited SetViewStyle(ALV, Avalue);
 end;
+{$ifdef wsintf}
+imptype function TGtk2WSCustomListView.ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TGtk2WSCustomListView.ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean;
+begin
+  Result := False;
+end;
+
+imptype procedure TGtk2WSCustomListView.ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer);
+begin
+end;
+
+imptype function TGtk2WSCustomListView.GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests;
+begin
+  Result := [];
+end;
+
+imptype function TGtk2WSCustomListView.GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem;
+var
+  ACount: Integer;
+  StartIndex, AIndex: Integer;
+begin
+  Result := nil;
+  if StartItem = nil then
+    Exit;
+  StartIndex := StartItem.Index;
+  AIndex := StartIndex;
+  ACount := ALV.Items.Count;
+  case Direction of
+    sdAbove:
+      while AIndex>0 do
+      begin
+        dec(AIndex);
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+    sdBelow:
+      while AIndex < ACount-1 do
+      begin
+        inc(AIndex);
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+    sdAll:
+      while True do
+      begin
+        inc(AIndex);
+        Assert(AIndex <> StartIndex, 'TWSCustomListView.GetNextItem: AIndex=StartIndex');
+        if AIndex >= ACount then
+          Exit;
+{       begin           Do not wrap around. Will never return Nil. Issue #38565.
+          AIndex := -1;  continue;
+        end;  }
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+  end;
+end;
+
+imptype procedure TGtk2WSCustomListView.SetHoverTime(const ALV: TCustomListView; const AValue: Integer);
+begin
+end;
+
+imptype procedure TGtk2WSCustomListView.SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement);
+begin
+end;
+
+imptype procedure TGtk2WSCustomListView.SetOwnerData(const ALV: TCustomListView; const AValue: Boolean);
+begin
+end;
+
+imptype function TGtk2WSCustomListView.RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean;
+begin
+  Result := false;
+end;
+{$endif}

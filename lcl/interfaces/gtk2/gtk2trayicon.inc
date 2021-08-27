@@ -518,7 +518,7 @@ end;
 *  RETURNS:        True if sucessfull, otherwise False
 *
 *******************************************************************}
-class function TGtk2WSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TGtk2WSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
 begin
   Result := False;
 
@@ -539,7 +539,7 @@ end;
 *  RETURNS:        True if sucessfull, otherwise False
 *
 *******************************************************************}
-class function TGtk2WSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TGtk2WSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   TrayIconHandle: TGtk2TrayIconHandle;
 begin
@@ -572,7 +572,7 @@ end;
 *  RETURNS:        Nothing
 *
 *******************************************************************}
-class procedure TGtk2WSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
+imptype procedure TGtk2WSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
 begin
   if ATrayIcon.Handle <> 0 then
     TGtk2TrayIconHandle(ATrayIcon.Handle).Update({%H-}PGdkPixbuf(ATrayIcon.Icon.Handle), ATrayIcon.Hint);
@@ -590,10 +590,20 @@ end;
 *  RETURNS:        Nothing
 *
 *******************************************************************}
-class function TGtk2WSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
+imptype function TGtk2WSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
 begin
   Result := Point(0, 0);
   if ATrayIcon.Handle <> 0 then
     Result := TGtk2TrayIconHandle(ATrayIcon.Handle).GetPosition;
 end;
+{$ifdef wsintf}
+imptype function TGtk2WSCustomTrayIcon.ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean;
+begin
+  Result := False;
+end;
 
+imptype function TGtk2WSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
+begin
+  Result := ATrayIcon.Icon.Canvas;
+end;
+{$endif}

@@ -20,6 +20,8 @@ unit Gtk2WSImgList;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
 ////////////////////////////////////////////////////
 // I M P O R T A N T                                
@@ -29,7 +31,7 @@ uses
 ////////////////////////////////////////////////////
 //  ImgList,
 ////////////////////////////////////////////////////
-  WSImgList, WSLCLClasses;
+  WSImgList, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif};
 
 type
 

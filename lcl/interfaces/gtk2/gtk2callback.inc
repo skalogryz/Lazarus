@@ -278,7 +278,9 @@ begin
   if TheWinControl<>nil then
   begin
     TheWinControl.CNPreferredSizeChanged;
+    {$ifndef wsintf}
     TGtkPrivateWidgetClass(TheWinControl.WidgetSetClass.WSPrivate).UpdateCursor(WinWidgetInfo);
+    {$endif}
     ConnectInternalWidgetsSignals(MainWidget,TheWinControl);
 
     if (TheWinControl is TCustomPage)

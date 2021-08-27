@@ -4,13 +4,15 @@ unit Gtk2WSFactory;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
   // RTL
   Classes,
   // LCL
   Controls, ComCtrls, Calendar, StdCtrls, Spin,
   Dialogs, ExtCtrls, ExtDlgs, Buttons, CheckLst, Forms, Grids, Menus,
-  PairSplitter, WSLCLClasses;
+  PairSplitter, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif};
 
 
 // imglist
@@ -136,7 +138,7 @@ end;
 // controls
 function RegisterDragImageListResolution: Boolean; alias : 'WSRegisterDragImageListResolution';
 begin
-  RegisterWSComponent(TDragImageListResolution, TGtk2WSDragImageListResolution);
+  RegisterWSComponent(TDragImageListResolution, TGtk2WSDragImageListResolution{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -155,7 +157,11 @@ end;
 
 function RegisterWinControl: Boolean; alias : 'WSRegisterWinControl';
 begin
+  {$ifdef wsintf}
+  RegisterWSComponent(TWinControl, TGtk2WSWinControl.Create);
+  {$else}
   RegisterWSComponent(TWinControl, TGtk2WSWinControl, TGtkPrivateWidget);
+  {$endif}
   //RegisterWSComponent(TWinControl, TGtk2WSWinControl);
   Result := True;
 end;
@@ -175,7 +181,7 @@ end;
 // comctrls
 function RegisterStatusBar: Boolean; alias : 'WSRegisterStatusBar';
 begin
-  RegisterWSComponent(TStatusBar, TGtk2WSStatusBar);
+  RegisterWSComponent(TStatusBar, TGtk2WSStatusBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -193,14 +199,14 @@ end;
 
 function RegisterCustomListView: Boolean; alias : 'WSRegisterCustomListView';
 begin
-  RegisterWSComponent(TCustomListView, TGtk2WSCustomListView);
+  RegisterWSComponent(TCustomListView, TGtk2WSCustomListView{$ifdef wsintf}.Create{$endif});
 //  RegisterWSComponent(TCustomListView, TGtk2WSListView);
   Result := True;
 end;
 
 function RegisterCustomProgressBar: Boolean; alias : 'WSRegisterCustomProgressBar';
 begin
-  RegisterWSComponent(TCustomProgressBar, TGtk2WSProgressBar);
+  RegisterWSComponent(TCustomProgressBar, TGtk2WSProgressBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -219,13 +225,13 @@ end;
 
 function RegisterToolBar: Boolean; alias : 'WSRegisterToolBar';
 begin
-  RegisterWSComponent(TToolBar, TGtk2WSToolBar);
+  RegisterWSComponent(TToolBar, TGtk2WSToolBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomTrackBar: Boolean; alias : 'WSRegisterCustomTrackBar';
 begin
-  RegisterWSComponent(TCustomTrackBar, TGtk2WSTrackBar);
+  RegisterWSComponent(TCustomTrackBar, TGtk2WSTrackBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -239,26 +245,26 @@ end;
 // calendar
 function RegisterCustomCalendar: Boolean; alias : 'WSRegisterCustomCalendar';
 begin
-  RegisterWSComponent(TCustomCalendar, TGtk2WSCustomCalendar);
+  RegisterWSComponent(TCustomCalendar, TGtk2WSCustomCalendar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 // dialogs
 function RegisterCommonDialog: Boolean; alias : 'WSRegisterCommonDialog';
 begin
-  RegisterWSComponent(TCommonDialog, TGtk2WSCommonDialog);
+  RegisterWSComponent(TCommonDialog, TGtk2WSCommonDialog{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterFileDialog: Boolean; alias : 'WSRegisterFileDialog';
 begin
-  RegisterWSComponent(TFileDialog, TGtk2WSFileDialog);
+  RegisterWSComponent(TFileDialog, TGtk2WSFileDialog{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterOpenDialog: Boolean; alias : 'WSRegisterOpenDialog';
 begin
-  RegisterWSComponent(TOpenDialog, TGtk2WSOpenDialog);
+  RegisterWSComponent(TOpenDialog, TGtk2WSOpenDialog{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -276,7 +282,7 @@ end;
 
 function RegisterColorDialog: Boolean; alias : 'WSRegisterColorDialog';
 begin
-  RegisterWSComponent(TColorDialog, TGtk2WSColorDialog);
+  RegisterWSComponent(TColorDialog, TGtk2WSColorDialog{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -288,34 +294,38 @@ end;
 
 function RegisterFontDialog: Boolean; alias : 'WSRegisterFontDialog';
 begin
-  RegisterWSComponent(TFontDialog, TGtk2WSFontDialog);
+  RegisterWSComponent(TFontDialog, TGtk2WSFontDialog{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 // StdCtrls
 function RegisterCustomScrollBar: Boolean; alias : 'WSRegisterCustomScrollBar';
 begin
-  RegisterWSComponent(TCustomScrollBar, TGtk2WSScrollBar);
+  RegisterWSComponent(TCustomScrollBar, TGtk2WSScrollBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomGroupBox: Boolean; alias : 'WSRegisterCustomGroupBox';
 begin
-  RegisterWSComponent(TCustomGroupBox, TGtk2WSCustomGroupBox);
+  RegisterWSComponent(TCustomGroupBox, TGtk2WSCustomGroupBox{$ifdef wsintf}.Create{$endif});
 //  RegisterWSComponent(TGroupBox, TGtk2WSGroupBox);
   Result := True;
 end;
 
 function RegisterCustomComboBox: Boolean; alias : 'WSRegisterCustomComboBox';
 begin
-  RegisterWSComponent(TCustomComboBox, TGtk2WSCustomComboBox);
+  RegisterWSComponent(TCustomComboBox, TGtk2WSCustomComboBox{$ifdef wsintf}.Create{$endif});
 //  RegisterWSComponent(TComboBox, TGtk2WSComboBox);
   Result := True;
 end;
 
 function RegisterCustomListBox: Boolean; alias : 'WSRegisterCustomListBox';
 begin
+  {$ifdef wsintf}
+  RegisterWSComponent(TCustomListBox, TGtk2WSCustomListBox.Create);
+  {$else}
   RegisterWSComponent(TCustomListBox, TGtk2WSCustomListBox, TGtk2PrivateList);
+  {$endif}
 //  RegisterWSComponent(TListBox, TGtk2WSListBox);
   Result := True;
 end;
@@ -323,15 +333,19 @@ end;
 function RegisterCustomEdit: Boolean; alias : 'WSRegisterCustomEdit';
 begin
 //  RegisterWSComponent(TEdit, TGtk2WSEdit);
-  RegisterWSComponent(TCustomEdit, TGtk2WSCustomEdit);
+  RegisterWSComponent(TCustomEdit, TGtk2WSCustomEdit{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomMemo: Boolean; alias : 'WSRegisterCustomMemo';
 begin
 //  RegisterWSComponent(TMemo, TGtk2WSMemo);
+  {$ifndef wsintf}
   RegisterWSComponent(TCustomMemo, TGtk2WSCustomMemo, TGtk2PrivateMemo);
   RegisterWSComponent(TCustomMemo, TGtk2WSCustomMemo);
+  {$else}
+  RegisterWSComponent(TCustomMemo, TGtk2WSCustomMemo.Create);
+  {$endif}
   Result := True;
 end;
 
@@ -343,34 +357,38 @@ end;
 
 function RegisterCustomButton: Boolean; alias : 'WSRegisterCustomButton';
 begin
+  {$ifndef wsintf}
   RegisterWSComponent(TCustomButton, TGtk2WSButton, TGtk2PrivateButton); { enabled(ifdef) in GTK1 }
   RegisterWSComponent(TCustomButton, TGtk2WSButton);
+  {$else}
+  RegisterWSComponent(TCustomButton, TGtk2WSButton.Create);
+  {$endif}
   Result := True;
 end;
 
 function RegisterCustomCheckBox: Boolean; alias : 'WSRegisterCustomCheckBox';
 begin
 //  RegisterWSComponent(TCustomCheckBox, TGtk2WSCustomCheckBox);
-  RegisterWSComponent(TCustomCheckBox, TGtk2WSCustomCheckBox);
+  RegisterWSComponent(TCustomCheckBox, TGtk2WSCustomCheckBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterToggleBox: Boolean; alias : 'WSRegisterToggleBox';
 begin
-  RegisterWSComponent(TToggleBox, TGtk2WSToggleBox);
+  RegisterWSComponent(TToggleBox, TGtk2WSToggleBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterRadioButton: Boolean; alias : 'WSRegisterRadioButton';
 begin
-  RegisterWSComponent(TRadioButton, TGtk2WSRadioButton);
+  RegisterWSComponent(TRadioButton, TGtk2WSRadioButton{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomStaticText: Boolean; alias : 'WSRegisterCustomStaticText';
 begin
 //  RegisterWSComponent(TStaticText, TGtk2WSStaticText);
-  RegisterWSComponent(TCustomStaticText, TGtk2WSCustomStaticText);
+  RegisterWSComponent(TCustomStaticText, TGtk2WSCustomStaticText{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -385,13 +403,17 @@ end;
 function RegisterCustomPage: Boolean; alias : 'WSRegisterCustomPage';
 begin
 //  RegisterWSComponent(TCustomPage, TGtk2WSCustomPage);
-  RegisterWSComponent(TCustomPage, TGtk2WSCustomPage);
+  RegisterWSComponent(TCustomPage, TGtk2WSCustomPage{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomNotebook: Boolean; alias : 'WSRegisterCustomNotebook';
 begin
+  {$ifdef wsintf}
+  RegisterWSComponent(TCustomTabControl, TGtk2WSCustomTabControl.Create);
+  {$else}
   RegisterWSComponent(TCustomTabControl, TGtk2WSCustomTabControl, TGtk2PrivateNotebook);
+  {$endif}
 //  RegisterWSComponent(TNotebook, TGtk2WSNotebook);
   Result := True;
 end;
@@ -452,23 +474,23 @@ end;
 
 function RegisterCustomPanel: Boolean; alias : 'WSRegisterCustomPanel';
 begin
-  RegisterWSComponent(TCustomPanel, TGtk2WSCustomPanel);
+  RegisterWSComponent(TCustomPanel, TGtk2WSCustomPanel{$ifdef wsintf}.Create{$endif});
   Result := False;
 end;
 
 function RegisterCustomTrayIcon: Boolean; alias : 'WSRegisterCustomTrayIcon';
 begin
   if UnityAppIndicatorInit then
-    RegisterWSComponent(TCustomTrayIcon, TUnityWSCustomTrayIcon)
+    RegisterWSComponent(TCustomTrayIcon, TUnityWSCustomTrayIcon{$ifdef wsintf}.Create{$endif})
   else
-    RegisterWSComponent(TCustomTrayIcon, TGtk2WSCustomTrayIcon);
+    RegisterWSComponent(TCustomTrayIcon, TGtk2WSCustomTrayIcon{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 //ExtDlgs
 function RegisterPreviewFileControl: Boolean; alias : 'WSRegisterPreviewFileControl';
 begin
-  RegisterWSComponent(TPreviewFileControl, TGtk2WSPreviewFileControl);
+  RegisterWSComponent(TPreviewFileControl, TGtk2WSPreviewFileControl{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -517,7 +539,11 @@ end;
 // Buttons
 function RegisterCustomBitBtn: Boolean; alias : 'WSRegisterCustomBitBtn';
 begin
+  {$ifdef wsintf}
+  RegisterWSComponent(TCustomBitBtn, TGtk2WSBitBtn{$ifdef wsintf}.Create{$endif});
+  {$else}
   RegisterWSComponent(TCustomBitBtn, TGtk2WSBitBtn, TGtk2PrivateButton);
+  {$endif}
   Result := True;
 end;
 
@@ -530,14 +556,18 @@ end;
 // CheckLst
 function RegisterCustomCheckListBox: Boolean; alias : 'WSRegisterCustomCheckListBox';
 begin
-  RegisterWSComponent(TCustomCheckListBox, TGtk2WSCustomCheckListBox);
+  RegisterWSComponent(TCustomCheckListBox, TGtk2WSCustomCheckListBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 // Forms
 function RegisterScrollingWinControl: Boolean; alias : 'WSRegisterScrollingWinControl';
 begin
+  {$ifdef wsintf}
+  RegisterWSComponent(TScrollingWinControl, TGtk2WSScrollingWinControl{$ifdef wsintf}.Create{$endif});
+  {$else}
   RegisterWSComponent(TScrollingWinControl, TGtk2WSScrollingWinControl, TGtkPrivateScrollingWinControl);
+  {$endif}
   Result := True;
 end;
 
@@ -556,32 +586,32 @@ end;
 
 function RegisterCustomForm: Boolean; alias : 'WSRegisterCustomForm';
 begin
-  RegisterWSComponent(TCustomForm, TGtk2WSCustomForm);
+  RegisterWSComponent(TCustomForm, TGtk2WSCustomForm{$ifdef wsintf}.Create{$endif});
 //  RegisterWSComponent(TForm, TGtk2WSForm);
   Result := True;
 end;
 
 function RegisterHintWindow: Boolean; alias : 'WSRegisterHintWindow';
 begin
-  RegisterWSComponent(THintWindow, TGtk2WSHintWindow);
+  RegisterWSComponent(THintWindow, TGtk2WSHintWindow{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomGrid: Boolean; alias : 'WSRegisterCustomGrid';
 begin
-  RegisterWSComponent(TCustomGrid, TGtk2WSCustomGrid);
+  RegisterWSComponent(TCustomGrid, TGtk2WSCustomGrid{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterMenuItem: Boolean; alias : 'WSRegisterMenuItem';
 begin
-  RegisterWSComponent(TMenuItem, TGtk2WSMenuItem);
+  RegisterWSComponent(TMenuItem, TGtk2WSMenuItem{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterMenu: Boolean; alias : 'WSRegisterMenu';
 begin
-  RegisterWSComponent(TMenu, TGtk2WSMenu);
+  RegisterWSComponent(TMenu, TGtk2WSMenu{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -593,25 +623,25 @@ end;
 
 function RegisterPopupMenu: Boolean; alias : 'WSRegisterPopupMenu';
 begin
-  RegisterWSComponent(TPopupMenu, TGtk2WSPopupMenu);
+  RegisterWSComponent(TPopupMenu, TGtk2WSPopupMenu{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterPairSplitterSide: Boolean; alias : 'WSRegisterPairSplitterSide';
 begin
-  RegisterWSComponent(TPairSplitterSide, TGtk2WSPairSplitterSide);
+  RegisterWSComponent(TPairSplitterSide, TGtk2WSPairSplitterSide{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomPairSplitter: Boolean; alias : 'WSRegisterCustomPairSplitter';
 begin
-  RegisterWSComponent(TCustomPairSplitter, TGtk2WSCustomPairSplitter);
+  RegisterWSComponent(TCustomPairSplitter, TGtk2WSCustomPairSplitter{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomFloatSpinEdit: Boolean; alias : 'WSRegisterCustomFloatSpinEdit';
 begin
-  RegisterWSComponent(TCustomFloatSpinEdit, TGtk2WSCustomFloatSpinEdit);
+  RegisterWSComponent(TCustomFloatSpinEdit, TGtk2WSCustomFloatSpinEdit{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 

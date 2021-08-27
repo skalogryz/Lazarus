@@ -17,9 +17,10 @@
 unit Gtk2WSControls;
 
 {$mode objfpc}{$H+}
-{$I gtk2defines.inc}
 
 interface
+
+{$I gtk2defines.inc}
 
 uses
   // RTL
@@ -46,13 +47,13 @@ type
   { TGtk2WSDragImageListResolution }
 
   TGtk2WSDragImageListResolution = class(TWSDragImageListResolution)
-  published
-    class function BeginDrag(const ADragImageList: TDragImageListResolution; {%H-}Window: HWND; AIndex, X, Y: Integer): Boolean; override;
-    class function DragMove(const {%H-}ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; override;
-    class procedure EndDrag(const {%H-}ADragImageList: TDragImageListResolution); override;
-    class function HideDragImage(const {%H-}ADragImageList: TDragImageListResolution;
+  impsection
+    imptype function BeginDrag(const ADragImageList: TDragImageListResolution; {%H-}Window: HWND; AIndex, X, Y: Integer): Boolean; override;
+    imptype function DragMove(const {%H-}ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean; override;
+    imptype procedure EndDrag(const {%H-}ADragImageList: TDragImageListResolution); override;
+    imptype function HideDragImage(const {%H-}ADragImageList: TDragImageListResolution;
       {%H-}ALockedWindow: HWND; {%H-}DoUnLock: Boolean): Boolean; override;
-    class function ShowDragImage(const {%H-}ADragImageList: TDragImageListResolution;
+    imptype function ShowDragImage(const {%H-}ADragImageList: TDragImageListResolution;
       {%H-}ALockedWindow: HWND; X, Y: Integer; {%H-}DoLock: Boolean): Boolean; override;
   end;
 
@@ -65,39 +66,51 @@ type
 
   { TGtk2WSWinControl }
 
-  TGtk2WSWinControl = class(TWSWinControl)
+  TGtk2WSWinControl = class({$ifndef wsintf}TWSWinControl{$else}TGtk2WSControl, IWSWinControl{$endif})
   private
   protected
   public
     // Internal public
     class procedure SetCallbacks(const AGTKObject: PGTKObject; const AComponent: TComponent);
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): HWND; override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): HWND; rootoverride;
 
-    class procedure AddControl(const AControl: TControl); override;
-    class function  CanFocus(const AWinControl: TWinControl): Boolean; override;
-    class procedure ConstraintsChange(const AWinControl: TWinControl); override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
-    class procedure Invalidate(const AWinControl: TWinControl); override;
+    imptype procedure AddControl(const AControl: TControl); override;
+    imptype function  CanFocus(const AWinControl: TWinControl): Boolean; rootoverride;
+    imptype procedure ConstraintsChange(const AWinControl: TWinControl); rootoverride;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); rootoverride;
+    imptype procedure Invalidate(const AWinControl: TWinControl); rootoverride;
 
-    class function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; rootoverride;
 
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
-    class procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
-    class procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const {%H-}AOldPos, ANewPos: Integer; const AChildren: TFPList); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer); override;
-    class procedure SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: string); override;
-    class procedure SetShape(const AWinControl: TWinControl; const AShape: HBITMAP); override;
-    class procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, {%H-}UseRightToLeftReading, {%H-}UseRightToLeftScrollBar : Boolean); override;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); rootoverride;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); rootoverride;
+    imptype procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const {%H-}AOldPos, ANewPos: Integer; const AChildren: TFPList); rootoverride;
+    imptype procedure SetColor(const AWinControl: TWinControl); rootoverride;
+    imptype procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); rootoverride;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); rootoverride;
+    imptype procedure SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer); rootoverride;
+    imptype procedure SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer); rootoverride;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: string); rootoverride;
+    imptype procedure SetShape(const AWinControl: TWinControl; const AShape: HBITMAP); rootoverride;
+    imptype procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, {%H-}UseRightToLeftReading, {%H-}UseRightToLeftScrollBar : Boolean); rootoverride;
 
-    class procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); override;
-    class procedure Repaint(const AWinControl: TWinControl); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
-    class procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); override;
+    imptype procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); rootoverride;
+    imptype procedure Repaint(const AWinControl: TWinControl); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); rootoverride;
+    imptype procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); rootoverride;
+    {$ifdef wsintf}
+    imptype function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; rootoverride;
+    imptype function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; rootoverride;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); rootoverride;
+    imptype function  GetDefaultClientRect(const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect): boolean; rootoverride;
+    imptype function GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean; rootoverride;
+    imptype function GetDoubleBuffered(const AWinControl: TWinControl): Boolean; rootoverride;
+    imptype function  GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; rootoverride;
+    imptype procedure AdaptBounds(const AWinControl: TWinControl;
+          var Left, Top, Width, Height: integer; var SuppressMove: boolean); rootoverride;
+    imptype procedure DefaultWndHandler(const AWinControl: TWinControl; var AMessage); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSGraphicControl }
@@ -108,7 +121,7 @@ type
 
   { TGtk2WSCustomControl }
 
-  TGtk2WSCustomControl = class(TWSCustomControl)
+  TGtk2WSCustomControl = class({$ifndef wsintf}TWSCustomControl{$else}TGtk2WSWinControl{$endif})
   published
   end;
 
@@ -135,11 +148,11 @@ type
 
   { TGtk2WSBaseScrollingWinControl }
 
-  TGtk2WSBaseScrollingWinControl = class(TWSWinControl)
+  TGtk2WSBaseScrollingWinControl = class({$ifndef wsintf}TWSWinControl{$else}TObject{$endif})
   public
-    class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): HWND; override;
+    class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
+  public
+    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): HWND; {$ifndef wsintf}override;{$endif}
   end;
 
 function GetWidgetHAdjustment(AWidget: PGTKWidget): PGTKAdjustment;
@@ -151,12 +164,12 @@ var
 implementation
 
 uses
-  Gtk2Int, LMessages, Gtk2WSPrivate, Forms;
+  Gtk2Int, LMessages, Gtk2WSPrivate, Forms{$ifdef wsintf},InterfaceBase{$endif};
 
 { TGtk2WSWinControl }
 
 
-class function TGtk2WSWinControl.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSWinControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   Widget: PGtkWidget;
@@ -234,7 +247,7 @@ begin
   g_signal_connect(Widget, 'scroll-event', TGCallback(@Gtk2ScrolledWindowScrollCB), WidgetInfo);
 end;
 
-class procedure TGtk2WSWinControl.SetBiDiMode(const AWinControl : TWinControl;
+imptype procedure TGtk2WSWinControl.SetBiDiMode(const AWinControl : TWinControl;
   UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean
   );
 const
@@ -287,7 +300,7 @@ begin
 end;
 
 
-class function TGtk2WSWinControl.GetText(const AWinControl: TWinControl;
+imptype function TGtk2WSWinControl.GetText(const AWinControl: TWinControl;
   var AText: String): Boolean;
 var
   TextBuf: PGtkTextBuffer;
@@ -332,7 +345,7 @@ begin
     gtk_viewport_set_shadow_type(PGtkViewport(Widget), BorderStyleShadowMap[ABorderStyle]);
 end;
 
-class procedure TGtk2WSWinControl.SetBorderStyle(
+imptype procedure TGtk2WSWinControl.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 var
   Widget: PGtkWidget;
@@ -372,7 +385,7 @@ end;
 
 { TGtk2WSDragImageListResolution }
 
-class function TGtk2WSDragImageListResolution.BeginDrag(
+imptype function TGtk2WSDragImageListResolution.BeginDrag(
   const ADragImageList: TDragImageListResolution; Window: HWND; AIndex, X, Y: Integer
   ): Boolean;
 var
@@ -426,26 +439,26 @@ begin
   ABitmap.Free;
 end;
 
-class function TGtk2WSDragImageListResolution.DragMove(
+imptype function TGtk2WSDragImageListResolution.DragMove(
   const ADragImageList: TDragImageListResolution; X, Y: Integer): Boolean;
 begin
   Result := Gtk2Widgetset.DragImageList_DragMove(X, Y);
 end;
 
-class procedure TGtk2WSDragImageListResolution.EndDrag(
+imptype procedure TGtk2WSDragImageListResolution.EndDrag(
   const ADragImageList: TDragImageListResolution);
 begin
   Gtk2Widgetset.DragImageList_EndDrag;
 end;
 
-class function TGtk2WSDragImageListResolution.HideDragImage(
+imptype function TGtk2WSDragImageListResolution.HideDragImage(
   const ADragImageList: TDragImageListResolution; ALockedWindow: HWND; DoUnLock: Boolean
   ): Boolean;
 begin
   Result := Gtk2Widgetset.DragImageList_SetVisible(False);
 end;
 
-class function TGtk2WSDragImageListResolution.ShowDragImage(
+imptype function TGtk2WSDragImageListResolution.ShowDragImage(
   const ADragImageList: TDragImageListResolution; ALockedWindow: HWND; X, Y: Integer;
   DoLock: Boolean): Boolean;
 begin
@@ -498,7 +511,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSWinControl.AddControl(const AControl: TControl);
+imptype procedure TGtk2WSWinControl.AddControl(const AControl: TControl);
 var
   AParent: TWinControl;
   ParentWidget: PGTKWidget;
@@ -541,7 +554,7 @@ begin
   end;
 end;
 
-class function TGtk2WSWinControl.CanFocus(const AWinControl: TWinControl): Boolean;
+imptype function TGtk2WSWinControl.CanFocus(const AWinControl: TWinControl): Boolean;
 var
   Widget, FocusWidget: PGtkWidget;
 begin
@@ -554,7 +567,7 @@ begin
     Result := False;
 end;
 
-class procedure TGtk2WSWinControl.ConstraintsChange(const AWinControl: TWinControl);
+imptype procedure TGtk2WSWinControl.ConstraintsChange(const AWinControl: TWinControl);
 var
   Widget: PGtkWidget;
   Geometry: TGdkGeometry;
@@ -595,13 +608,13 @@ begin
   end;
 end;
 
-class procedure TGtk2WSWinControl.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TGtk2WSWinControl.DestroyHandle(const AWinControl: TWinControl);
 begin
   //DebugLn('TGtk2WSWinControl.DestroyHandle ',DbgSName(AWinControl));
   Gtk2WidgetSet.DestroyLCLComponent(AWinControl);
 end;
 
-class procedure TGtk2WSWinControl.Invalidate(const AWinControl: TWinControl);
+imptype procedure TGtk2WSWinControl.Invalidate(const AWinControl: TWinControl);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'Invalidate')
   then Exit;
@@ -610,14 +623,14 @@ begin
   gtk_widget_queue_draw({%H-}PGtkWidget(AWinControl.Handle));
 end;
 
-class procedure TGtk2WSWinControl.ShowHide(const AWinControl: TWinControl);
+imptype procedure TGtk2WSWinControl.ShowHide(const AWinControl: TWinControl);
 begin
   // other methods use ShowHide also, can't move code
   Gtk2WidgetSet.SetVisible(AWinControl, AWinControl.HandleObjectShouldBeVisible);
   InvalidateLastWFPResult(AWinControl, AWinControl.BoundsRect);
 end;
 
-class procedure TGtk2WSWinControl.ScrollBy(const AWinControl: TWinControl;
+imptype procedure TGtk2WSWinControl.ScrollBy(const AWinControl: TWinControl;
   DeltaX, DeltaY: integer);
 var
   Scrolled: PGtkScrolledWindow;
@@ -650,7 +663,7 @@ begin
   AWinControl.Invalidate;
 end;
 
-class procedure TGtk2WSWinControl.SetBounds(const AWinControl: TWinControl;
+imptype procedure TGtk2WSWinControl.SetBounds(const AWinControl: TWinControl;
   const ALeft, ATop, AWidth, AHeight: Integer);
 var
   AForm: TCustomForm;
@@ -752,7 +765,7 @@ begin
   Gtk2WidgetSet.SetCommonCallbacks(AGtkObject, AComponent);
 end;
 
-class procedure TGtk2WSWinControl.SetChildZPosition(
+imptype procedure TGtk2WSWinControl.SetChildZPosition(
   const AWinControl, AChild: TWinControl;
   const AOldPos, ANewPos: Integer; const AChildren: TFPList);
 var
@@ -764,7 +777,7 @@ begin
 
   if not WSCheckHandleAllocated(AChild, 'SetChildZPosition (child)') then
     Exit;
-
+  {$ifndef wsintf}
   if (ANewPos <= 0) or (ANewPos >= AChildren.Count - 1) then
   begin
     // simple
@@ -785,24 +798,26 @@ begin
           Child.WidgetSetClass.WSPrivate).SetZPosition(Child, wszpBack);
     end;
   end;
+  {$endif}
 end;
 
-class procedure TGtk2WSWinControl.SetCursor(const AWinControl: TWinControl; const ACursor: HCursor);
+imptype procedure TGtk2WSWinControl.SetCursor(const AWinControl: TWinControl; const ACursor: HCursor);
 var
   WidgetInfo: PWidgetInfo;
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetCursor')
   then Exit;
-
+  {$ifndef wsintf}
   WidgetInfo := GetWidgetInfo({%H-}Pointer(AWinControl.Handle));
   if WidgetInfo^.ControlCursor <> ACursor then
   begin
     WidgetInfo^.ControlCursor := ACursor;
     TGtkPrivateWidgetClass(AWinControl.WidgetSetClass.WSPrivate).UpdateCursor(WidgetInfo);
   end;
+  {$endif}
 end;
 
-class procedure TGtk2WSWinControl.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSWinControl.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   Widget: PGtkWidget;
@@ -822,7 +837,7 @@ begin
                                GTK_STYLE_TEXT]);
 end;
 
-class procedure TGtk2WSWinControl.SetPos(const AWinControl: TWinControl;
+imptype procedure TGtk2WSWinControl.SetPos(const AWinControl: TWinControl;
   const ALeft, ATop: Integer);
 var
   Widget: PGtkWidget;
@@ -842,7 +857,7 @@ begin
   gtk_widget_size_allocate(Widget, @Allocation);// Beware: this triggers callbacks
 end;
 
-class procedure TGtk2WSWinControl.SetSize(const AWinControl: TWinControl;
+imptype procedure TGtk2WSWinControl.SetSize(const AWinControl: TWinControl;
   const AWidth, AHeight: Integer);
 var
   Widget: PGtkWidget;
@@ -862,7 +877,7 @@ begin
   gtk_widget_size_allocate(Widget, @Allocation);// Beware: this triggers callbacks
 end;
 
-class procedure TGtk2WSWinControl.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSWinControl.SetColor(const AWinControl: TWinControl);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetColor')
   then Exit;
@@ -884,7 +899,7 @@ begin
   UpdateWidgetStyleOfControl(AWinControl);
 end;
 
-class procedure TGtk2WSWinControl.SetText(const AWinControl: TWinControl;
+imptype procedure TGtk2WSWinControl.SetText(const AWinControl: TWinControl;
   const AText: string);
 
   procedure SetNotebookPageTabLabel;
@@ -1004,7 +1019,7 @@ begin
   //DebugLn(Format('trace:  [TGtkWidgetSet.SetLabel] %s --> END', [AWinControl.ClassName]));
 end;
 
-class procedure TGtk2WSWinControl.SetShape(const AWinControl: TWinControl;
+imptype procedure TGtk2WSWinControl.SetShape(const AWinControl: TWinControl;
   const AShape: HBITMAP);
 var
   GtkWidget, FixedWidget: PGtkWidget;
@@ -1034,7 +1049,7 @@ end;
 {
   Paint control to X, Y point of device context.
 }
-class procedure TGtk2WSWinControl.PaintTo(const AWinControl: TWinControl;
+imptype procedure TGtk2WSWinControl.PaintTo(const AWinControl: TWinControl;
   ADC: HDC; X, Y: Integer);
 var
   DC: TGtkDeviceContext absolute ADC;
@@ -1119,7 +1134,7 @@ begin
   PaintWidget(GetFixedWidget({%H-}PGtkWidget(AWinControl.Handle)));
 end;
 
-class procedure TGtk2WSWinControl.Repaint(const AWinControl: TWinControl);
+imptype procedure TGtk2WSWinControl.Repaint(const AWinControl: TWinControl);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'Repaint')
   then Exit;
@@ -1309,5 +1324,59 @@ begin
   );
 end;
 
+
+{$ifdef wsintf}
+imptype function TGtk2WSWinControl.GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
+begin
+  Result := WidgetSet.GetClientBounds(AWincontrol.Handle, ARect);
+end;
+
+imptype function TGtk2WSWinControl.GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
+begin
+  // for now default to the WinAPI version
+  Result := WidgetSet.GetClientRect(AWincontrol.Handle, ARect);
+end;
+
+imptype procedure TGtk2WSWinControl.GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
+begin
+  PreferredWidth := 0;
+  PreferredHeight := 0;
+end;
+
+imptype function  TGtk2WSWinControl.GetDefaultClientRect(const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect): boolean;
+begin
+    Result:=false;
+end;
+
+imptype function TGtk2WSWinControl.GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TGtk2WSWinControl.GetDoubleBuffered(const AWinControl: TWinControl): Boolean;
+begin
+  Result := AWinControl.DoubleBuffered;
+end;
+
+imptype function  TGtk2WSWinControl.GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean;
+var
+  S: String;
+begin
+  Result := GetText(AWinControl, S);
+  if Result
+  then ALength := Length(S);
+end;
+
+imptype procedure TGtk2WSWinControl.AdaptBounds(const AWinControl: TWinControl;
+      var Left, Top, Width, Height: integer; var SuppressMove: boolean);
+begin
+end;
+
+imptype procedure TGtk2WSWinControl.DefaultWndHandler(const AWinControl: TWinControl; var AMessage);
+begin
+  WidgetSet.CallDefaultWndHandler(AWinControl, AMessage);
+end;
+
+{$endif}
 
 end.

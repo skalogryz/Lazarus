@@ -24,6 +24,8 @@ unit Gtk2WSPrivate;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
   // libs
   Gtk2, Glib2, Gdk2,
@@ -31,7 +33,7 @@ uses
   // LCL
   LCLType, LMessages, LCLProc, Controls, Forms,
   // widgetset
-  WSControls, WSLCLClasses, WSProc,
+  WSControls, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSProc,
   // interface
   Gtk2Def, Gtk2Proc, Gtk2WSControls;
 

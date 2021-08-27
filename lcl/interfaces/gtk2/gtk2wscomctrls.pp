@@ -16,9 +16,10 @@
 unit Gtk2WSComCtrls;
 
 {$mode objfpc}{$H+}
-{$I gtk2defines.inc}
 
 interface
+
+{$I gtk2defines.inc}
 
 uses
   // RTL, FCL, libs
@@ -29,7 +30,7 @@ uses
   LCLType, LCLIntf, LMessages, Controls, Graphics, ComCtrls, StdCtrls, Forms,
   ImgList, InterfaceBase,
   // widgetset
-  WSComCtrls, WSLCLClasses, WSControls, WSProc,
+  WSComCtrls, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif}, WSControls, WSProc,
   // GtkWidgetset
   Gtk2Def, Gtk2Globals, Gtk2Proc,
   // Gtk2Widgetset
@@ -55,83 +56,89 @@ type
 type
   { TGtk2WSCustomPage }
 
-  TGtk2WSCustomPage = class(TWSCustomPage)
+  TGtk2WSCustomPage = class({$ifndef wsintf}TWSCustomPage{$else}TGtk2WSWinControl, IWSCustomPage{$endif})
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure UpdateProperties(const ACustomPage: TCustomPage); override;
-    class procedure SetBounds(const {%H-}AWinControl: TWinControl; const {%H-}ALeft, {%H-}ATop, {%H-}AWidth, {%H-}AHeight: Integer); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
-    class function GetDefaultClientRect(const AWinControl: TWinControl;
+    imptype procedure UpdateProperties(const ACustomPage: TCustomPage); rootoverride;
+    imptype procedure SetBounds(const {%H-}AWinControl: TWinControl; const {%H-}ALeft, {%H-}ATop, {%H-}AWidth, {%H-}AHeight: Integer); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype function GetDefaultClientRect(const AWinControl: TWinControl;
              const {%H-}aLeft, {%H-}aTop, {%H-}aWidth, {%H-}aHeight: integer; var aClientRect: TRect
              ): boolean; override;
   end;
 
   { TGtk2WSCustomTabControl }
 
-  TGtk2WSCustomTabControl = class(TWSCustomTabControl)
+  TGtk2WSCustomTabControl = class({$ifndef wsintf}TWSCustomTabControl{$else}TGtk2WSWinControl, IWSCustomTabControl{$endif})
   private
     class function CreateTTabControlHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): HWND;
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
                                 const AParams: TCreateParams): HWND; override;
-    class function GetDefaultClientRect(const AWinControl: TWinControl;
+    imptype function GetDefaultClientRect(const AWinControl: TWinControl;
              const {%H-}aLeft, {%H-}aTop, aWidth, aHeight: integer; var aClientRect: TRect
              ): boolean; override;
-    class procedure AddPage(const ATabControl: TCustomTabControl;
-      const AChild: TCustomPage; const AIndex: integer); override;
-    class procedure MovePage(const ATabControl: TCustomTabControl;
-      const AChild: TCustomPage; const NewIndex: integer); override;
+    imptype procedure AddPage(const ATabControl: TCustomTabControl;
+      const AChild: TCustomPage; const AIndex: integer); rootoverride;
+    imptype procedure MovePage(const ATabControl: TCustomTabControl;
+      const AChild: TCustomPage; const NewIndex: integer); rootoverride;
 
-    class function GetCapabilities: TCTabControlCapabilities; override;
-    class function GetNotebookMinTabHeight(const AWinControl: TWinControl): integer; override;
-    class function GetNotebookMinTabWidth(const AWinControl: TWinControl): integer; override;
-    class function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer; override;
-    class function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect; override;
-    class procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer); override;
-    class procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition); override;
-    class procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean); override;
-    class procedure UpdateProperties(const ATabControl: TCustomTabControl); override;
+    imptype function GetCapabilities: TCTabControlCapabilities; rootoverride;
+    imptype function GetNotebookMinTabHeight(const AWinControl: TWinControl): integer; rootoverride;
+    imptype function GetNotebookMinTabWidth(const AWinControl: TWinControl): integer; rootoverride;
+    imptype function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer; rootoverride;
+    imptype function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect; rootoverride;
+    imptype procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer); rootoverride;
+    imptype procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition); rootoverride;
+    imptype procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean); rootoverride;
+    imptype procedure UpdateProperties(const ATabControl: TCustomTabControl); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer); rootoverride;
+    imptype procedure SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer); rootoverride;
+    imptype procedure SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution); rootoverride;
+    imptype procedure SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSStatusBar }
 
-  TGtk2WSStatusBar = class(TWSStatusBar)
+  TGtk2WSStatusBar = class({$ifndef wsintf}TWSStatusBar{$else}TGtk2WSWinControl, IWSStatusBar{$endif})
   protected
-    class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); override;
-    class procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); override;
-    class procedure Update(const AStatusBar: TStatusBar); override;
-    class procedure GetPreferredSize(const {%H-}AWinControl: TWinControl;
+    class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); rootoverride;
+    imptype procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); rootoverride;
+    imptype procedure Update(const AStatusBar: TStatusBar); rootoverride;
+    imptype procedure GetPreferredSize(const {%H-}AWinControl: TWinControl;
                         var {%H-}PreferredWidth, PreferredHeight: integer;
                         {%H-}WithThemeSpace: Boolean); override;
 
-    class procedure SetSizeGrip(const AStatusBar: TStatusBar; {%H-}SizeGrip: Boolean); override;
+    imptype procedure SetSizeGrip(const AStatusBar: TStatusBar; {%H-}SizeGrip: Boolean); rootoverride;
   end;
 
   { TGtk2WSTabSheet }
 
-  TGtk2WSTabSheet = class(TWSTabSheet)
+  TGtk2WSTabSheet = class({$ifndef wsintf}TWSTabSheet{$else}TGtk2WSCustomPage{$endif})
   published
   end;
 
   { TGtk2WSPageControl }
 
-  TGtk2WSPageControl = class(TWSPageControl)
+  TGtk2WSPageControl = class({$ifndef wsintf}TWSPageControl{$else}TGtk2WSCustomTabControl{$endif})
   published
   end;
 
   { TGtk2WSCustomListView }
 
-  TGtk2WSCustomListView = class(TWSCustomListView)
+  TGtk2WSCustomListView = class({$ifndef wsintf}TWSCustomListView{$else}TGtk2WSWinControl{$endif})
   private
     class procedure SetPropertyInternal(const ALV: TCustomListView; const Widgets: PTVWidgets; const AProp: TListViewProperty; const AIsSet: Boolean);
     class procedure SetNeedDefaultColumn(const ALV: TCustomListView; const AValue: Boolean);
@@ -139,75 +146,75 @@ type
     class function GetViewModel(const AView: PGtkWidget): PGtkTreeModel;
   protected
     class procedure SetListCallbacks(const AScrollWidget: PGtkWidget; const Widgets: PTVWidgets; const AWidgetInfo: PWidgetInfo);
-  published
+  impsection
     // columns
-    class procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); override;
-    class function  ColumnGetWidth(const ALV: TCustomListView; const {%H-}AIndex: Integer; const {%H-}AColumn: TListColumn): Integer; override;
-    class procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn); override;
-    class procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const {%H-}AColumn: TListColumn); override;
-    class procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AAlignment: TAlignment); override;
-    class procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AAutoSize: Boolean); override;
-    class procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const ACaption: String); override;
-    class procedure ColumnSetImage(const ALV: TCustomListView; const {%H-}AIndex: Integer; const {%H-}AColumn: TListColumn; const {%H-}AImageIndex: Integer); override;
-    class procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AMaxWidth: Integer); override;
-    class procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AMinWidth: integer); override;
-    class procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AWidth: Integer); override;
-    class procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AVisible: Boolean); override;
-    class procedure ColumnSetSortIndicator(const ALV: TCustomListView; const AIndex: Integer;
+    imptype procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); rootoverride;
+    imptype function  ColumnGetWidth(const ALV: TCustomListView; const {%H-}AIndex: Integer; const {%H-}AColumn: TListColumn): Integer; rootoverride;
+    imptype procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn); rootoverride;
+    imptype procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const {%H-}AColumn: TListColumn); rootoverride;
+    imptype procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AAlignment: TAlignment); rootoverride;
+    imptype procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AAutoSize: Boolean); rootoverride;
+    imptype procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const ACaption: String); rootoverride;
+    imptype procedure ColumnSetImage(const ALV: TCustomListView; const {%H-}AIndex: Integer; const {%H-}AColumn: TListColumn; const {%H-}AImageIndex: Integer); rootoverride;
+    imptype procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AMaxWidth: Integer); rootoverride;
+    imptype procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AMinWidth: integer); rootoverride;
+    imptype procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AWidth: Integer); rootoverride;
+    imptype procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AVisible: Boolean); rootoverride;
+    imptype procedure ColumnSetSortIndicator(const ALV: TCustomListView; const AIndex: Integer;
       const {%H-}AColumn: TListColumn; const ASortIndicator: TSortIndicator);
-      override;
+      rootoverride;
 
     // items
-    class procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer); override;
-    class function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; {%H-}ACode: TDisplayCode): TRect; override;
-    class procedure ItemExchange(const ALV: TCustomListView; {%H-}AItem: TListItem; const AIndex1, AIndex2: Integer); override;
-    class procedure ItemMove(const ALV: TCustomListView; {%H-}AItem: TListItem; const AFromIndex, AToIndex: Integer); override;
-    class function  ItemGetChecked(const {%H-}ALV: TCustomListView; const {%H-}AIndex: Integer; const AItem: TListItem): Boolean; override;
-    class function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; override; // returns True if supported
-    class procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem); override;
-    class procedure ItemSetChecked(const ALV: TCustomListView; const {%H-}AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}AChecked: Boolean); override;
-    class procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}ASubIndex, AImageIndex: Integer); override;
-    class procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean); override;
-    class procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}ASubIndex: Integer; const {%H-}AText: String); override;
-    class procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}PartialOK: Boolean); override;
-    class function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint; override;
-    class procedure ItemUpdate(const ALV: TCustomListView; const {%H-}AIndex: Integer; const {%H-}AItem: TListItem); override;
+    imptype procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer); rootoverride;
+    imptype function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; {%H-}ACode: TDisplayCode): TRect; rootoverride;
+    imptype procedure ItemExchange(const ALV: TCustomListView; {%H-}AItem: TListItem; const AIndex1, AIndex2: Integer); rootoverride;
+    imptype procedure ItemMove(const ALV: TCustomListView; {%H-}AItem: TListItem; const AFromIndex, AToIndex: Integer); rootoverride;
+    imptype function  ItemGetChecked(const {%H-}ALV: TCustomListView; const {%H-}AIndex: Integer; const AItem: TListItem): Boolean; rootoverride;
+    imptype function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; rootoverride; // returns True if supported
+    imptype procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem); rootoverride;
+    imptype procedure ItemSetChecked(const ALV: TCustomListView; const {%H-}AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}AChecked: Boolean); rootoverride;
+    imptype procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}ASubIndex, AImageIndex: Integer); rootoverride;
+    imptype procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean); rootoverride;
+    imptype procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}ASubIndex: Integer; const {%H-}AText: String); rootoverride;
+    imptype procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}PartialOK: Boolean); rootoverride;
+    imptype function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint; rootoverride;
+    imptype procedure ItemUpdate(const ALV: TCustomListView; const {%H-}AIndex: Integer; const {%H-}AItem: TListItem); rootoverride;
 
     // lv
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): HWND; override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): HWND; override;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
 
-    class procedure BeginUpdate(const ALV: TCustomListView); override;
-    class procedure EndUpdate(const ALV: TCustomListView); override;
+    imptype procedure BeginUpdate(const ALV: TCustomListView); rootoverride;
+    imptype procedure EndUpdate(const ALV: TCustomListView); rootoverride;
 
-    class function GetBoundingRect(const ALV: TCustomListView): TRect; override;
-    class function GetDropTarget(const ALV: TCustomListView): Integer; override;
-    class function GetFocused(const ALV: TCustomListView): Integer; override;
-    class function GetHoverTime(const ALV: TCustomListView): Integer; override;
-    class function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer; override;
-    class function GetSelCount(const ALV: TCustomListView): Integer; override;
-    class function GetSelection(const ALV: TCustomListView): Integer; override;
-    class function GetTopItem(const ALV: TCustomListView): Integer; override;
-    class function GetViewOrigin(const ALV: TCustomListView): TPoint; override;
-    class function GetVisibleRowCount(const ALV: TCustomListView): Integer; override;
+    imptype function GetBoundingRect(const ALV: TCustomListView): TRect; rootoverride;
+    imptype function GetDropTarget(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetFocused(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetHoverTime(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer; rootoverride;
+    imptype function GetSelCount(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetSelection(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetTopItem(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetViewOrigin(const ALV: TCustomListView): TPoint; rootoverride;
+    imptype function GetVisibleRowCount(const ALV: TCustomListView): Integer; rootoverride;
 
-    class procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean); override;
-    class procedure SetAllocBy(const ALV: TCustomListView; const {%H-}AValue: Integer); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetDefaultItemHeight(const ALV: TCustomListView; const {%H-}AValue: Integer); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetHotTrackStyles(const ALV: TCustomListView; const {%H-}AValue: TListHotTrackStyles); override;
+    imptype procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean); rootoverride;
+    imptype procedure SetAllocBy(const ALV: TCustomListView; const {%H-}AValue: Integer); rootoverride;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetDefaultItemHeight(const ALV: TCustomListView; const {%H-}AValue: Integer); rootoverride;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure SetHotTrackStyles(const ALV: TCustomListView; const {%H-}AValue: TListHotTrackStyles); rootoverride;
 //    class procedure SetHoverTime(const ALV: TCustomListView; const {%H-}AValue: Integer); override;
 //    class procedure SetIconOptions(const ALV: TCustomListView; const AValue: TIconOptions); override;
-    class procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageListResolution); override;
-    class procedure SetItemsCount(const ALV: TCustomListView; const {%H-}Avalue: Integer); override;
-    class procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean); override;
-    class procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties); override;
-    class procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle); override;
-    class procedure SetSort(const ALV: TCustomListView; const {%H-}AType: TSortType; const {%H-}AColumn: Integer;
-      const {%H-}ASortDirection: TSortDirection); override;
-    class procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); override;
-    class procedure SetViewStyle(const ALV: TCustomListView; const AValue: TViewStyle); override;
+    imptype procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageListResolution); rootoverride;
+    imptype procedure SetItemsCount(const ALV: TCustomListView; const {%H-}Avalue: Integer); rootoverride;
+    imptype procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean); rootoverride;
+    imptype procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties); rootoverride;
+    imptype procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle); rootoverride;
+    imptype procedure SetSort(const ALV: TCustomListView; const {%H-}AType: TSortType; const {%H-}AColumn: Integer;
+      const {%H-}ASortDirection: TSortDirection); rootoverride;
+    imptype procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); rootoverride;
+    imptype procedure SetViewStyle(const ALV: TCustomListView; const AValue: TViewStyle); rootoverride;
   end;
 
   { TGtk2WSListView }
@@ -218,15 +225,15 @@ type
 
   { TGtk2WSProgressBar }
 
-  TGtk2WSProgressBar = class(TWSProgressBar)
+  TGtk2WSProgressBar = class({$ifndef wsintf}TWSProgressBar{$else}TGtk2WSWinControl, IWSProgressBar{$endif})
   private
     class procedure UpdateProgressBarText(const AProgressBar: TCustomProgressBar); virtual;
     class procedure InternalSetStyle(AProgressBar: PGtkProgressBar; AStyle: TProgressBarStyle);
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure ApplyChanges(const AProgressBar: TCustomProgressBar); override;
-    class procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); override;
-    class procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure ApplyChanges(const AProgressBar: TCustomProgressBar); rootoverride;
+    imptype procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); rootoverride;
+    imptype procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle); rootoverride;
   end;
 
   { TGtk2WSCustomUpDown }
@@ -249,11 +256,11 @@ type
 
   { TGtk2WSToolBar }
 
-  TGtk2WSToolBar = class(TWSToolBar)
+  TGtk2WSToolBar = class({$ifndef wsintf}TWSToolBar{$else}TGtk2WSWinControl{$endif})
   protected
     class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TGtk2WSTrackBar }
@@ -261,12 +268,12 @@ type
   TGtk2WSTrackBar = class(TWSTrackBar)
   protected
     class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure ApplyChanges(const ATrackBar: TCustomTrackBar); override;
-    class function  GetPosition(const ATrackBar: TCustomTrackBar): integer; override;
-    class procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer); override;
-    class procedure GetPreferredSize(const {%H-}AWinControl: TWinControl;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure ApplyChanges(const ATrackBar: TCustomTrackBar); override;
+    imptype function  GetPosition(const ATrackBar: TCustomTrackBar): integer; override;
+    imptype procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer); override;
+    imptype procedure GetPreferredSize(const {%H-}AWinControl: TWinControl;
                         var {%H-}PreferredWidth, PreferredHeight: integer;
                         {%H-}WithThemeSpace: Boolean); override;
   end;
@@ -320,7 +327,7 @@ begin
   SignalConnect(AWidget, 'value_changed', @GtkWSTrackBar_Changed, AWidgetInfo);
 end;
 
-class function TGtk2WSTrackBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSTrackBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Adjustment: PGtkAdjustment;
@@ -348,7 +355,7 @@ begin
   SetCallbacks(Widget, WidgetInfo);
 end;
 
-class procedure TGtk2WSTrackBar.ApplyChanges(const ATrackBar: TCustomTrackBar);
+imptype procedure TGtk2WSTrackBar.ApplyChanges(const ATrackBar: TCustomTrackBar);
 const
   ValuePositionMap: array[TTrackBarScalePos] of TGtkPositionType =
   (
@@ -400,7 +407,7 @@ begin
   end;
 end;
 
-class function TGtk2WSTrackBar.GetPosition(const ATrackBar: TCustomTrackBar
+imptype function TGtk2WSTrackBar.GetPosition(const ATrackBar: TCustomTrackBar
   ): integer;
 var
   Range: PGtkRange;
@@ -413,7 +420,7 @@ begin
   Result := Trunc(gtk_range_get_value(Range));
 end;
 
-class procedure TGtk2WSTrackBar.SetPosition(const ATrackBar: TCustomTrackBar;
+imptype procedure TGtk2WSTrackBar.SetPosition(const ATrackBar: TCustomTrackBar;
   const NewPosition: integer);
 var
   Range: PGtkRange;
@@ -431,7 +438,7 @@ begin
 end;
 
 
-class procedure TGtk2WSTrackBar.GetPreferredSize(
+imptype procedure TGtk2WSTrackBar.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 var
@@ -502,7 +509,7 @@ begin
   end;
 end;
 
-class function TGtk2WSProgressBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSProgressBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Widget: PGtkWidget;
@@ -519,7 +526,7 @@ begin
   TGtk2WSWinControl.SetCallbacks(PGtkObject(Widget), TComponent(WidgetInfo^.LCLObject));
 end;
 
-class procedure TGtk2WSProgressBar.ApplyChanges(const AProgressBar: TCustomProgressBar);
+imptype procedure TGtk2WSProgressBar.ApplyChanges(const AProgressBar: TCustomProgressBar);
 const
   OrientationMap: array[TProgressBarOrientation] of TGtkProgressBarOrientation =
   (
@@ -552,7 +559,7 @@ begin
   SetPosition(AProgressBar, AProgressBar.Position);
 end;
 
-class procedure TGtk2WSProgressBar.SetPosition(
+imptype procedure TGtk2WSProgressBar.SetPosition(
   const AProgressBar: TCustomProgressBar; const NewPosition: integer);
 var
   fraction:gdouble;
@@ -574,7 +581,7 @@ begin
   UpdateProgressBarText(AProgressBar);
 end;
 
-class procedure TGtk2WSProgressBar.SetStyle(
+imptype procedure TGtk2WSProgressBar.SetStyle(
   const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle);
 begin
   if not WSCheckHandleAllocated(AProgressBar, 'SetStyle') then
@@ -592,7 +599,7 @@ begin
   TGtk2WSWinControl.SetCallbacks(PGtkObject(AWidget), TComponent(AWidgetInfo^.LCLObject));
 end;
 
-class function TGtk2WSStatusBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSStatusBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   EventBox, HBox: PGtkWidget;
@@ -612,7 +619,7 @@ begin
   SetCallbacks(EventBox, WidgetInfo);
 end;
 
-class procedure TGtk2WSStatusBar.PanelUpdate(const AStatusBar: TStatusBar;
+imptype procedure TGtk2WSStatusBar.PanelUpdate(const AStatusBar: TStatusBar;
   PanelIndex: integer);
 var
   HBox: PGtkWidget;
@@ -636,19 +643,19 @@ begin
   end;
 end;
 
-class procedure TGtk2WSStatusBar.SetPanelText(const AStatusBar: TStatusBar;
+imptype procedure TGtk2WSStatusBar.SetPanelText(const AStatusBar: TStatusBar;
   PanelIndex: integer);
 begin
   PanelUpdate(AStatusBar, PanelIndex);
 end;
 
-class procedure TGtk2WSStatusBar.Update(const AStatusBar: TStatusBar);
+imptype procedure TGtk2WSStatusBar.Update(const AStatusBar: TStatusBar);
 begin
   //DebugLn('TGtkWidgetSet.StatusBarUpdate ',DbgS(AStatusBar));
   UpdateStatusBarPanels(AStatusBar, {%H-}PGtkBin(AStatusBar.Handle)^.child);
 end;
 
-class procedure TGtk2WSStatusBar.GetPreferredSize(
+imptype procedure TGtk2WSStatusBar.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 var
@@ -664,7 +671,7 @@ begin
   //debugln('TGtkWSStatusBar.GetPreferredSize END ',dbgs(PreferredHeight));
 end;
 
-class procedure TGtk2WSStatusBar.SetSizeGrip(const AStatusBar: TStatusBar;
+imptype procedure TGtk2WSStatusBar.SetSizeGrip(const AStatusBar: TStatusBar;
   SizeGrip: Boolean);
 var
   LastWidget, HBox: PGtkWidget;
@@ -684,7 +691,7 @@ begin
   TGtk2WSWinControl.SetCallbacks(PGtkObject(AWidget), TComponent(AWidgetInfo^.LCLObject));
 end;
 
-class function TGtk2WSToolBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSToolBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Widget, ClientWidget: PGtkWidget;

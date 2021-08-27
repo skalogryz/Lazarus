@@ -20,6 +20,8 @@ unit Gtk2WSExtDlgs;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
 ////////////////////////////////////////////////////
 // I M P O R T A N T                                
@@ -29,7 +31,7 @@ uses
 ////////////////////////////////////////////////////
 //  ExtDlgs,
 ////////////////////////////////////////////////////
-  WSExtDlgs, WSLCLClasses;
+  WSExtDlgs, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
 

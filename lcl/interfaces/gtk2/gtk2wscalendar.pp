@@ -20,6 +20,8 @@ unit Gtk2WSCalendar;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
   // RTL
   glib2, gdk2, gtk2, SysUtils, Types, Classes,
@@ -28,7 +30,7 @@ uses
   InterfaceBase, LCLProc,
   // Widgetset
   Gtk2Proc, Gtk2Def, Gtk2Int, Gtk2WsControls,
-  WSCalendar, WSLCLClasses, WSProc;
+  WSCalendar, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif}, WSProc;
 
 type
 
@@ -36,21 +38,26 @@ type
 
   { TGtk2WSCustomCalendar }
 
-  TGtk2WSCustomCalendar = class(TWSCustomCalendar)
+  TGtk2WSCustomCalendar = class({$ifndef wsintf}TWSCustomCalendar{$else}TGtk2WSWinControl, IWSCustomCalendar{$endif})
   protected
-    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
+    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
     class function GetCalendar(const ACalendar: TCustomCalendar): PGtkCalendar; //inline;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
-    class function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; override;
-    class function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; override;
-    class procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); override;
-    class procedure SetDisplaySettings(const ACalendar: TCustomCalendar;
-      const ADisplaySettings: TDisplaySettings); override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
+    imptype function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; rootoverride;
+    imptype function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; rootoverride;
+    imptype procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); rootoverride;
+    imptype procedure SetDisplaySettings(const ACalendar: TCustomCalendar;
+      const ADisplaySettings: TDisplaySettings); rootoverride;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
                         var PreferredWidth, PreferredHeight: integer;
                         WithThemeSpace: Boolean); override;
+    {$ifdef wsintf}
+    imptype function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView; rootoverride;
+    imptype procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
+      const ADayOfWeek: TCalDayOfWeek); rootoverride;
+    {$endif}
   end;
 
 
@@ -125,7 +132,7 @@ begin
   Result := PGtkCalendar(GetWidgetInfo({%H-}PGtkWidget(ACalendar.Handle))^.CoreWidget);
 end;
 
-class function TGtk2WSCustomCalendar.CreateHandle(
+imptype function TGtk2WSCustomCalendar.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams
   ): TLCLIntfHandle;
 var
@@ -160,14 +167,17 @@ begin
   SetCallBacks(FrameWidget, WidgetInfo);
 end;
 
-class procedure TGtk2WSCustomCalendar.DestroyHandle(
+imptype procedure TGtk2WSCustomCalendar.DestroyHandle(
   const AWinControl: TWinControl);
 begin
+  {$ifndef wsintf}
   TGtk2WSWinControl.DestroyHandle(AWinControl);
-  //inherited DestroyHandle(AWinControl);
+  {$else}
+  inherited DestroyHandle(AWinControl);
+  {$endif}
 end;
 
-class function TGtk2WSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
+imptype function TGtk2WSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
 var
   Year, Month, Day: guint;  //used for csCalendar
 begin
@@ -179,7 +189,7 @@ begin
   Result := EncodeDate(Year, Month + 1, Day);
 end;
 
-class function TGtk2WSCustomCalendar.HitTest(const ACalendar: TCustomCalendar;
+imptype function TGtk2WSCustomCalendar.HitTest(const ACalendar: TCustomCalendar;
   const APoint: TPoint): TCalendarPart;
 var
   GtkCalendar: PGtkCalendar;
@@ -265,7 +275,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
+imptype procedure TGtk2WSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
 var
   Year, Month, Day: string;
   GtkCalendar: PGtkCalendar;
@@ -280,7 +290,7 @@ begin
   gtk_calendar_select_day(GtkCalendar, StrToInt(Day));
 end;
 
-class procedure TGtk2WSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar;
+imptype procedure TGtk2WSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar;
   const ADisplaySettings: TDisplaySettings);
 var
   num: dword;
@@ -315,12 +325,22 @@ begin
   AGtkCalendarInternalTimer^.ATimerSourceID := g_timeout_add(1, @SetCalendarDisplayOptionsTimer, AGtkCalendarInternalTimer);
 end;
 
-class procedure TGtk2WSCustomCalendar.GetPreferredSize(
+imptype procedure TGtk2WSCustomCalendar.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 begin
   GetGTKDefaultWidgetSize(AWinControl, PreferredWidth, PreferredHeight,
                           WithThemeSpace);
 end;
+{$ifdef wsintf}
+imptype function TGtk2WSCustomCalendar.GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView;
+begin
+  Result := cvMonth;
+end;
 
+imptype procedure TGtk2WSCustomCalendar.SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
+  const ADayOfWeek: TCalDayOfWeek);
+begin
+end;
+{$endif}
 end.

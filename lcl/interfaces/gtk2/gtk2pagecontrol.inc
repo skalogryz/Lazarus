@@ -273,7 +273,7 @@ begin
   g_signal_connect(Widget, 'scroll-event', TGCallback(@Gtk2ScrolledWindowScrollCB), WidgetInfo);
 end;
 
-class function TGtk2WSCustomTabControl.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomTabControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   AWidget: PGtkNoteBook;
@@ -311,7 +311,7 @@ begin
   SetCallBacks(PGtkWidget(AWidget), WidgetInfo);
 end;
 
-class function TGtk2WSCustomTabControl.GetDefaultClientRect(
+imptype function TGtk2WSCustomTabControl.GetDefaultClientRect(
   const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer;
   var aClientRect: TRect): boolean;
 var
@@ -342,7 +342,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomTabControl.AddPage(const ATabControl: TCustomTabControl;
+imptype procedure TGtk2WSCustomTabControl.AddPage(const ATabControl: TCustomTabControl;
   const AChild: TCustomPage; const AIndex: integer);
 {
   Inserts a new page to a notebook at position Index. The ATabControl is a
@@ -433,7 +433,7 @@ begin
   {$ENDIF}
 end;
 
-class procedure TGtk2WSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;
+imptype procedure TGtk2WSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;
   const AChild: TCustomPage; const NewIndex: integer);
 var
   NoteBookWidget: PGtkNotebook;
@@ -446,12 +446,12 @@ begin
   UpdateNoteBookClientWidget(ATabControl);
 end;
 
-class function TGtk2WSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
+imptype function TGtk2WSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
 begin
   Result:=[nbcPageListPopup, nbcShowCloseButtons];
 end;
 
-class function TGtk2WSCustomTabControl.GetNotebookMinTabHeight(
+imptype function TGtk2WSCustomTabControl.GetNotebookMinTabHeight(
   const AWinControl: TWinControl): integer;
 var
   FrameBorders: TRect;
@@ -459,17 +459,25 @@ begin
   FrameBorders:=GetStyleNotebookFrameBorders;
   Result := FrameBorders.Top; // +1 for getting size, +1 to see border line
   if Result<=0 then
+  {$ifndef wsintf}
     Result:=inherited GetNotebookMinTabHeight(AWinControl);
+  {$else}
+    Result:=30;
+  {$endif}
   //debugln('TGtkWSCustomTabControl.GetNotebookMinTabHeight A ',dbgs(Result));
 end;
 
-class function TGtk2WSCustomTabControl.GetNotebookMinTabWidth(
+imptype function TGtk2WSCustomTabControl.GetNotebookMinTabWidth(
   const AWinControl: TWinControl): integer;
 begin
+  {$ifndef wsintf}
   Result:=TWSCustomTabControl.GetNotebookMinTabWidth(AWinControl);
+  {$else}
+  Result:=60;
+  {$endif}
 end;
 
-class function TGtk2WSCustomTabControl.GetTabIndexAtPos(
+imptype function TGtk2WSCustomTabControl.GetTabIndexAtPos(
   const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer;
 var
   NoteBookWidget: PGtkNotebook;
@@ -517,7 +525,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomTabControl.GetTabRect(const ATabControl: TCustomTabControl;
+imptype function TGtk2WSCustomTabControl.GetTabRect(const ATabControl: TCustomTabControl;
   const AIndex: Integer): TRect;
 var
   NoteBookWidget: PGtkNotebook;
@@ -526,7 +534,11 @@ var
   Count: guint;
   OffsetPage: TRect;
 begin
+  {$ifdef wsintf}
+  Result := Rect(-1,-1,-1,-1);
+  {$else}
   Result := inherited;
+  {$endif}
   if (ATabControl is TTabControl) then
     exit;
 
@@ -547,7 +559,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomTabControl.SetPageIndex(
+imptype procedure TGtk2WSCustomTabControl.SetPageIndex(
   const ATabControl: TCustomTabControl; const AIndex: integer);
 var
   GtkNotebook: PGtkNotebook;
@@ -580,7 +592,7 @@ begin
   UpdateNoteBookClientWidget(ATabControl);
 end;
 
-class procedure TGtk2WSCustomTabControl.SetTabPosition(
+imptype procedure TGtk2WSCustomTabControl.SetTabPosition(
   const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition);
 begin
   if (ATabControl is TTabControl) then
@@ -590,7 +602,7 @@ begin
     GtkPositionTypeMap[ATabPosition]);
 end;
 
-class procedure TGtk2WSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl;
+imptype procedure TGtk2WSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl;
   AShowTabs: boolean);
 begin
   if IsTTabControl({%H-}PGtkWidget(ATabControl.Handle)) then
@@ -601,7 +613,7 @@ begin
     gtk_notebook_set_show_tabs({%H-}PGtkNotebook(ATabControl.Handle), AShowTabs);
 end;
 
-class procedure TGtk2WSCustomTabControl.UpdateProperties(const ATabControl: TCustomTabControl);
+imptype procedure TGtk2WSCustomTabControl.UpdateProperties(const ATabControl: TCustomTabControl);
 begin
   if (ATabControl is TTabControl) then
     exit;
@@ -611,9 +623,23 @@ begin
   else
     gtk_notebook_popup_enable({%H-}PGtkNotebook(ATabControl.Handle));
 end;
+{$ifdef wsintf}
+imptype procedure TGtk2WSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer);
+begin
+end;
 
+imptype procedure TGtk2WSCustomTabControl.SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer);
+begin
+end;
 
+imptype procedure TGtk2WSCustomTabControl.SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution);
+begin
+end;
 
+imptype procedure TGtk2WSCustomTabControl.SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string);
+begin
+end;
+{$endif}
 { TGtk2WSCustomPage }
 
 class procedure TGtk2WSCustomPage.SetCallbacks(const AGtkWidget: PGtkWidget;
@@ -622,7 +648,7 @@ begin
   TGtk2WSWinControl.SetCallbacks(PGtkObject(AGtkWidget), TComponent(AWidgetInfo^.LCLObject));
 end;
 
-class function TGtk2WSCustomPage.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomPage.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Widget: PGtkWidget;
@@ -644,7 +670,7 @@ begin
   SetCallBacks(Widget, WidgetInfo);
 end;
 
-class procedure TGtk2WSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
+imptype procedure TGtk2WSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
 var
   NoteBook: PGtkWidget;
   PageWidget: PGtkWidget;
@@ -678,7 +704,7 @@ begin
     gtk_widget_queue_draw(TabImageWidget);
 end;
 
-class procedure TGtk2WSCustomPage.SetBounds(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomPage.SetBounds(const AWinControl: TWinControl;
   const ALeft, ATop, AWidth, AHeight: Integer);
 begin
   if (AWinControl.Parent <> nil) and (AWinControl.Parent is TTabControl) then begin
@@ -692,7 +718,7 @@ begin
   // ignore resizes from the LCL
 end;
 
-class procedure TGtk2WSCustomPage.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomPage.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 begin
   if (AWinControl.Parent <> nil) and (AWinControl.Parent is TTabControl) then begin
@@ -706,7 +732,7 @@ begin
   UpdateNotebookTabFont(AWinControl, AFont);
 end;
 
-class procedure TGtk2WSCustomPage.ShowHide(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomPage.ShowHide(const AWinControl: TWinControl);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'ShowHide') then
     exit;
@@ -720,7 +746,7 @@ begin
   TGtk2WidgetSet(WidgetSet).SetVisible(AWinControl, AWinControl.HandleObjectShouldBeVisible);
 end;
 
-class function TGtk2WSCustomPage.GetDefaultClientRect(
+imptype function TGtk2WSCustomPage.GetDefaultClientRect(
   const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer;
   var aClientRect: TRect): boolean;
 begin

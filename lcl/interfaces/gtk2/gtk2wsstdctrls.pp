@@ -16,6 +16,7 @@
 unit Gtk2WSStdCtrls;
 
 {$mode objfpc}{$H+}
+{$I gtk2defines.inc}
 {$PACKRECORDS c}
 
 interface
@@ -63,40 +64,40 @@ type
   
   { TGtk2WSScrollBar }
 
-  TGtk2WSScrollBar = class(TWSScrollBar)
+  TGtk2WSScrollBar = class({$ifndef wsintf}TWSScrollBar{$else}TGtk2WSWinControl, IWSScrollBar{$endif})
   protected
-    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetKind(const AScrollBar: TCustomScrollBar; const {%H-}AIsHorizontal: Boolean); override;
-    class procedure SetParams(const AScrollBar: TCustomScrollBar); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetKind(const AScrollBar: TCustomScrollBar; const {%H-}AIsHorizontal: Boolean); rootoverride;
+    imptype procedure SetParams(const AScrollBar: TCustomScrollBar); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
   end;
 
   { TGtk2WSCustomGroupBox }
 
-  TGtk2WSCustomGroupBox = class(TWSCustomGroupBox)
+  TGtk2WSCustomGroupBox = class({$ifndef wsintf}TWSCustomGroupBox{$else}TGtk2WSCustomControl{$endif})
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
     class procedure SetLabel(AFrame: PGtkFrame; AText: String);
     class function GetFrameWidget(AEventBox: PGtkEventBox): PGtkFrame;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class function GetDefaultClientRect(const AWinControl: TWinControl;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype function GetDefaultClientRect(const AWinControl: TWinControl;
              const {%H-}aLeft, {%H-}aTop, aWidth, aHeight: integer; var aClientRect: TRect
              ): boolean; override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
                         var PreferredWidth, PreferredHeight: integer;
                         WithThemeSpace: Boolean); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: string); override;
-    class procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: string); override;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
   end;
 
   { TGtk2WSGroupBox }
 
-  TGtk2WSGroupBox = class(TWSGroupBox)
+  TGtk2WSGroupBox = class({$ifndef wsintf}TWSGroupBox{$else}TGtk2WSCustomGroupBox{$endif})
   published
   end;
 
@@ -104,158 +105,183 @@ type
   { !!! Both are used: TGtkComboBoxEntry (with entry) and TGtkComboBox (without entry),
            but not the old TGtkCombo !!! }
 
-  TGtk2WSCustomComboBox = class(TWSCustomComboBox)
+  TGtk2WSCustomComboBox = class({$ifndef wsintf}TWSCustomComboBox{$else}TGtk2WSWinControl, IWSCustomComboBox{$endif})
   protected
-    class procedure ReCreateCombo(const ACustomComboBox: TCustomComboBox; const AWithEntry: Boolean; const AWidgetInfo: PWidgetInfo); virtual;
+    imptype procedure ReCreateCombo(const ACustomComboBox: TCustomComboBox; const AWithEntry: Boolean; const AWidgetInfo: PWidgetInfo); virtual;
     class procedure SetRenderer(const ACustomComboBox: TCustomComboBox; AWidget: PGtkWidget; AWidgetInfo: PWidgetInfo); virtual;
     class procedure SetCallbacks(const AWinControl: tWinControl; const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
     class procedure SetSensitivity(AWinControl: TWinControl; AWidget: PGtkWidget);
-  published
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+  impsection
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
       var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
 
-    class function GetDroppedDown(const ACustomComboBox: TCustomComboBox): Boolean; override;
-    class function GetSelStart(const ACustomComboBox: TCustomComboBox): integer; override;
-    class function GetSelLength(const ACustomComboBox: TCustomComboBox): integer; override;
-    class function GetItemIndex(const ACustomComboBox: TCustomComboBox): integer; override;
-    class function GetMaxLength(const ACustomComboBox: TCustomComboBox): integer; override;
-    class function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype function GetDroppedDown(const ACustomComboBox: TCustomComboBox): Boolean; rootoverride;
+    imptype function GetSelStart(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype function GetSelLength(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype function GetItemIndex(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype function GetMaxLength(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
 
-    class procedure SetArrowKeysTraverseList(const {%H-}ACustomComboBox: TCustomComboBox;
-                                             {%H-}NewTraverseList: boolean); override;
-    class procedure SetDroppedDown(const ACustomComboBox: TCustomComboBox; ADroppedDown: Boolean); override;
-    class procedure SetSelStart(const ACustomComboBox: TCustomComboBox; NewStart: integer); override;
-    class procedure SetSelLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); override;
-    class procedure SetItemIndex(const ACustomComboBox: TCustomComboBox; NewIndex: integer); override;
-    class procedure SetMaxLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); override;
-    class procedure SetStyle(const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle); override;
-    class procedure SetReadOnly(const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean); override;
+    imptype procedure SetArrowKeysTraverseList(const {%H-}ACustomComboBox: TCustomComboBox;
+                                             {%H-}NewTraverseList: boolean); rootoverride;
+    imptype procedure SetDroppedDown(const ACustomComboBox: TCustomComboBox; ADroppedDown: Boolean); rootoverride;
+    imptype procedure SetSelStart(const ACustomComboBox: TCustomComboBox; NewStart: integer); rootoverride;
+    imptype procedure SetSelLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); rootoverride;
+    imptype procedure SetItemIndex(const ACustomComboBox: TCustomComboBox; NewIndex: integer); rootoverride;
+    imptype procedure SetMaxLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); rootoverride;
+    imptype procedure SetStyle(const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle); rootoverride;
+    imptype procedure SetReadOnly(const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean); rootoverride;
 
-    class function  GetItems(const ACustomComboBox: TCustomComboBox): TStrings; override;
-    class procedure Sort(const ACustomComboBox: TCustomComboBox; {%H-}AList: TStrings; IsSorted: boolean); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype function  GetItems(const ACustomComboBox: TCustomComboBox): TStrings; rootoverride;
+    imptype procedure Sort(const ACustomComboBox: TCustomComboBox; {%H-}AList: TStrings; IsSorted: boolean); rootoverride;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont);  override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
 
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
     
-    class function  CanFocus(const AWinControl: TWinControl): boolean; override;
+    imptype function  CanFocus(const AWinControl: TWinControl): boolean; override;
 
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
+    {$ifdef wsintf}
+    imptype procedure SetDropDownCount(const ACustomComboBox: TCustomComboBox; NewCount: Integer); rootoverride;
+    imptype procedure SetTextHint(const ACustomComboBox: TCustomComboBox; const ATextHint: string); rootoverride;
+    imptype procedure FreeItems(var AItems: TStrings); rootoverride;
+    imptype function GetItemHeight(const ACustomComboBox: TCustomComboBox): Integer; rootoverride;
+    imptype procedure SetItemHeight(const ACustomComboBox: TCustomComboBox; const AItemHeight: Integer); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSComboBox }
 
-  TGtk2WSComboBox = class(TWSComboBox)
+  TGtk2WSComboBox = class({$ifndef wsintf}TWSComboBox{$else}TGtk2WSCustomComboBox{$endif})
   published
   end;
 
   { TGtk2WSCustomListBox }
 
-  TGtk2WSCustomListBox = class(TWSCustomListBox)
+  TGtk2WSCustomListBox = class({$ifndef wsintf}TWSCustomListBox{$else}TGtk2WSWinControl, IWSCustomListBox{$endif})
   protected
-    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetIndexAtXY(const ACustomListBox: TCustomListBox; {%H-}X, Y: integer): integer; override;
-    class function GetItemIndex(const ACustomListBox: TCustomListBox): integer; override;
-    class function GetItemRect(const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect): boolean; override;
-    class function GetScrollWidth(const ACustomListBox: TCustomListBox): Integer; override;
-    class function GetSelCount(const ACustomListBox: TCustomListBox): integer; override;
-    class function GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean; override;
-    class function GetStrings(const ACustomListBox: TCustomListBox): TStrings; override;
-    class function GetTopIndex(const ACustomListBox: TCustomListBox): integer; override;
+    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function GetIndexAtXY(const ACustomListBox: TCustomListBox; {%H-}X, Y: integer): integer; rootoverride;
+    imptype function GetItemIndex(const ACustomListBox: TCustomListBox): integer; rootoverride;
+    imptype function GetItemRect(const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect): boolean; rootoverride;
+    imptype function GetScrollWidth(const ACustomListBox: TCustomListBox): Integer; rootoverride;
+    imptype function GetSelCount(const ACustomListBox: TCustomListBox): integer; rootoverride;
+    imptype function GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean; rootoverride;
+    imptype function GetStrings(const ACustomListBox: TCustomListBox): TStrings; rootoverride;
+    imptype function GetTopIndex(const ACustomListBox: TCustomListBox): integer; rootoverride;
 
-    class procedure SelectItem(const ACustomListBox: TCustomListBox; AnIndex: integer; ASelected: boolean); override;
-    class procedure SetBorder(const ACustomListBox: TCustomListBox); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetItemIndex(const ACustomListBox: TCustomListBox; const AIndex: integer); override;
-    class procedure SetScrollWidth(const ACustomListBox: TCustomListBox; const AScrollWidth: Integer); override;
-    class procedure SetSelectionMode(const ACustomListBox: TCustomListBox; const {%H-}AExtendedSelect,
-                                     AMultiSelect: boolean); override;
-    class procedure SetStyle(const ACustomListBox: TCustomListBox); override;
-    class procedure SetSorted(const {%H-}ACustomListBox: TCustomListBox; AList: TStrings; ASorted: boolean); override;
-    class procedure SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype procedure SelectItem(const ACustomListBox: TCustomListBox; AnIndex: integer; ASelected: boolean); rootoverride;
+    imptype procedure SetBorder(const ACustomListBox: TCustomListBox); rootoverride;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetItemIndex(const ACustomListBox: TCustomListBox; const AIndex: integer); rootoverride;
+    imptype procedure SetScrollWidth(const ACustomListBox: TCustomListBox; const AScrollWidth: Integer); rootoverride;
+    imptype procedure SetSelectionMode(const ACustomListBox: TCustomListBox; const {%H-}AExtendedSelect,
+                                     AMultiSelect: boolean); rootoverride;
+    imptype procedure SetStyle(const ACustomListBox: TCustomListBox); rootoverride;
+    imptype procedure SetSorted(const {%H-}ACustomListBox: TCustomListBox; AList: TStrings; ASorted: boolean); rootoverride;
+    imptype procedure SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer); rootoverride;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
+    {$ifdef wsintf}
+    imptype procedure DragStart(const ACustomListBox: TCustomListBox); rootoverride;
+    imptype procedure FreeStrings(var AStrings: TStrings); rootoverride;
+    imptype procedure SelectRange(const ACustomListBox: TCustomListBox;
+      ALow, AHigh: integer; ASelected: boolean); rootoverride;
+    imptype procedure SetColumnCount(const ACustomListBox: TCustomListBox; ACount: Integer); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSListBox }
 
-  TGtk2WSListBox = class(TWSListBox)
+  TGtk2WSListBox = class({$ifndef wsintf}TWSListBox{$else}TGtk2WSCustomListBox{$endif})
   published
   end;
 
   { TGtk2WSCustomEdit }
 
-  TGtk2WSCustomEdit = class(TWSCustomEdit)
-  published
-    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; override;
-    class function GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
-    class function GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
+  TGtk2WSCustomEdit = class({$ifndef wsintf}TWSCustomEdit{$else}TGtk2WSWinControl, IWSCustomEdit{$endif})
+  impsection
+    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; rootoverride;
+    imptype function GetSelStart(const ACustomEdit: TCustomEdit): integer; rootoverride;
+    imptype function GetSelLength(const ACustomEdit: TCustomEdit): integer; rootoverride;
 
-    class procedure SetCaretPos(const ACustomEdit: TCustomEdit; const NewPos: TPoint); override;
-    class procedure SetCharCase(const {%H-}ACustomEdit: TCustomEdit; {%H-}NewCase: TEditCharCase); override;
-    class procedure SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode); override;
-    class procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetPasswordChar(const ACustomEdit: TCustomEdit; {%H-}NewChar: char); override;
-    class procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
-    class procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
-    class procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: string); override;
-    class procedure SetSelText(const ACustomEdit: TCustomEdit; const NewSelText: string); override;
+    imptype procedure SetCaretPos(const ACustomEdit: TCustomEdit; const NewPos: TPoint); rootoverride;
+    imptype procedure SetCharCase(const {%H-}ACustomEdit: TCustomEdit; {%H-}NewCase: TEditCharCase); rootoverride;
+    imptype procedure SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode); rootoverride;
+    imptype procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); rootoverride;
+    imptype procedure SetPasswordChar(const ACustomEdit: TCustomEdit; {%H-}NewChar: char); rootoverride;
+    imptype procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); rootoverride;
+    imptype procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); rootoverride;
+    imptype procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); rootoverride;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: string); override;
+    imptype procedure SetSelText(const ACustomEdit: TCustomEdit; const NewSelText: string); rootoverride;
 
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
                         var PreferredWidth, PreferredHeight: integer;
                         WithThemeSpace: Boolean); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
 
-    class procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); override;
+    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); rootoverride;
 
-    class procedure Cut(const ACustomEdit: TCustomEdit); override;
-    class procedure Copy(const ACustomEdit: TCustomEdit); override;
-    class procedure Paste(const ACustomEdit: TCustomEdit); override;
-    class procedure Undo(const ACustomEdit: TCustomEdit); override;
+    imptype procedure Cut(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Copy(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Paste(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Undo(const ACustomEdit: TCustomEdit); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCanUndo(const ACustomEdit: TCustomEdit): Boolean; rootoverride;
+    imptype procedure SetHideSelection(const ACustomEdit: TCustomEdit; NewHideSelection: Boolean); rootoverride;
+    imptype procedure SetNumbersOnly(const ACustomEdit: TCustomEdit; NewNumbersOnly: Boolean); rootoverride;
+    imptype procedure SetTextHint(const ACustomEdit: TCustomEdit; const ATextHint: string); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSCustomMemo }
 
-  TGtk2WSCustomMemo = class(TWSCustomMemo)
+  TGtk2WSCustomMemo = class({$ifndef wsintf}TWSCustomMemo{$else}TGtk2WSCustomEdit, IWSCustomMemo{$endif})
   protected
-    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
 
-    class function  GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
-    class function  GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
-    class function  GetStrings(const ACustomMemo: TCustomMemo): TStrings; override;
+    imptype function  GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
+    imptype function  GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
+    imptype function  GetStrings(const ACustomMemo: TCustomMemo): TStrings; rootoverride;
 
-    class procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
-    class procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetWantTabs(const ACustomMemo: TCustomMemo; const NewWantTabs: boolean); override;
-    class procedure SetEchoMode(const {%H-}ACustomEdit: TCustomEdit; {%H-}NewMode: TEchoMode); override;
-    class procedure SetPasswordChar(const {%H-}ACustomEdit: TCustomEdit; {%H-}NewChar: char); override;
-    class procedure SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean); override;
+    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
+    imptype procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
+    imptype procedure SetWantTabs(const ACustomMemo: TCustomMemo; const NewWantTabs: boolean); rootoverride;
+    imptype procedure SetEchoMode(const {%H-}ACustomEdit: TCustomEdit; {%H-}NewMode: TEchoMode); override;
+    imptype procedure SetPasswordChar(const {%H-}ACustomEdit: TCustomEdit; {%H-}NewChar: char); override;
+    imptype procedure SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean); rootoverride;
 
-    class procedure SetCharCase(const {%H-}ACustomEdit: TCustomEdit; {%H-}NewCase: TEditCharCase); override;
-    class procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
-    class procedure SetSelText(const ACustomEdit: TCustomEdit; const NewSelText: string); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: string); override;
-    class procedure SetScrollbars(const ACustomMemo: TCustomMemo; const NewScrollbars: TScrollStyle); override;
+    imptype procedure SetCharCase(const {%H-}ACustomEdit: TCustomEdit; {%H-}NewCase: TEditCharCase); override;
+    imptype procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
+    imptype procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
+    imptype procedure SetSelText(const ACustomEdit: TCustomEdit; const NewSelText: string); override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: string); override;
+    imptype procedure SetScrollbars(const ACustomMemo: TCustomMemo; const NewScrollbars: TScrollStyle); rootoverride;
 
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
                         var PreferredWidth, PreferredHeight: integer;
                         WithThemeSpace: Boolean); override;
 
-    class function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; override;
-    class procedure SetCaretPos(const ACustomEdit: TCustomEdit; const NewPos: TPoint); override;
+    imptype function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; override;
+    imptype procedure SetCaretPos(const ACustomEdit: TCustomEdit; const NewPos: TPoint); override;
+    {$ifdef wsintf}
+    imptype procedure AppendText(const ACustomMemo: TCustomMemo; const AText: string); rootoverride;
+    imptype procedure FreeStrings(var AStrings: TStrings); rootoverride;
+    imptype procedure SetWantReturns(const ACustomMemo: TCustomMemo; const NewWantReturns: boolean); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSEdit }
@@ -291,50 +317,53 @@ type
   
   { TGtk2WSButtonControl }
 
-  TGtk2WSButtonControl = class(TWSButtonControl)
+  TGtk2WSButtonControl = class({$ifndef wsintf}TWSButtonControl{$else}TGtk2WSWinControl{$endif})
   published
   end;
 
   { TGtk2WSButton }
 
-  TGtk2WSButton = class(TWSButton)
+  TGtk2WSButton = class({$ifndef wsintf}TWSButton{$else}TGtk2WSButtonControl, IWSButton{$endif})
   protected
     class function  GetButtonWidget(AEventBox: PGtkEventBox): PGtkButton;
     class function  GetLabelWidget(AEventBox: PGtkEventBox): PGtkLabel;
   public
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
                         var PreferredWidth, PreferredHeight: integer;
                         WithThemeSpace: Boolean); override;
-    class function  GetText(const {%H-}AWinControl: TWinControl; var {%H-}AText: String): Boolean; override;
+    imptype function  GetText(const {%H-}AWinControl: TWinControl; var {%H-}AText: String): Boolean; override;
 
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetDefault(const AButton: TCustomButton; ADefault: Boolean); override;
-    class procedure SetShortcut(const AButton: TCustomButton; const {%H-}ShortCutK1, {%H-}ShortCutK2: TShortcut); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure SetDefault(const AButton: TCustomButton; ADefault: Boolean); rootoverride;
+    imptype procedure SetShortcut(const AButton: TCustomButton; const {%H-}ShortCutK1, {%H-}ShortCutK2: TShortcut); rootoverride;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
   end;
 
   { TGtk2WSCustomCheckBox }
 
-  TGtk2WSCustomCheckBox = class(TWSCustomCheckBox)
+  TGtk2WSCustomCheckBox = class({$ifndef wsintf}TWSCustomCheckBox{$else}TGtk2WSButtonControl, IWSCustomCheckBox{$endif})
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
                                  const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
                         var PreferredWidth, PreferredHeight: integer;
                         WithThemeSpace: Boolean); override;
-    class function  RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; override;
-    class procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, {%H-}ShortCutK2: TShortCut); override;
-    class procedure SetState(const ACustomCheckBox: TCustomCheckBox;
-      const NewState: TCheckBoxState); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype function  RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; rootoverride;
+    imptype procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, {%H-}ShortCutK2: TShortCut); rootoverride;
+    imptype procedure SetState(const ACustomCheckBox: TCustomCheckBox;
+      const NewState: TCheckBoxState); rootoverride;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
+    {$ifdef wsintf}
+    imptype procedure SetAlignment(const ACustomCheckBox: TCustomCheckBox; const NewAlignment: TLeftRight); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSCheckBox }
@@ -346,15 +375,15 @@ type
   { TGtk2WSToggleBox }
 
   TGtk2WSToggleBox = class(TWSToggleBox)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TGtk2WSRadioButton }
 
   TGtk2WSRadioButton = class(TWSRadioButton)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TGtk2WSCustomStaticText }
@@ -363,19 +392,19 @@ type
   protected
     class function GetLabelWidget(AFrame: PGtkFrame): PGtkLabel;
     class function GetBoxWidget(AFrame: PGtkFrame): PGtkEventBox;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetAlignment(const ACustomStaticText: TCustomStaticText;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetAlignment(const ACustomStaticText: TCustomStaticText;
                                  const NewAlignment: TAlignment); override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
                         var PreferredWidth, PreferredHeight: integer;
                         WithThemeSpace: Boolean); override;
-    class function  GetText(const {%H-}AWinControl: TWinControl; var {%H-}AText: String): Boolean; override;
+    imptype function  GetText(const {%H-}AWinControl: TWinControl; var {%H-}AText: String): Boolean; override;
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo);
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle); override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
   end;
 
   { TGtk2WSStaticText }
@@ -444,7 +473,7 @@ begin
     PInteger(Data)^ := gtk_tree_path_get_indices(Path)^;
 end;
 
-class function TGtk2WSCustomListBox.GetItemIndex(
+imptype function TGtk2WSCustomListBox.GetItemIndex(
   const ACustomListBox: TCustomListBox): integer;
 var
   Widget: PGtkWidget;
@@ -477,7 +506,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomListBox.GetItemRect(
+imptype function TGtk2WSCustomListBox.GetItemRect(
   const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect
   ): boolean;
 var
@@ -503,7 +532,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomListBox.GetScrollWidth(const ACustomListBox: TCustomListBox): Integer;
+imptype function TGtk2WSCustomListBox.GetScrollWidth(const ACustomListBox: TCustomListBox): Integer;
 var
   Adjustment: PGtkAdjustment;
 begin
@@ -511,12 +540,12 @@ begin
   Result := Trunc(Adjustment^.upper);
 end;
 
-class function TGtk2WSCustomListBox.GetTopIndex(const ACustomListBox: TCustomListBox): integer;
+imptype function TGtk2WSCustomListBox.GetTopIndex(const ACustomListBox: TCustomListBox): integer;
 begin
   Result := GetIndexAtXY(ACustomListBox, 0, 1);
 end;
 
-class procedure TGtk2WSCustomListBox.SelectItem(
+imptype procedure TGtk2WSCustomListBox.SelectItem(
   const ACustomListBox: TCustomListBox; AnIndex: integer; ASelected: boolean);
 var
   Widget: PGtkWidget; // pointer to gtk-widget (local use when neccessary)
@@ -545,14 +574,14 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomListBox.SetBorder(
+imptype procedure TGtk2WSCustomListBox.SetBorder(
   const ACustomListBox: TCustomListBox);
 begin
   gtk_scrolled_window_set_shadow_type({%H-}PGtkScrolledWindow(ACustomListBox.Handle),
     BorderStyleShadowMap[ACustomListBox.BorderStyle]);
 end;
 
-class procedure TGtk2WSCustomListBox.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomListBox.SetColor(const AWinControl: TWinControl);
 var
   AWidget: PGTKWidget;
 begin
@@ -566,7 +595,7 @@ begin
     [GTK_STATE_NORMAL, GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STYLE_BASE]);
 end;
 
-class procedure TGtk2WSCustomListBox.SetItemIndex(
+imptype procedure TGtk2WSCustomListBox.SetItemIndex(
   const ACustomListBox: TCustomListBox; const AIndex: integer);
 var
   Widget: PGtkWidget;
@@ -610,7 +639,7 @@ begin
   Dec(WidgetInfo^.ChangeLock);
 end;
 
-class procedure TGtk2WSCustomListBox.SetScrollWidth(
+imptype procedure TGtk2WSCustomListBox.SetScrollWidth(
   const ACustomListBox: TCustomListBox; const AScrollWidth: Integer);
 const
   BoolToPolicy: array[Boolean] of TGtkPolicyType = (GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
@@ -625,7 +654,7 @@ begin
   gtk_adjustment_changed(Adjustment);
 end;
 
-class procedure TGtk2WSCustomListBox.SetSelectionMode(
+imptype procedure TGtk2WSCustomListBox.SetSelectionMode(
   const ACustomListBox: TCustomListBox; const AExtendedSelect,
   AMultiSelect: boolean);
 var
@@ -647,7 +676,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomListBox.SetStyle(
+imptype procedure TGtk2WSCustomListBox.SetStyle(
   const ACustomListBox: TCustomListBox);
 var
   AStyle: PtrInt;
@@ -661,7 +690,7 @@ begin
     RecreateWnd(ACustomListBox);
 end;
 
-class procedure TGtk2WSCustomListBox.SetSorted(const ACustomListBox: TCustomListBox;
+imptype procedure TGtk2WSCustomListBox.SetSorted(const ACustomListBox: TCustomListBox;
   AList: TStrings; ASorted: boolean);
 begin
   if AList is TGtkListStoreStringList then
@@ -672,7 +701,7 @@ begin
     raise Exception.Create('');
 end;
 
-class procedure TGtk2WSCustomListBox.SetTopIndex(
+imptype procedure TGtk2WSCustomListBox.SetTopIndex(
   const ACustomListBox: TCustomListBox; const NewTopIndex: integer);
 var
   Widget: PGtkWidget;
@@ -695,7 +724,7 @@ begin
   gtk_tree_path_free(APath);
 end;
 
-class procedure TGtk2WSCustomListBox.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomListBox.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   Widget: PGtkWidget;
@@ -710,7 +739,7 @@ begin
   Gtk2WidgetSet.SetWidgetFont(Widget, AFont);
 end;
 
-class procedure TGtk2WSCustomListBox.ShowHide(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomListBox.ShowHide(const AWinControl: TWinControl);
 begin
   // issue #27276
   if AWinControl.HandleAllocated and AWinControl.HandleObjectShouldBeVisible and
@@ -722,7 +751,37 @@ begin
   Gtk2WidgetSet.SetVisible(AWinControl, AWinControl.HandleObjectShouldBeVisible);
   InvalidateLastWFPResult(AWinControl, AWinControl.BoundsRect);
 end;
+{$ifdef wsintf}
+imptype procedure TGtk2WSCustomListBox.DragStart(const ACustomListBox: TCustomListBox);
+begin
+end;
 
+imptype procedure TGtk2WSCustomListBox.FreeStrings(var AStrings: TStrings);
+begin
+  AStrings.Free;
+  AStrings := nil;
+end;
+
+imptype procedure TGtk2WSCustomListBox.SelectRange(const ACustomListBox: TCustomListBox;
+  ALow, AHigh: integer; ASelected: boolean);
+var
+  OldTopIndex, i: Integer;
+begin  // A default implementation. A widgetset can override it with a better one.
+  OldTopIndex := ACustomListBox.TopIndex; //prevent scrolling to last Item selected on Windows, Issue #0036929
+  ACustomListBox.Items.BeginUpdate; //prevent visual update when selecting large ranges on Windows, Issue #0036929
+  try
+    for i := ALow to AHigh do
+      SelectItem(ACustomListBox, i, ASelected);
+    ACustomListBox.TopIndex := OldTopIndex;
+  finally
+    ACustomListBox.Items.EndUpdate;
+  end;
+end;
+
+imptype procedure TGtk2WSCustomListBox.SetColumnCount(const ACustomListBox: TCustomListBox; ACount: Integer);
+begin
+end;
+{$endif}
 function gtk2ListBoxSelectionChangedAfter({%H-}Widget: PGtkWidget;
   WidgetInfo: PWidgetInfo): gboolean; cdecl;
 var
@@ -739,7 +798,7 @@ begin
   DeliverMessage(WidgetInfo^.LCLObject, Mess);
 end;
 
-class function TGtk2WSCustomListBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomListBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   TVWidget: PGtkWidget;
@@ -824,7 +883,7 @@ begin
   TGtk2WSWinControl.SetCallbacks(PGtkObject(AGtkWidget), TComponent(AWidgetInfo^.LCLObject));
 end;
 
-class function TGtk2WSCustomListBox.GetIndexAtXY(
+imptype function TGtk2WSCustomListBox.GetIndexAtXY(
   const ACustomListBox: TCustomListBox; X, Y: integer): integer;
 var
   aTreeView: PGtkTreeView;
@@ -850,7 +909,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomListBox.GetSelCount(const ACustomListBox: TCustomListBox): integer;
+imptype function TGtk2WSCustomListBox.GetSelCount(const ACustomListBox: TCustomListBox): integer;
 var
   Widget: PGtkWidget; // pointer to gtk-widget (local use when neccessary)
   Selection: PGtkTreeSelection;
@@ -868,7 +927,7 @@ begin
   g_list_free(Rows);
 end;
 
-class function TGtk2WSCustomListBox.GetSelected(
+imptype function TGtk2WSCustomListBox.GetSelected(
   const ACustomListBox: TCustomListBox; const AIndex: integer): boolean;
 var
   Widget: PGtkWidget; // pointer to gtk-widget (local use when neccessary)
@@ -889,7 +948,7 @@ begin
     Result := gtk_tree_selection_iter_is_selected(Selection, @Item);
 end;
 
-class function TGtk2WSCustomListBox.GetStrings(
+imptype function TGtk2WSCustomListBox.GetStrings(
   const ACustomListBox: TCustomListBox): TStrings;
 var
   Widget: PGtkWidget;// pointer to gtk-widget
@@ -930,7 +989,7 @@ begin
 end;
 
 
-class function TGtk2WSCustomCheckBox.CreateHandle(
+imptype function TGtk2WSCustomCheckBox.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams
   ): TLCLIntfHandle;
 var
@@ -960,7 +1019,7 @@ begin
   SetCallbacks({%H-}PGtkWidget(Result), WidgetInfo);
 end;
 
-class procedure TGtk2WSCustomCheckBox.GetPreferredSize(
+imptype procedure TGtk2WSCustomCheckBox.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 begin
@@ -968,7 +1027,7 @@ begin
                           WithThemeSpace);
 end;
 
-class function TGtk2WSCustomCheckBox.RetrieveState(
+imptype function TGtk2WSCustomCheckBox.RetrieveState(
   const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
 var
   ToggleButton: PGtkToggleButton;
@@ -983,7 +1042,7 @@ begin
     Result := cbUnchecked;
 end;
 
-class procedure TGtk2WSCustomCheckBox.SetShortCut(const ACustomCheckBox: TCustomCheckBox;
+imptype procedure TGtk2WSCustomCheckBox.SetShortCut(const ACustomCheckBox: TCustomCheckBox;
   const ShortCutK1, ShortCutK2: TShortCut);
 begin
   Accelerate(ACustomCheckBox, {%H-}PGtkWidget(ACustomCheckBox.Handle), ShortcutK1,
@@ -992,7 +1051,7 @@ begin
     );
 end;
 
-class procedure TGtk2WSCustomCheckBox.SetState(
+imptype procedure TGtk2WSCustomCheckBox.SetState(
   const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
 var
   GtkObject: PGtkObject;
@@ -1007,7 +1066,7 @@ begin
   LockOnChange(GtkObject,-1);
 end;
 
-class procedure TGtk2WSCustomCheckBox.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomCheckBox.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   Widget: PGTKWidget;
@@ -1025,7 +1084,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomCheckBox.SetText(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomCheckBox.SetText(const AWinControl: TWinControl;
   const AText: String);
 var
   BoxWidget: PGtkWidget;
@@ -1053,7 +1112,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomCheckBox.ShowHide(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomCheckBox.ShowHide(const AWinControl: TWinControl);
 begin
   // gtk2 doesn't set font properly
   // so we are doing it one more time before showing. Issues #21172, #23152
@@ -1063,8 +1122,17 @@ begin
     AWinControl.InvalidatePreferredSize();
     AWinControl.AdjustSize();
   end;
+  {$ifdef wsintf}
+  inherited ShowHide(AWinControl);
+  {$else}
   TGtk2WSWinControl.ShowHide(AWinControl);
+  {$endif}
 end;
+{$ifdef wsintf}
+imptype procedure TGtk2WSCustomCheckBox.SetAlignment(const ACustomCheckBox: TCustomCheckBox; const NewAlignment: TLeftRight);
+begin
+end;
+{$endif}
 
 {$I gtk2wscustommemo.inc}
 
@@ -1088,7 +1156,7 @@ begin
     gtk_signal_func(@gtkDefaultPopupMenuCloseFix), AWidgetInfo);
 end;
 
-class procedure TGtk2WSCustomEdit.GetPreferredSize(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomEdit.GetPreferredSize(const AWinControl: TWinControl;
   var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
 begin
   GetGTKDefaultWidgetSize(AWinControl,PreferredWidth,PreferredHeight,
@@ -1096,7 +1164,7 @@ begin
   //debugln('TGtkWSCustomEdit.GetPreferredSize ',DbgSName(AWinControl),' PreferredWidth=',dbgs(PreferredWidth),' PreferredHeight=',dbgs(PreferredHeight));
 end;
 
-class procedure TGtk2WSCustomEdit.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomEdit.SetColor(const AWinControl: TWinControl);
 var
   AWidget: PGTKWidget;
 begin
@@ -1108,7 +1176,7 @@ begin
 end;
 
 
-class procedure TGtk2WSCustomEdit.SetText(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomEdit.SetText(const AWinControl: TWinControl;
   const AText: string);
 var
   Widget: PGtkWidget;
@@ -1147,7 +1215,7 @@ begin
   {$ENDIF}
 end;
 
-class procedure TGtk2WSCustomEdit.SetSelText(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomEdit.SetSelText(const ACustomEdit: TCustomEdit;
   const NewSelText: string);
 var
   Widget: PGtkWidget;
@@ -1185,13 +1253,13 @@ begin
   DeliverMessage(ACustomEdit, Mess);
 end;
 
-class procedure TGtk2WSCustomEdit.SetCharCase(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomEdit.SetCharCase(const ACustomEdit: TCustomEdit;
   NewCase: TEditCharCase);
 begin
   // TODO: TGtk2WSCustomEdit.SetCharCase: implement me!
 end;
 
-class procedure TGtk2WSCustomEdit.SetMaxLength(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomEdit.SetMaxLength(const ACustomEdit: TCustomEdit;
   NewLength: integer);
 var
   Widget: PGtkWidget;
@@ -1207,7 +1275,7 @@ begin
   Result := (Event^.keyval = GDK_KEY_UP) or (Event^.keyval = GDK_KEY_DOWN);
 end;
 
-class function TGtk2WSCustomEdit.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomEdit.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Widget: PGtkWidget; // ptr to the newly created GtkWidget
@@ -1246,7 +1314,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomEdit.GetCaretPos(const ACustomEdit: TCustomEdit
+imptype function TGtk2WSCustomEdit.GetCaretPos(const ACustomEdit: TCustomEdit
   ): TPoint;
 var
   Entry: PGtkEntry;
@@ -1265,7 +1333,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomEdit.GetSelStart(const ACustomEdit: TCustomEdit
+imptype function TGtk2WSCustomEdit.GetSelStart(const ACustomEdit: TCustomEdit
   ): integer;
 var
   Entry: PGtkEntry;
@@ -1284,7 +1352,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomEdit.GetSelLength(const ACustomEdit: TCustomEdit
+imptype function TGtk2WSCustomEdit.GetSelLength(const ACustomEdit: TCustomEdit
   ): integer;
 var
   Entry: PGtkEntry;
@@ -1303,7 +1371,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomEdit.SetCaretPos(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomEdit.SetCaretPos(const ACustomEdit: TCustomEdit;
   const NewPos: TPoint);
 var
   NewStart: Integer;
@@ -1326,7 +1394,7 @@ begin
   gtk_editable_set_position(PGtkEditable(Entry), NewStart);
 end;
 
-class procedure TGtk2WSCustomEdit.SetEchoMode(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomEdit.SetEchoMode(const ACustomEdit: TCustomEdit;
   NewMode: TEchoMode);
 var
   Entry: PGtkEntry;
@@ -1342,7 +1410,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomEdit.SetPasswordChar(
+imptype procedure TGtk2WSCustomEdit.SetPasswordChar(
   const ACustomEdit: TCustomEdit; NewChar: char);
 var
   PWChar: Integer;
@@ -1361,7 +1429,7 @@ begin
   gtk_entry_set_invisible_char(Entry,PWChar);
 end;
 
-class procedure TGtk2WSCustomEdit.SetReadOnly(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomEdit.SetReadOnly(const ACustomEdit: TCustomEdit;
   NewReadOnly: boolean);
 var
   Widget: PGtkWidget;
@@ -1371,7 +1439,7 @@ begin
     gtk_editable_set_editable(PGtkEditable(Widget), not NewReadOnly);
 end;
 
-class procedure TGtk2WSCustomEdit.SetSelStart(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomEdit.SetSelStart(const ACustomEdit: TCustomEdit;
   NewStart: integer);
 var
   NewPos: Integer;
@@ -1394,7 +1462,7 @@ begin
   gtk_editable_set_position(PGtkEditable(Entry), NewPos);
 end;
 
-class procedure TGtk2WSCustomEdit.SetSelLength(
+imptype procedure TGtk2WSCustomEdit.SetSelLength(
   const ACustomEdit: TCustomEdit; NewLength: integer);
 var
   Entry: PGtkEntry;
@@ -1415,7 +1483,7 @@ begin
     SelStart );
 end;
 
-class procedure TGtk2WSCustomEdit.SetAlignment(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomEdit.SetAlignment(const ACustomEdit: TCustomEdit;
   const AAlignment: TAlignment);
 var
   Entry: PGtkEntry;
@@ -1430,7 +1498,7 @@ begin
   gtk_entry_set_alignment(Entry, Alignment);
 end;
 
-class procedure TGtk2WSCustomEdit.Cut(const ACustomEdit: TCustomEdit);
+imptype procedure TGtk2WSCustomEdit.Cut(const ACustomEdit: TCustomEdit);
 var
   ATextView: PGtkTextView;
   ABuffer: PGtkTextBuffer;
@@ -1454,7 +1522,7 @@ begin
     gtk_editable_cut_clipboard({%H-}PGtkEditable(ACustomEdit.Handle));
 end;
 
-class procedure TGtk2WSCustomEdit.Copy(const ACustomEdit: TCustomEdit);
+imptype procedure TGtk2WSCustomEdit.Copy(const ACustomEdit: TCustomEdit);
 var
   ATextView: PGtkTextView;
   ABuffer: PGtkTextBuffer;
@@ -1477,7 +1545,7 @@ begin
     gtk_editable_copy_clipboard({%H-}PGtkEditable(ACustomEdit.Handle));
 end;
 
-class procedure TGtk2WSCustomEdit.Paste(const ACustomEdit: TCustomEdit);
+imptype procedure TGtk2WSCustomEdit.Paste(const ACustomEdit: TCustomEdit);
 var
   ATextView: PGtkTextView;
   ABuffer: PGtkTextBuffer;
@@ -1495,15 +1563,34 @@ begin
     gtk_editable_paste_clipboard({%H-}PGtkEditable(ACustomEdit.Handle));
 end;
 
-class procedure TGtk2WSCustomEdit.Undo(const ACustomEdit: TCustomEdit);
+imptype procedure TGtk2WSCustomEdit.Undo(const ACustomEdit: TCustomEdit);
 begin
   if not WSCheckHandleAllocated(ACustomEdit, 'Undo') then
     Exit;
   //TODO: I cannot find anything usefull in gtk2 to do this, seem
   //that we have to make our own implementation.
 end;
+{$ifdef wsintf}
+imptype function TGtk2WSCustomEdit.GetCanUndo(const ACustomEdit: TCustomEdit): Boolean;
+begin
+  Result := false;
+end;
 
-class procedure TGtk2WSCustomComboBox.ReCreateCombo(
+imptype procedure TGtk2WSCustomEdit.SetHideSelection(const ACustomEdit: TCustomEdit; NewHideSelection: Boolean);
+begin
+end;
+
+imptype procedure TGtk2WSCustomEdit.SetNumbersOnly(const ACustomEdit: TCustomEdit; NewNumbersOnly: Boolean);
+begin
+end;
+
+imptype procedure TGtk2WSCustomEdit.SetTextHint(const ACustomEdit: TCustomEdit; const ATextHint: string);
+begin
+end;
+
+{$endif}
+
+imptype procedure TGtk2WSCustomComboBox.ReCreateCombo(
   const ACustomComboBox: TCustomComboBox; const AWithEntry: Boolean;
   const AWidgetInfo: PWidgetInfo);
 var
@@ -1808,7 +1895,7 @@ begin
   g_object_set_property(PGObject(AWidget), 'button-sensitivity', @Value);
 end;
 
-class procedure TGtk2WSCustomComboBox.GetPreferredSize(
+imptype procedure TGtk2WSCustomComboBox.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 var
@@ -1819,7 +1906,7 @@ begin
   PreferredWidth := 0;
 end;
 
-class function TGtk2WSCustomComboBox.GetDroppedDown(
+imptype function TGtk2WSCustomComboBox.GetDroppedDown(
   const ACustomComboBox: TCustomComboBox): Boolean;
 var
   WidgetInfo: PWidgetInfo;
@@ -1842,7 +1929,7 @@ begin
   Result := AValue.data[0].v_int <> 0;
 end;
 
-class function TGtk2WSCustomComboBox.GetSelStart(
+imptype function TGtk2WSCustomComboBox.GetSelStart(
   const ACustomComboBox: TCustomComboBox): integer;
 var
   WidgetInfo: PWidgetInfo;
@@ -1862,7 +1949,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomComboBox.GetSelLength(
+imptype function TGtk2WSCustomComboBox.GetSelLength(
   const ACustomComboBox: TCustomComboBox): integer;
 var
   WidgetInfo: PWidgetInfo;
@@ -1882,7 +1969,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomComboBox.GetItemIndex(
+imptype function TGtk2WSCustomComboBox.GetItemIndex(
   const ACustomComboBox: TCustomComboBox): integer;
 var
   WidgetInfo: PWidgetInfo;
@@ -1892,7 +1979,7 @@ begin
   Result := gtk_combo_box_get_active(PGtkComboBox(WidgetInfo^.CoreWidget));
 end;
 
-class function TGtk2WSCustomComboBox.GetMaxLength(
+imptype function TGtk2WSCustomComboBox.GetMaxLength(
   const ACustomComboBox: TCustomComboBox): integer;
 var
   WidgetInfo: PWidgetInfo;
@@ -1910,7 +1997,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomComboBox.GetText(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomComboBox.GetText(const AWinControl: TWinControl;
   var AText: String): Boolean;
 var
   WidgetInfo: PWidgetInfo;
@@ -1932,7 +2019,7 @@ begin
   if Index > -1 then  AText := TCustomComboBox(AWinControl).Items.Strings[Index];
 end;
 
-class procedure TGtk2WSCustomComboBox.SetArrowKeysTraverseList(
+imptype procedure TGtk2WSCustomComboBox.SetArrowKeysTraverseList(
   const ACustomComboBox: TCustomComboBox; NewTraverseList: boolean);
 begin
   // TODO: TGtk2WSCustomComboBox.SetArrowKeysTraverseList: not supported
@@ -1940,7 +2027,7 @@ begin
   // we will have to eat the keystrokes to set this to false
 end;
 
-class procedure TGtk2WSCustomComboBox.SetDroppedDown(
+imptype procedure TGtk2WSCustomComboBox.SetDroppedDown(
   const ACustomComboBox: TCustomComboBox; ADroppedDown: Boolean);
 var
   WidgetInfo: PWidgetInfo;
@@ -1955,7 +2042,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomComboBox.SetSelStart(
+imptype procedure TGtk2WSCustomComboBox.SetSelStart(
   const ACustomComboBox: TCustomComboBox; NewStart: integer);
 var
   WidgetInfo: PWidgetInfo;
@@ -1970,7 +2057,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomComboBox.SetSelLength(
+imptype procedure TGtk2WSCustomComboBox.SetSelLength(
   const ACustomComboBox: TCustomComboBox; NewLength: integer);
 var
   WidgetInfo: PWidgetInfo;
@@ -1986,7 +2073,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomComboBox.SetItemIndex(
+imptype procedure TGtk2WSCustomComboBox.SetItemIndex(
   const ACustomComboBox: TCustomComboBox; NewIndex: integer);
 var
   P: PGtkWidget;
@@ -2016,7 +2103,7 @@ begin
   Dec(WidgetInfo^.ChangeLock);
 end;
 
-class procedure TGtk2WSCustomComboBox.SetMaxLength(
+imptype procedure TGtk2WSCustomComboBox.SetMaxLength(
   const ACustomComboBox: TCustomComboBox; NewLength: integer);
 var
   WidgetInfo: PWidgetInfo;
@@ -2032,7 +2119,7 @@ begin
   g_object_set_data(PGObject(WidgetInfo^.CoreWidget), 'max-length', {%H-}Pointer(PtrInt(NewLength)));
 end;
 
-class procedure TGtk2WSCustomComboBox.SetStyle(
+imptype procedure TGtk2WSCustomComboBox.SetStyle(
   const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle);
 var
   WidgetInfo: PWidgetInfo;
@@ -2046,7 +2133,7 @@ begin
   ReCreateCombo(ACustomComboBox, NeedEntry, WidgetInfo);
 end;
 
-class procedure TGtk2WSCustomComboBox.SetReadOnly(
+imptype procedure TGtk2WSCustomComboBox.SetReadOnly(
   const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean);
 var
   WidgetInfo: PWidgetInfo;
@@ -2059,7 +2146,7 @@ begin
     gtk_entry_set_editable(PGtkEditable(Entry), not NewReadOnly);
 end;
 
-class function TGtk2WSCustomComboBox.GetItems(
+imptype function TGtk2WSCustomComboBox.GetItems(
   const ACustomComboBox: TCustomComboBox): TStrings;
 var
   ComboWidget: PGtkWidget;
@@ -2071,7 +2158,7 @@ begin
                                      GtkListItemLCLListTag));
 end;
 
-class procedure TGtk2WSCustomComboBox.Sort(const ACustomComboBox: TCustomComboBox;
+imptype procedure TGtk2WSCustomComboBox.Sort(const ACustomComboBox: TCustomComboBox;
   AList: TStrings; IsSorted: boolean);
 var
   ComboWidget: PGtkWidget;
@@ -2083,7 +2170,7 @@ begin
                                      GtkListItemLCLListTag)).Sorted := IsSorted;
 end;
 
-class procedure TGtk2WSCustomComboBox.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomComboBox.SetColor(const AWinControl: TWinControl);
 var
   WidgetInfo: PWidgetInfo;
   Child: PGtkWidget; // can be GtkCellRenderer or GtkEntry
@@ -2097,7 +2184,7 @@ begin
    [GTK_STATE_NORMAL,GTK_STYLE_BASE]);
 end;
 
-class procedure TGtk2WSCustomComboBox.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomComboBox.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   Entry: PGtkEntry;
@@ -2126,7 +2213,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomComboBox.SetText(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomComboBox.SetText(const AWinControl: TWinControl;
   const AText: String);
 var
   WidgetInfo: PWidgetInfo;
@@ -2143,13 +2230,13 @@ begin
   Dec(WidgetInfo^.ChangeLock);
 end;
 
-class procedure TGtk2WSCustomComboBox.ShowHide(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomComboBox.ShowHide(const AWinControl: TWinControl);
 begin
   Gtk2WidgetSet.SetVisible(AWinControl, AWinControl.HandleObjectShouldBeVisible);
   InvalidateLastWFPResult(AWinControl, AWinControl.BoundsRect);
 end;
 
-class function TGtk2WSCustomComboBox.CanFocus(const AWinControl: TWinControl
+imptype function TGtk2WSCustomComboBox.CanFocus(const AWinControl: TWinControl
   ): boolean;
 var
   WidgetInfo: PWidgetInfo;
@@ -2166,7 +2253,7 @@ begin
   //DebugLn(['TGtk2WSCustomComboBox.CanFocus ',dbgsName(AWinControl),' ',gtk_is_combo_box_entry(WidgetInfo^.CoreWidget),' Result=',Result]);
 end;
 
-class function TGtk2WSCustomComboBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomComboBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Box,      // this makes it easy to switch between GtkComBox and GtkComboBoxEntry
@@ -2237,7 +2324,7 @@ begin
   Result := TLCLIntfHandle({%H-}PtrUInt(Box));
 end;
 
-class procedure TGtk2WSCustomComboBox.DestroyHandle(
+imptype procedure TGtk2WSCustomComboBox.DestroyHandle(
   const AWinControl: TWinControl);
 var
   Handle: HWND;
@@ -2254,6 +2341,30 @@ begin
   // compile time, while the WS class hierarchy is created at runtime
   TWSWinControlClass(Classparent).DestroyHandle(AWinControl);
 end;
+{$ifdef wsintf}
+imptype procedure TGtk2WSCustomComboBox.SetDropDownCount(const ACustomComboBox: TCustomComboBox; NewCount: Integer);
+begin
+end;
+
+imptype procedure TGtk2WSCustomComboBox.SetTextHint(const ACustomComboBox: TCustomComboBox; const ATextHint: string);
+begin
+end;
+
+imptype procedure TGtk2WSCustomComboBox.FreeItems(var AItems: TStrings);
+begin
+  AItems.Free;
+  AItems := nil;
+end;
+
+imptype function TGtk2WSCustomComboBox.GetItemHeight(const ACustomComboBox: TCustomComboBox): Integer;
+begin
+  Result := 0;
+end;
+
+imptype procedure TGtk2WSCustomComboBox.SetItemHeight(const ACustomComboBox: TCustomComboBox; const AItemHeight: Integer);
+begin
+end;
+{$endif}
 
 { TGtk2WSCustomGroupBox }
 
@@ -2293,7 +2404,7 @@ begin
   Result:=PGtkFrame(PGtkBin(GBWidget)^.child);
 end;
 
-class function TGtk2WSCustomGroupBox.CreateHandle(
+imptype function TGtk2WSCustomGroupBox.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams
   ): TLCLIntfHandle;
 var
@@ -2348,7 +2459,7 @@ begin
   SetCallbacks(FrameBox, WidgetInfo);
 end;
 
-class procedure TGtk2WSCustomGroupBox.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomGroupBox.SetColor(const AWinControl: TWinControl);
 var
   GBWidget: PGTKWidget;
 begin
@@ -2364,7 +2475,7 @@ begin
        [GTK_STATE_NORMAL,GTK_STATE_ACTIVE,GTK_STATE_PRELIGHT,GTK_STATE_SELECTED]);
 end;
 
-class function TGtk2WSCustomGroupBox.GetDefaultClientRect(
+imptype function TGtk2WSCustomGroupBox.GetDefaultClientRect(
   const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer;
   var aClientRect: TRect): boolean;
 var
@@ -2392,7 +2503,7 @@ begin
   //if Result then DebugLn(['TGtk2WSCustomGroupBox.GetDefaultClientRect END FrameBorders=',dbgs(FrameBorders),' aClientRect=',dbgs(aClientRect)]);
 end;
 
-class procedure TGtk2WSCustomGroupBox.GetPreferredSize(
+imptype procedure TGtk2WSCustomGroupBox.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 begin
@@ -2401,7 +2512,7 @@ begin
                           WithThemeSpace);
 end;
 
-class procedure TGtk2WSCustomGroupBox.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomGroupBox.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   Frame: PGtkFrame;
@@ -2419,14 +2530,14 @@ begin
   inherited SetFont(AWinControl, AFont);
 end;
 
-class procedure TGtk2WSCustomGroupBox.SetText(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomGroupBox.SetText(const AWinControl: TWinControl;
   const AText: string);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetText') then Exit;
   SetLabel(GetFrameWidget({%H-}PGtkEventBox(AWinControl.Handle)), AText);
 end;
 
-class procedure TGtk2WSCustomGroupBox.SetBounds(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomGroupBox.SetBounds(const AWinControl: TWinControl;
   const ALeft, ATop, AWidth, AHeight: Integer);
 var
   GroubBox: TCustomGroupBox absolute AWinControl;
@@ -2453,7 +2564,11 @@ begin
       g_object_set_data(PGObject(Frame), 'lcl-groupbox-min-width', nil);
     end;
   end;
+  {$ifndef wsintf}
   TGtk2WSWinControl.SetBounds(AWinControl, ALeft, ATop, AWidth, AHeight);
+  {$else}
+  inherited SetBounds(AWinControl, ALeft, ATop, AWidth, AHeight);
+  {$endif}
 end;
 
 function Gtk2WSButton_Clicked(AWidget: PGtkWidget; AInfo: PWidgetInfo): GBoolean; cdecl;
@@ -2545,7 +2660,7 @@ end;
   Under Gtk 2 we need to put a GtkEventBox under the GtkButton, because a
   GtkButton has no window and that causes the Z-Order to be wrong.
 }
-class function TGtk2WSButton.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSButton.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Button: TCustomButton;
@@ -2596,13 +2711,13 @@ begin
     gtk_widget_show(EventBox);
 end;
 
-class function TGtk2WSButton.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
+imptype function TGtk2WSButton.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
 begin
   // The button text is static, so let the LCL fallback to FCaption
   Result := False;
 end;
 
-class procedure TGtk2WSButton.SetDefault(const AButton: TCustomButton; ADefault: Boolean);
+imptype procedure TGtk2WSButton.SetDefault(const AButton: TCustomButton; ADefault: Boolean);
 begin
   if not WSCheckHandleAllocated(AButton, 'SetDefault')
   then Exit;
@@ -2620,7 +2735,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSButton.SetShortcut(const AButton: TCustomButton;
+imptype procedure TGtk2WSButton.SetShortcut(const AButton: TCustomButton;
   const ShortCutK1, ShortCutK2: TShortcut);
 begin
   if not WSCheckHandleAllocated(AButton, 'SetShortcut')
@@ -2628,7 +2743,7 @@ begin
   // gtk2: shortcuts are handled by the LCL
 end;
 
-class procedure TGtk2WSButton.SetText(const AWinControl: TWinControl; const AText: String);
+imptype procedure TGtk2WSButton.SetText(const AWinControl: TWinControl; const AText: String);
 var
   BtnWidget: PGtkButton;
   LblWidget: PGtkLabel;
@@ -2649,7 +2764,7 @@ begin
   Gtk2WidgetSet.SetLabelCaption(LblWidget, AText);
 end;
 
-class procedure TGtk2WSButton.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSButton.SetColor(const AWinControl: TWinControl);
 var
   BtnWidget: PGTKWidget;
 begin
@@ -2660,7 +2775,7 @@ begin
        [GTK_STATE_NORMAL,GTK_STATE_ACTIVE,GTK_STATE_PRELIGHT,GTK_STATE_SELECTED]);
 end;
 
-class procedure TGtk2WSButton.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSButton.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   LblWidget: PGtkWidget;
@@ -2677,7 +2792,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSButton.GetPreferredSize(const AWinControl: TWinControl;
+imptype procedure TGtk2WSButton.GetPreferredSize(const AWinControl: TWinControl;
   var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
 begin
   GetGTKDefaultWidgetSize(AWinControl,PreferredWidth,PreferredHeight,
@@ -2699,7 +2814,7 @@ begin
     TGCallback(@Gtk2RangeScrollReleaseCB), AWidgetInfo);
 end;
 
-class function TGtk2WSScrollBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSScrollBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Adjustment: PGtkAdjustment = nil;
@@ -2731,7 +2846,7 @@ begin
   SetCallbacks(Widget, WidgetInfo);
 end;
 
-class procedure TGtk2WSScrollBar.SetKind(const AScrollBar: TCustomScrollBar;
+imptype procedure TGtk2WSScrollBar.SetKind(const AScrollBar: TCustomScrollBar;
   const AIsHorizontal: Boolean);
 begin
   if not AScrollBar.HandleAllocated then
@@ -2739,7 +2854,7 @@ begin
   RecreateWnd(AScrollBar);
 end;
 
-class procedure TGtk2WSScrollBar.SetParams(const AScrollBar: TCustomScrollBar);
+imptype procedure TGtk2WSScrollBar.SetParams(const AScrollBar: TCustomScrollBar);
 var
   Range: PGtkRange;
 begin
@@ -2767,7 +2882,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSScrollBar.ShowHide(const AWinControl: TWinControl);
+imptype procedure TGtk2WSScrollBar.ShowHide(const AWinControl: TWinControl);
 begin
   if not AWinControl.HandleAllocated then
     exit;
@@ -2779,7 +2894,7 @@ end;
 
 { TGtk2WSRadioButton }
 
-class function TGtk2WSRadioButton.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSRadioButton.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Widget, TempWidget: PGtkWidget;
@@ -2832,7 +2947,7 @@ end;
 
 { TGtk2WSToggleBox }
 
-class function TGtk2WSToggleBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSToggleBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Widget: PGtkWidget;
@@ -2868,7 +2983,7 @@ begin
   Result := PGtkEventBox(PGtkBin(AFrame)^.child);
 end;
 
-class function TGtk2WSCustomStaticText.CreateHandle(
+imptype function TGtk2WSCustomStaticText.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams
   ): TLCLIntfHandle;
 var
@@ -2919,7 +3034,7 @@ begin
   SetCallbacks({%H-}PGtkWidget(Result), WidgetInfo);
 end;
 
-class procedure TGtk2WSCustomStaticText.SetAlignment(const ACustomStaticText: TCustomStaticText;
+imptype procedure TGtk2WSCustomStaticText.SetAlignment(const ACustomStaticText: TCustomStaticText;
   const NewAlignment: TAlignment);
 var
   LblWidget: PGtkLabel;
@@ -2931,7 +3046,7 @@ begin
   SetLabelAlignment(LblWidget, NewAlignment);
 end;
 
-class procedure TGtk2WSCustomStaticText.GetPreferredSize(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomStaticText.GetPreferredSize(const AWinControl: TWinControl;
   var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
 begin
   GetGTKDefaultWidgetSize(AWinControl, PreferredWidth, PreferredHeight,
@@ -2939,14 +3054,14 @@ begin
   //debugln('TGtkWSCustomStaticText.GetPreferredSize ',DbgSName(AWinControl),' PreferredWidth=',dbgs(PreferredWidth),' PreferredHeight=',dbgs(PreferredHeight));
 end;
 
-class function TGtk2WSCustomStaticText.GetText(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomStaticText.GetText(const AWinControl: TWinControl;
   var AText: String): Boolean;
 begin
   // The text is static, so let the LCL fallback to FCaption
   Result := False;
 end;
 
-class procedure TGtk2WSCustomStaticText.SetText(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomStaticText.SetText(const AWinControl: TWinControl;
   const AText: String);
 var
   FrameWidget: PGtkFrame;
@@ -2967,7 +3082,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomStaticText.SetStaticBorderStyle(
+imptype procedure TGtk2WSCustomStaticText.SetStaticBorderStyle(
   const ACustomStaticText: TCustomStaticText;
   const NewBorderStyle: TStaticBorderStyle);
 begin
@@ -2984,7 +3099,7 @@ begin
   SignalConnect(AGtkWidget, 'grab_focus', @gtkActivateCB, AWidgetInfo);
 end;
 
-class procedure TGtk2WSCustomStaticText.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomStaticText.SetColor(const AWinControl: TWinControl);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetColor') then Exit;
 
@@ -2994,7 +3109,7 @@ begin
                                GTK_STATE_PRELIGHT,GTK_STATE_SELECTED]);
 end;
 
-class procedure TGtk2WSCustomStaticText.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSCustomStaticText.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   Widget: PGtkWidget;

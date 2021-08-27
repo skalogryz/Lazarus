@@ -100,3 +100,17 @@
   {$OPTIMIZATION NOREMOVEEMPTYPROCS}
 {$ENDIF}
 
+{.$define WSINTF}
+
+{$macro on}
+{$ifdef wsintf}
+{$define imptype:=}
+{$define impsection:=public}
+{$define rootoverride:=virtual}
+{$define setcbvirtual:=}
+{$else}
+{$define imptype:=class}
+{$define impsection:=published}
+{$define rootoverride:=override}
+{$define setcbvirtual:=virtual}
+{$endif}

@@ -113,7 +113,7 @@ begin
     gtk_signal_func(@gtkDefaultPopupMenuCloseFix), AWidgetInfo);
 end;
 
-class function TGtk2WSCustomMemo.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomMemo.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Widget,
@@ -164,7 +164,7 @@ begin
   SetCallbacks(Widget, WidgetInfo);
 end;
 
-class function TGtk2WSCustomMemo.GetStrings(const ACustomMemo: TCustomMemo): TStrings;
+imptype function TGtk2WSCustomMemo.GetStrings(const ACustomMemo: TCustomMemo): TStrings;
 var
   TextView: PGtkTextView;
 begin
@@ -172,7 +172,7 @@ begin
   Result := TGtk2MemoStrings.Create(TextView, ACustomMemo);
 end;
 
-class procedure TGtk2WSCustomMemo.SetAlignment(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetAlignment(const ACustomEdit: TCustomEdit;
   const AAlignment: TAlignment);
 var
   TextView: PGtkTextView;
@@ -182,7 +182,7 @@ begin
 end;
 
 
-class procedure TGtk2WSCustomMemo.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomMemo.SetColor(const AWinControl: TWinControl);
 var
   AWidget: PGTKWidget;
 begin
@@ -196,7 +196,7 @@ begin
     [GTK_STATE_NORMAL, GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STYLE_BASE]);
 end;
 
-class procedure TGtk2WSCustomMemo.SetFont(const AWinControl: TWinControl; const AFont: TFont);
+imptype procedure TGtk2WSCustomMemo.SetFont(const AWinControl: TWinControl; const AFont: TFont);
 var
   AWidget: PGTKWidget;
 begin
@@ -215,7 +215,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomMemo.SetSelStart(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetSelStart(const ACustomEdit: TCustomEdit;
   NewStart: integer);
 var
   MemoStrings: TGtk2MemoStrings;
@@ -228,7 +228,7 @@ begin
   MemoStrings.QueueSelectLength(0);
 end;
 
-class procedure TGtk2WSCustomMemo.SetSelLength(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetSelLength(const ACustomEdit: TCustomEdit;
   NewLength: integer);
 var
   MemoStrings: TGtk2MemoStrings;
@@ -240,7 +240,7 @@ begin
   MemoStrings.QueueSelectLength(NewLength);
 end;
 
-class procedure TGtk2WSCustomMemo.SetWantTabs(const ACustomMemo: TCustomMemo;
+imptype procedure TGtk2WSCustomMemo.SetWantTabs(const ACustomMemo: TCustomMemo;
   const NewWantTabs: boolean);
 var
   TextView: PGtkTextView;
@@ -252,19 +252,19 @@ begin
   gtk_text_view_set_accepts_tab(TextView, NewWantTabs);
 end;
 
-class procedure TGtk2WSCustomMemo.SetEchoMode(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetEchoMode(const ACustomEdit: TCustomEdit;
   NewMode: TEchoMode);
 begin
   // not supported
 end;
 
-class procedure TGtk2WSCustomMemo.SetPasswordChar(
+imptype procedure TGtk2WSCustomMemo.SetPasswordChar(
   const ACustomEdit: TCustomEdit; NewChar: char);
 begin
   // not supported
 end;
 
-class procedure TGtk2WSCustomMemo.SetWordWrap(const ACustomMemo: TCustomMemo;
+imptype procedure TGtk2WSCustomMemo.SetWordWrap(const ACustomMemo: TCustomMemo;
   const NewWordWrap: boolean);
 var
   TextView: PGtkTextView;
@@ -278,13 +278,13 @@ begin
     gtk_text_view_set_wrap_mode(PGtkTextView(TextView), GTK_WRAP_NONE);
 end;
 
-class procedure TGtk2WSCustomMemo.SetCharCase(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetCharCase(const ACustomEdit: TCustomEdit;
   NewCase: TEditCharCase);
 begin
   // TODO: TGtk2WSCustomMemo.SetCharCase: implement me!
 end;
 
-class procedure TGtk2WSCustomMemo.SetScrollbars(const ACustomMemo: TCustomMemo;
+imptype procedure TGtk2WSCustomMemo.SetScrollbars(const ACustomMemo: TCustomMemo;
   const NewScrollbars: TScrollStyle);
 var
   SS:TPoint;
@@ -296,7 +296,7 @@ begin
   gtk_scrolled_window_set_policy(ScrollWidget ,SS.X, SS.Y);
 end;
 
-class procedure TGtk2WSCustomMemo.SetMaxLength(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetMaxLength(const ACustomEdit: TCustomEdit;
   NewLength: integer);
 var
   Widget: PGtkWidget;
@@ -306,7 +306,7 @@ begin
     gtk_entry_set_max_length(GTK_ENTRY(Widget), guint16(NewLength));
 end;
 
-class procedure TGtk2WSCustomMemo.SetReadOnly(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetReadOnly(const ACustomEdit: TCustomEdit;
   NewReadOnly: boolean);
 var
   TextView: PGtkTextView;
@@ -319,7 +319,7 @@ begin
     gtk_text_view_set_editable(TextView, not NewReadOnly);
 end;
 
-class procedure TGtk2WSCustomMemo.SetSelText(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetSelText(const ACustomEdit: TCustomEdit;
   const NewSelText: string);
 var
   MemoStrings: TGtk2MemoStrings;
@@ -353,7 +353,7 @@ begin
   gtk_text_buffer_insert(TextBuf, @StartIter, PChar(NewSelText), -1);
 end;
 
-class procedure TGtk2WSCustomMemo.SetText(const AWinControl: TWinControl; const AText: string);
+imptype procedure TGtk2WSCustomMemo.SetText(const AWinControl: TWinControl; const AText: string);
 var
   TextBuf: PGtkTextBuffer;
   StartIter: TGtkTextIter;
@@ -366,7 +366,7 @@ begin
   gtk_text_buffer_place_cursor(TextBuf, @StartIter);
 end;
 
-class procedure TGtk2WSCustomMemo.GetPreferredSize(
+imptype procedure TGtk2WSCustomMemo.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 begin
@@ -374,7 +374,7 @@ begin
                           WithThemeSpace);
 end;
 
-class function TGtk2WSCustomMemo.GetSelStart(const ACustomEdit: TCustomEdit): integer;
+imptype function TGtk2WSCustomMemo.GetSelStart(const ACustomEdit: TCustomEdit): integer;
 var
   MemoStrings: TGtk2MemoStrings;
   TextView: PGtkTextView;
@@ -409,7 +409,7 @@ begin
   Result := Min(StartPos, EndPos);
 end;
 
-class function TGtk2WSCustomMemo.GetSelLength(const ACustomEdit: TCustomEdit): integer;
+imptype function TGtk2WSCustomMemo.GetSelLength(const ACustomEdit: TCustomEdit): integer;
 var
   MemoStrings: TGtk2MemoStrings;
   TextView: PGtkTextView;
@@ -434,7 +434,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomMemo.GetCaretPos(const ACustomEdit: TCustomEdit): TPoint;
+imptype function TGtk2WSCustomMemo.GetCaretPos(const ACustomEdit: TCustomEdit): TPoint;
 var
   TextView: PGtkTextView;
   TextBuffer: PGtkTextBuffer;
@@ -453,7 +453,7 @@ begin
   Result.Y := gtk_text_iter_get_line(@TextIter);
 end;
 
-class procedure TGtk2WSCustomMemo.SetCaretPos(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomMemo.SetCaretPos(const ACustomEdit: TCustomEdit;
   const NewPos: TPoint);
 var
   TextView: PGtkTextView;
@@ -480,3 +480,19 @@ begin
 
   SetSelStart(ACustomEdit, gtk_text_iter_get_offset(@TextIter));
 end;
+{$ifdef wsintf}
+imptype procedure TGtk2WSCustomMemo.AppendText(const ACustomMemo: TCustomMemo; const AText: string);
+begin
+
+end;
+
+imptype procedure TGtk2WSCustomMemo.FreeStrings(var AStrings: TStrings);
+begin
+  AStrings.Free;
+  AStrings := nil;
+end;
+
+imptype procedure TGtk2WSCustomMemo.SetWantReturns(const ACustomMemo: TCustomMemo; const NewWantReturns: boolean);
+begin
+end;
+{$endif}

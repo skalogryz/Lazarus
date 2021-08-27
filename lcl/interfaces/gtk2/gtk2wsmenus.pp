@@ -20,6 +20,8 @@ unit Gtk2WSMenus;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
   // RTL
   Classes, Types, glib2, gdk2, gtk2,
@@ -27,35 +29,40 @@ uses
   LazTracer,
   // LCL
   Gtk2Int, Gtk2Proc, Gtk2Globals, Gtk2Def, Gtk2Extra,
-  LCLType, LCLIntf, InterfaceBase, WSMenus, LMessages, Graphics, Menus, Forms;
+  LCLType, LCLIntf, InterfaceBase, WSMenus, LMessages, Graphics, Menus, Forms
+  {$ifdef wsintf}, WSLCLClasses_Intf{$endif};
 
 type
 
   { TGtk2WSMenuItem }
 
-  TGtk2WSMenuItem = class(TWSMenuItem)
+  TGtk2WSMenuItem = class({$ifndef wsintf}TWSMenuItem{$else}TWSLCLComponent, IWSMenuItem{$endif})
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo);
-  published
-    class procedure AttachMenu(const AMenuItem: TMenuItem); override;
-    class function CreateHandle(const AMenuItem: TMenuItem): HMENU; override;
-    class procedure DestroyHandle(const AMenuItem: TMenuItem); override;
-    class procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); override;
-    class procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); override;
-    class procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); override;
-    class function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; override;
-    class function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; override;
-    class function SetRadioItem(const AMenuItem: TMenuItem; const {%H-}RadioItem: boolean): boolean; override;
-    class function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; override;
-    class procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const {%H-}AIcon: TBitmap); override;
+  impsection
+    imptype procedure AttachMenu(const AMenuItem: TMenuItem); rootoverride;
+    imptype function CreateHandle(const AMenuItem: TMenuItem): HMENU; rootoverride;
+    imptype procedure DestroyHandle(const AMenuItem: TMenuItem); rootoverride;
+    imptype procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); rootoverride;
+    imptype procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+    imptype procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); rootoverride;
+    imptype function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; rootoverride;
+    imptype function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; rootoverride;
+    imptype function SetRadioItem(const AMenuItem: TMenuItem; const {%H-}RadioItem: boolean): boolean; rootoverride;
+    imptype function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; rootoverride;
+    imptype procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const {%H-}AIcon: TBitmap); rootoverride;
+    {$ifdef wsintf}
+    imptype function  OpenCommand: LongInt; rootoverride;
+    imptype procedure CloseCommand(ACommand: LongInt); rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSMenu }
 
-  TGtk2WSMenu = class(TWSMenu)
-  published
-    class function CreateHandle(const AMenu: TMenu): HMENU; override;
-    class procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, {%H-}UseRightToLeftReading : Boolean); override;
+  TGtk2WSMenu = class({$ifndef wsintf}TWSMenu{$else}TWSLCLComponent, IWSMenu{$endif})
+  impsection
+    imptype function CreateHandle(const AMenu: TMenu): HMENU; rootoverride;
+    imptype procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, {%H-}UseRightToLeftReading : Boolean); rootoverride;
   end;
 
   { TGtk2WSMainMenu }
@@ -66,12 +73,12 @@ type
 
   { TGtk2WSPopupMenu }
 
-  TGtk2WSPopupMenu = class(TWSPopupMenu)
+  TGtk2WSPopupMenu = class({$ifndef wsintf}TWSPopupMenu{$else}TGtk2WSMenu, IWSPopupMenu{$endif})
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const AMenu: TMenu): HMENU; override;
-    class procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); override;
+  impsection
+    imptype function CreateHandle(const AMenu: TMenu): HMENU; override;
+    imptype procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); rootoverride;
   end;
 
 
@@ -256,7 +263,7 @@ begin
     TGTKSignalFunc(@Gtk2MenuItemSizeRequest), AWidgetInfo^.LCLObject);
 end;
 
-class procedure TGtk2WSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
+imptype procedure TGtk2WSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
 var
   MenuItem, ParentMenuWidget, ContainerMenu: PGtkWidget;
 begin
@@ -307,7 +314,7 @@ begin
   end;
 end;
 
-class function TGtk2WSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
+imptype function TGtk2WSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
 var
   Widget: PGtkWidget;
   WidgetInfo: PWidgetInfo;
@@ -358,13 +365,13 @@ begin
   Result := HMENU({%H-}PtrUInt(Widget));
 end;
 
-class procedure TGtk2WSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
+imptype procedure TGtk2WSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
 begin
   { TODO: cleanup }
   TGtk2WidgetSet(WidgetSet).DestroyLCLComponent(AMenuItem);
 end;
 
-class procedure TGtk2WSMenuItem.SetCaption(const AMenuItem: TMenuItem;
+imptype procedure TGtk2WSMenuItem.SetCaption(const AMenuItem: TMenuItem;
   const ACaption: string);
 var
   MenuItemWidget: PGtkWidget;
@@ -381,7 +388,7 @@ begin
    end;
 end;
 
-class procedure TGtk2WSMenuItem.SetShortCut(const AMenuItem: TMenuItem;
+imptype procedure TGtk2WSMenuItem.SetShortCut(const AMenuItem: TMenuItem;
   const ShortCutK1, ShortCutK2: TShortCut);
 //var
   //MenuWidget: PGtkMenuItem;
@@ -404,7 +411,7 @@ begin
   gtk_menu_item_set_accel_path(); }
 end;
 
-class procedure TGtk2WSMenuItem.SetVisible(const AMenuItem: TMenuItem;
+imptype procedure TGtk2WSMenuItem.SetVisible(const AMenuItem: TMenuItem;
   const Visible: boolean);
 var
   MenuItemWidget: PGtkWidget;
@@ -420,7 +427,7 @@ begin
     gtk_widget_hide(MenuItemWidget);
 end;
 
-class function TGtk2WSMenuItem.SetCheck(const AMenuItem: TMenuItem;
+imptype function TGtk2WSMenuItem.SetCheck(const AMenuItem: TMenuItem;
   const Checked: boolean): boolean;
 var
   IsRadio: Boolean;
@@ -452,7 +459,7 @@ begin
   end;
 end;
 
-class function TGtk2WSMenuItem.SetEnable(const AMenuItem: TMenuItem;
+imptype function TGtk2WSMenuItem.SetEnable(const AMenuItem: TMenuItem;
   const Enabled: boolean): boolean;
 begin
   Result := False;
@@ -462,14 +469,14 @@ begin
   Result := True;
 end;
 
-class function TGtk2WSMenuItem.SetRadioItem(const AMenuItem: TMenuItem;
+imptype function TGtk2WSMenuItem.SetRadioItem(const AMenuItem: TMenuItem;
   const RadioItem: boolean): boolean;
 begin
   AMenuItem.RecreateHandle;
   Result := True;
 end;
 
-class function TGtk2WSMenuItem.SetRightJustify(const AMenuItem: TMenuItem;
+imptype function TGtk2WSMenuItem.SetRightJustify(const AMenuItem: TMenuItem;
   const Justified: boolean): boolean;
 var
   MenuItemWidget: PGtkMenuItem;
@@ -483,7 +490,7 @@ begin
   Result := True;
 end;
 
-class procedure TGtk2WSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
+imptype procedure TGtk2WSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
   const HasIcon: Boolean; const AIcon: TBitmap);
 begin
   if not WSCheckMenuItem(AMenuItem, 'UpdateMenuIcon') then
@@ -493,10 +500,21 @@ begin
   if HasIcon then
     AMenuItem.RecreateHandle;
 end;
+{$ifdef wsintf}
+imptype function TGtk2WSMenuItem.OpenCommand: LongInt;
+begin
+  Result := CreateMenuCommand;
+end;
+
+imptype procedure TGtk2WSMenuItem.CloseCommand(ACommand: LongInt);
+begin
+  ReleaseMenuCommand(ACommand);
+end;
+{$endif}
 
 { TGtk2WSMenu }
 
-class function TGtk2WSMenu.CreateHandle(const AMenu: TMenu): HMENU;
+imptype function TGtk2WSMenu.CreateHandle(const AMenu: TMenu): HMENU;
 var
   Widget: PGtkWidget;
   WidgetInfo: PWidgetInfo;
@@ -532,7 +550,7 @@ begin
   // no callbacks for main menu
 end;
 
-class procedure TGtk2WSMenu.SetBiDiMode(const AMenu : TMenu;
+imptype procedure TGtk2WSMenu.SetBiDiMode(const AMenu : TMenu;
   UseRightToLeftAlign, UseRightToLeftReading : Boolean);
 const
   WidgetDirection : array[boolean] of longint = (GTK_TEXT_DIR_LTR, GTK_TEXT_DIR_RTL);
@@ -640,7 +658,7 @@ begin
     gtk_signal_func(@gtkWSPopupMenuDeactivate), AWidgetInfo);
 end;
 
-class function TGtk2WSPopupMenu.CreateHandle(const AMenu: TMenu): HMENU;
+imptype function TGtk2WSPopupMenu.CreateHandle(const AMenu: TMenu): HMENU;
 var
   Widget: PGtkWidget;
   WidgetInfo: PWidgetInfo;
@@ -655,7 +673,7 @@ begin
   SetCallbacks(Widget, WidgetInfo);
 end;
 
-class procedure TGtk2WSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X,
+imptype procedure TGtk2WSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X,
   Y: integer);
 var
   APoint: TPoint;

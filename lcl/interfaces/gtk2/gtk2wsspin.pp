@@ -20,6 +20,8 @@ unit Gtk2WSSpin;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
   // RTL
   glib2, gtk2, SysUtils, Classes, Math,
@@ -27,28 +29,28 @@ uses
   Controls, LCLType, LCLProc, LMessages, LazUTF8, Spin, StdCtrls,
   // Widgetset
   Gtk2Extra, Gtk2Def, Gtk2WSStdCtrls,
-  Gtk2Proc, WSLCLClasses, WSProc, WSSpin;
+  Gtk2Proc, {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSProc, WSSpin;
 
 type
 
   { TGtk2WSCustomFloatSpinEdit }
 
-  TGtk2WSCustomFloatSpinEdit = class(TWSCustomFloatSpinEdit)
+  TGtk2WSCustomFloatSpinEdit = class({$ifndef wsintf}TWSCustomFloatSpinEdit{$else}TGtk2WSEdit, IWSCustomFloatSpinEdit{$endif})
   protected
     class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
-    class function GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
-    class function GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double; override;
+  impsection
+    imptype function GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
+    imptype function GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
+    imptype function GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double; rootoverride;
 
-    class procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
-    class procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetReadOnly(const ACustomEdit: TCustomEdit; ReadOnly: boolean); override;
+    imptype procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
+    imptype procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
+    imptype procedure SetReadOnly(const ACustomEdit: TCustomEdit; ReadOnly: boolean); override;
 
-    class procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean); override;
+    imptype procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean); rootoverride;
 
-    class procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit); override;
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit); rootoverride;
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
 implementation
@@ -71,7 +73,7 @@ begin
   TGtk2WSCustomEdit.SetCallbacks(AWidget, AWidgetInfo);
 end;
 
-class function TGtk2WSCustomFloatSpinEdit.GetSelStart(const ACustomEdit: TCustomEdit): integer;
+imptype function TGtk2WSCustomFloatSpinEdit.GetSelStart(const ACustomEdit: TCustomEdit): integer;
 var
   Entry: PGtkEntry;
 begin
@@ -81,7 +83,7 @@ begin
   Result := Min(Entry^.current_pos, Entry^.selection_bound)
 end;
 
-class function TGtk2WSCustomFloatSpinEdit.GetSelLength(const ACustomEdit: TCustomEdit): integer;
+imptype function TGtk2WSCustomFloatSpinEdit.GetSelLength(const ACustomEdit: TCustomEdit): integer;
 var
   AStart, AEnd: gint;
 begin
@@ -92,7 +94,7 @@ begin
     Result := Abs(AEnd-AStart);
 end;
 
-class function TGtk2WSCustomFloatSpinEdit.GetValue(
+imptype function TGtk2WSCustomFloatSpinEdit.GetValue(
   const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double;
 var
   StrValue: String;
@@ -112,7 +114,7 @@ begin
   Result := ACustomFloatSpinEdit.StrToValue(StrValue);
 end;
 
-class procedure TGtk2WSCustomFloatSpinEdit.SetSelStart(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomFloatSpinEdit.SetSelStart(const ACustomEdit: TCustomEdit;
   NewStart: integer);
 begin
   if not WSCheckHandleAllocated(ACustomEdit, 'SetSelStart') then
@@ -120,7 +122,7 @@ begin
   gtk_editable_set_position(GetSpinGtkEditable(ACustomEdit), NewStart);
 end;
 
-class procedure TGtk2WSCustomFloatSpinEdit.SetSelLength(const ACustomEdit: TCustomEdit;
+imptype procedure TGtk2WSCustomFloatSpinEdit.SetSelLength(const ACustomEdit: TCustomEdit;
   NewLength: integer);
 var
   Entry: PGtkEntry;
@@ -135,7 +137,7 @@ begin
     SelStart + NewLength);
 end;
 
-class procedure TGtk2WSCustomFloatSpinEdit.SetReadOnly(const ACustomEdit: TCustomEdit; ReadOnly: boolean);
+imptype procedure TGtk2WSCustomFloatSpinEdit.SetReadOnly(const ACustomEdit: TCustomEdit; ReadOnly: boolean);
 var
   Widget: PGtkWidget;
   AnAdjustment: PGtkAdjustment;
@@ -177,7 +179,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomFloatSpinEdit.SetEditorEnabled(
+imptype procedure TGtk2WSCustomFloatSpinEdit.SetEditorEnabled(
   const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean);
 var
   Widget: PGtkWidget;
@@ -189,7 +191,7 @@ begin
     gtk_editable_set_editable(PGtkEditable(Widget), AValue);
 end;
 
-class procedure TGtk2WSCustomFloatSpinEdit.UpdateControl(
+imptype procedure TGtk2WSCustomFloatSpinEdit.UpdateControl(
   const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
 var
   AnAdjustment: PGtkAdjustment;
@@ -239,7 +241,7 @@ begin
   DeliverMessage(ACustomFloatSpinEdit, Mess);
 end;
 
-class function TGtk2WSCustomFloatSpinEdit.CreateHandle(
+imptype function TGtk2WSCustomFloatSpinEdit.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams
   ): TLCLIntfHandle;
 var

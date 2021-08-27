@@ -17,7 +17,7 @@ uses
   GLib2, Gtk2, Gdk2Pixbuf,
   Classes, SysUtils, dynlibs,
   Graphics, Controls, Forms, ExtCtrls, WSExtCtrls, LCLType, LazUTF8,
-  FileUtil;
+  FileUtil{$ifdef wsintf},WSLCLClasses_Intf{$endif};
 
 { Copyleft implementation of TTrayIcon originally for Unity applications indicators
   Original version 2015 by Anthony Walter sysrpl@gmail.com
@@ -63,12 +63,16 @@ uses
   You cannot use a different popupmenu once one has been used }
 
 type
-  TUnityWSCustomTrayIcon = class(TWSCustomTrayIcon)
-  published
-    class function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class function Show(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); override;
-    class function GetPosition(const {%H-}ATrayIcon: TCustomTrayIcon): TPoint; override;
+  TUnityWSCustomTrayIcon = class({$ifndef wsintf}TWSCustomTrayIcon{$else}TWSLCLComponent, IWSCustomTrayIcon{$endif})
+  impsection
+    imptype function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype function Show(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); rootoverride;
+    imptype function GetPosition(const {%H-}ATrayIcon: TCustomTrayIcon): TPoint; rootoverride;
+    {$ifdef wsintf}
+    imptype function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas; rootoverride;
+    {$endif}
   end;
 
 { UnityAppIndicatorInit returns true if an AppIndicator library can be loaded }
@@ -229,7 +233,7 @@ end;
 
 { TUnityWSCustomTrayIcon }
 
-class function TUnityWSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TUnityWSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   T: TUnityTrayIconHandle;
 begin
@@ -242,7 +246,7 @@ begin
   Result := True;
 end;
 
-class function TUnityWSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TUnityWSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   T: TUnityTrayIconHandle;
 begin
@@ -254,7 +258,7 @@ begin
   Result := True;
 end;
 
-class procedure TUnityWSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
+imptype procedure TUnityWSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
 var
   T: TUnityTrayIconHandle;
 begin
@@ -265,11 +269,21 @@ begin
   end;
 end;
 
-class function TUnityWSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
+imptype function TUnityWSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
 begin
   Result := Point(0, 0);
 end;
+{$ifdef wsintf}
+imptype function TUnityWSCustomTrayIcon.ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean;
+begin
+  Result := False;
+end;
 
+imptype function TUnityWSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
+begin
+  Result := ATrayIcon.Icon.Canvas;
+end;
+{$endif}
 { UnityAppIndicatorInit }
 
 var

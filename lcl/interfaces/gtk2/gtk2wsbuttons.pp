@@ -19,6 +19,8 @@ unit Gtk2WSButtons;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
   // RTL
   Classes, glib2, gtk2, gdk2, gdk2pixbuf,
@@ -30,7 +32,7 @@ uses
   LazLoggerBase,
   {$ENDIF}
   // WS
-  WSButtons, WSLCLClasses, WSProc,
+  WSButtons, Gtk2WSStdCtrls, {$ifdef wsintf}Gtk2WSControls, WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSProc,
   Gtk2Def;
 
 type
@@ -43,7 +45,7 @@ type
 
   { TGtk2WSBitBtn }
 
-  TGtk2WSBitBtn = class(TWSBitBtn)
+  TGtk2WSBitBtn = class({$ifndef wsintf}TWSBitBtn{$else}TGtk2WSButton, IWSBitBtn{$endif})
   private
     class procedure BuildWidget(ABitBtn: TCustomBitBtn; MainWidget: PGtkWidget;
       ABitBtnInfo: PBitBtnWidgetInfo; const ACaption: String);
@@ -54,18 +56,22 @@ type
     class function UpdateGlyph(const ABitBtn: TCustomBitBtn; BitBtnInfo: PBitBtnWidgetInfo;
       const AValue: TButtonGlyph; const AButtonState: TButtonState): Boolean;
     class procedure UpdateMargin(const ABitBtn: TCustomBitBtn; const AAlignWidget: PGtkAlignment; const AMargin: Integer);
-    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); override;
-    class procedure SetLayout(const ABitBtn: TCustomBitBtn; const {%H-}AValue: TButtonLayout); override;
-    class procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); override;
-    class procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); rootoverride;
+    imptype procedure SetLayout(const ABitBtn: TCustomBitBtn; const {%H-}AValue: TButtonLayout); rootoverride;
+    imptype procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); rootoverride;
+    imptype procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); rootoverride;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    {$ifdef wsintf}
+
+    {$endif}
   end;
   TGtk2WSBitBtnClass = class of TGtk2WSBitBtn;
+
 
 
   { TGtk2WSSpeedButton }
@@ -80,7 +86,7 @@ type
 implementation
 
 uses
-  Gtk2Proc, Gtk2Int, Gtk2WSStdCtrls;
+  Gtk2Proc, Gtk2Int;
 
 const
   GtkStateToButtonState: array[GTK_STATE_NORMAL..GTK_STATE_INSENSITIVE] of TButtonState =
@@ -184,7 +190,7 @@ begin
     gtk_container_remove(PGtkContainer(ParentWidget), Widget);
 end;
 
-class function TGtk2WSBitBtn.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSBitBtn.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   BitBtn: TCustomBitBtn absolute AWinControl;
@@ -219,7 +225,7 @@ begin
   SetCallbacks({%H-}PGtkWidget(Result), WidgetInfo);
 end;
 
-class procedure TGtk2WSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn;
+imptype procedure TGtk2WSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn;
   const AValue: TButtonGlyph);
 var
   MainWidget: PGtkWidget;
@@ -237,7 +243,7 @@ begin
     BuildWidget(ABitBtn, MainWidget, BitBtnInfo, ABitBtn.Caption);
 end;
 
-class procedure TGtk2WSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
+imptype procedure TGtk2WSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
   const AValue: TButtonLayout);
 var
   MainWidget: PGtkWidget;
@@ -253,7 +259,7 @@ begin
   BuildWidget(ABitBtn, MainWidget, BitBtnInfo, ABitBtn.Caption);
 end;
 
-class procedure TGtk2WSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn;
+imptype procedure TGtk2WSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn;
   const AValue: Integer);
 var
   MainWidget: PGtkWidget;
@@ -267,7 +273,7 @@ begin
     UpdateMargin(ABitBtn, AlignWidget, AValue);
 end;
 
-class procedure TGtk2WSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn;
+imptype procedure TGtk2WSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn;
   const AValue: Integer);
 var
   MainWidget: PGtkWidget;
@@ -285,7 +291,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSBitBtn.SetText(const AWinControl: TWinControl;
+imptype procedure TGtk2WSBitBtn.SetText(const AWinControl: TWinControl;
   const AText: String);
 var
   MainWidget: PGtkWidget;
@@ -311,7 +317,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSBitBtn.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSBitBtn.SetColor(const AWinControl: TWinControl);
 var
   Widget: PGTKWidget;
 begin
@@ -321,7 +327,7 @@ begin
      [GTK_STATE_NORMAL,GTK_STATE_ACTIVE,GTK_STATE_PRELIGHT,GTK_STATE_SELECTED]);
 end;
 
-class procedure TGtk2WSBitBtn.SetFont(const AWinControl: TWinControl;
+imptype procedure TGtk2WSBitBtn.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   WidgetInfo: PWidgetInfo;

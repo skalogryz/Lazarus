@@ -20,6 +20,8 @@ unit Gtk2WSDialogs;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
   // RTL
   Gtk2, Glib2, gdk2, pango,
@@ -30,83 +32,86 @@ uses
   LazFileUtils, LazUTF8, LCLStrConsts, LCLProc, InterfaceBase,
   // Widgetset
   Gtk2Int, Gtk2Globals, Gtk2Def, Gtk2Proc,
-  WSDialogs;
+  WSDialogs{$ifdef wsintf},WSLCLClasses_Intf{$endif};
   
 type
   { TGtk2WSCommonDialog }
 
-  TGtk2WSCommonDialog = class(TWSCommonDialog)
+  TGtk2WSCommonDialog = class({$ifndef wsintf}TWSCommonDialog{$else}TWSLCLComponent, IWSCommonDialog{$endif})
   private
     class procedure SetColorDialogColor(ColorSelection: PGtkColorSelectionDialog; Color: TColor);
     class procedure SetColorDialogPalette(ColorSelection: PGtkColorSelectionDialog; Palette: TStrings);
   protected
-    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
+    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
     class procedure SetSizes(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const {%H-}ACommonDialog: TCommonDialog): THandle; override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
-    class procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
+  impsection
+    imptype function  CreateHandle(const {%H-}ACommonDialog: TCommonDialog): THandle; rootoverride;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); rootoverride;
+    imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); rootoverride;
+    {$ifdef wsintf}
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSFileDialog }
 
-  TGtk2WSFileDialog = class(TWSFileDialog)
+  TGtk2WSFileDialog = class({$ifndef wsintf}TWSFileDialog{$else}TGtk2WSCommonDialog{$endif})
   protected
-    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); {$ifndef wsintf}virtual;{$endif}
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
   end;
 
   { TGtk2WSOpenDialog }
 
-  TGtk2WSOpenDialog = class(TWSOpenDialog)
+  TGtk2WSOpenDialog = class({$ifndef wsintf}TWSOpenDialog{$else}TGtk2WSFileDialog{$endif})
   protected
     class function CreateOpenDialogFilter(OpenDialog: TOpenDialog; SelWidget: PGtkWidget): string; virtual;
     class procedure CreateOpenDialogHistory(OpenDialog: TOpenDialog; SelWidget: PGtkWidget); virtual;
     class procedure CreatePreviewDialogControl(PreviewDialog: TPreviewFileDialog; SelWidget: PGtkWidget); virtual;
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TGtk2WSSaveDialog }
 
-  TGtk2WSSaveDialog = class(TWSSaveDialog)
-  published
-    class function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TGtk2WSSaveDialog = class({$ifndef wsintf}TWSSaveDialog{$else}TGtk2WSOpenDialog{$endif})
+  impsection
+    imptype function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TGtk2WSSelectDirectoryDialog }
 
-  TGtk2WSSelectDirectoryDialog = class(TWSSelectDirectoryDialog)
-  published
-    class function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TGtk2WSSelectDirectoryDialog = class({$ifndef wsintf}TWSSelectDirectoryDialog{$else}TGtk2WSOpenDialog{$endif})
+  impsection
+    imptype function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TGtk2WSColorDialog }
 
-  TGtk2WSColorDialog = class(TWSColorDialog)
+  TGtk2WSColorDialog = class({$ifndef wsintf}TWSColorDialog{$else}TGtk2WSCommonDialog{$endif})
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TGtk2WSColorButton }
 
-  TGtk2WSColorButton = class(TWSColorButton)
+  TGtk2WSColorButton = class({$ifndef wsintf}TWSColorButton{$else}TGtk2WSColorDialog{$endif})
   published
   end;
 
   { TGtk2WSFontDialog }
 
-  TGtk2WSFontDialog = class(TWSFontDialog)
+  TGtk2WSFontDialog = class({$ifndef wsintf}TWSFontDialog{$else}TGtk2WSCommonDialog{$endif})
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  impsection
+    imptype function  CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype function QueryWSEventCapabilities(const {%H-}ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
 // forward declarations
@@ -114,8 +119,6 @@ type
 procedure UpdateDetailView(OpenDialog: TOpenDialog);
 
 implementation
-
-{$I gtk2defines.inc}
 
 {-------------------------------------------------------------------------------
   procedure UpdateDetailView
@@ -811,7 +814,7 @@ end;
 
 { TGtk2WSSelectDirectoryDialog }
 
-class function TGtk2WSSelectDirectoryDialog.QueryWSEventCapabilities(
+imptype function TGtk2WSSelectDirectoryDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoShow];
@@ -819,7 +822,7 @@ end;
 
 { TGtk2WSSaveDialog }
 
-class function TGtk2WSSaveDialog.QueryWSEventCapabilities(
+imptype function TGtk2WSSaveDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoShow];
@@ -998,7 +1001,7 @@ end;
 
   requires: gtk+ 2.6
 }
-class function TGtk2WSOpenDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TGtk2WSOpenDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   FileSelWidget: PGtkFileChooser;
   OpenDialog: TOpenDialog absolute ACommonDialog;
@@ -1009,7 +1012,11 @@ var
   //HBox: PGtkWidget;
   //FileDetailLabel: PGtkWidget;
 begin
+  {$ifdef wsnintf}
   Result := TGtk2WSFileDialog.CreateHandle(ACommonDialog);
+  {$else}
+  Result := inherited CreateHandle(ACommonDialog);
+  {$endif}
   FileSelWidget := {%H-}PGtkFileChooser(Result);
 
   if OpenDialog.InheritsFrom(TSaveDialog) then
@@ -1092,7 +1099,7 @@ begin
   //  PopulateFileAndDirectoryLists(FileSelWidget, InitialFilter);
 end;
 
-class function TGtk2WSOpenDialog.QueryWSEventCapabilities(
+imptype function TGtk2WSOpenDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoShow];
@@ -1112,7 +1119,7 @@ end;
   Creates a new TFile/Open/SaveDialog
   requires: gtk+ 2.6
 }
-class function TGtk2WSFileDialog.CreateHandle(const ACommonDialog: TCommonDialog
+imptype function TGtk2WSFileDialog.CreateHandle(const ACommonDialog: TCommonDialog
   ): THandle;
 var
   FileDialog: TFileDialog absolute ACommonDialog;
@@ -1266,13 +1273,13 @@ begin
     gtk_window_set_default_size(PGtkWindow(AGtkWidget), NewWidth, NewHeight);
 end;
 
-class function TGtk2WSCommonDialog.CreateHandle(
+imptype function TGtk2WSCommonDialog.CreateHandle(
   const ACommonDialog: TCommonDialog): THandle;
 begin
   Result := 0;
 end;
 
-class procedure TGtk2WSCommonDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TGtk2WSCommonDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   GtkWindow: PGtkWindow;
 begin
@@ -1291,12 +1298,18 @@ begin
   GtkWindowShowModal(nil, GtkWindow);
 end;
 
-class procedure TGtk2WSCommonDialog.DestroyHandle(
+imptype procedure TGtk2WSCommonDialog.DestroyHandle(
   const ACommonDialog: TCommonDialog);
 begin
   { TODO: cleanup }
   TGtk2WidgetSet(WidgetSet).DestroyLCLComponent(ACommonDialog);
 end;
+{$ifdef wsintf}
+imptype function TGtk2WSCommonDialog.QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
+begin
+  Result := [];
+end;
+{$endif}
 
 { TGtk2WSColorDialog }
 
@@ -1310,7 +1323,7 @@ begin
     'clicked', gtk_signal_func(@gtkDialogCancelclickedCB), AWidgetInfo^.LCLObject);
 end;
 
-class function TGtk2WSColorDialog.CreateHandle(
+imptype function TGtk2WSColorDialog.CreateHandle(
   const ACommonDialog: TCommonDialog): THandle;
 var
   Widget: PGtkWidget;
@@ -1325,7 +1338,7 @@ begin
   SetCallbacks(Widget, WidgetInfo);
 end;
 
-class function TGtk2WSColorDialog.QueryWSEventCapabilities(
+imptype function TGtk2WSColorDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoShow];
@@ -1349,7 +1362,7 @@ begin
     'clicked', gtk_signal_func(@gtkDialogApplyclickedCB), AWidgetInfo^.LCLObject);
 end;
 
-class function TGtk2WSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TGtk2WSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   FontDesc: PPangoFontDescription;
   TmpStr: pChar;
@@ -1406,7 +1419,7 @@ begin
   SetCallbacks(Widget, WidgetInfo);
 end;
 
-class function TGtk2WSFontDialog.QueryWSEventCapabilities(
+imptype function TGtk2WSFontDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoShow];

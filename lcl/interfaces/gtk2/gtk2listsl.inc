@@ -827,7 +827,11 @@ begin
   
   //Clear the combobox text and set item index to -1
   if FOwner is TCustomComboBox then
+    {$ifdef wsintf}
+    GetWSCustomComboBox(FOwner.WidgetSetClass).SetItemIndex(TCustomComboBox(FOwner), -1);
+    {$else}
     TGtk2WSCustomComboBox.SetItemIndex(TCustomComboBox(FOwner), -1);
+    {$endif}
   
   {$IFDEF CheckGtkList}
   ConsistencyCheck;

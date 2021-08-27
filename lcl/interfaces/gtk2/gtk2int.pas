@@ -42,7 +42,7 @@ uses
   LMessages, LCLProc, LCLIntf, LCLType, Dialogs, Controls, Forms, LCLStrConsts,
   Graphics, Menus, Themes, Buttons, StdCtrls, CheckLst, ComCtrls, ExtCtrls,
   LCLPlatformDef, InterfaceBase,
-  WSLCLClasses, WSControls,
+  {$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif}, WSControls,
   Gtk2WinApiWindow, Gtk2Globals, Gtk2Proc, Gtk2Def, Gtk2FontCache, Gtk2Extra, Gtk2MsgQueue,
   // LazUtils
   GraphType, GraphMath, LazFileUtils, LazUTF8, DynHashArray, Maps, IntegerList,
@@ -401,7 +401,10 @@ uses
   Gtk2WSPrivate,
   Gtk2Themes,
 ////////////////////////////////////////////////////
-  {%H-}Gtk2Debug{%H-};
+  {%H-}Gtk2Debug{%H-}
+  {$ifdef wsintf}
+  ,WSStdCtrls, WSCheckLst
+  {$endif};
 
 {$include gtk2widgetset.inc}
 {$include gtk2winapi.inc}
@@ -815,7 +818,11 @@ begin
 
   if FOwner is TCustomComboBox then
   begin
+    {$ifdef wsintf}
+    GetWSCustomComboBox(FOwner.WidgetSetClass).SetText(FOwner,'');
+    {$else}
     TGtk2WSCustomComboBox.SetText(FOwner, '');
+    {$endif}
     //Update the internal Index cache
     PInteger(WidgetInfo^.UserData)^ := -1;
   end;
@@ -932,8 +939,13 @@ begin
     AItemChecked := TCheckListBox(FOwner).Checked[CurIndex];
   inherited Move(CurIndex, NewIndex);
   if FOwner is TCheckListBox then
+    {$ifdef wsintf}
+    GetWSCustomCheckListBox(FOwner.WidgetSetClass).SetState(TCustomCheckListBox(FOwner),
+      NewIndex, AState[AItemChecked]);
+    {$else}
     TGtk2WSCustomCheckListBox.SetState(TCustomCheckListBox(FOwner),
       NewIndex, AState[AItemChecked]);
+    {$endif}
 
 end;
 

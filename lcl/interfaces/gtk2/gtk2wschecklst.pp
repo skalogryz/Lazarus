@@ -20,6 +20,8 @@ unit Gtk2WSCheckLst;
 
 interface
 
+{$I gtk2defines.inc}
+
 uses
   // RTL
   SysUtils, Classes,
@@ -33,7 +35,7 @@ uses
 ////////////////////////////////////////////////////
   CheckLst, StdCtrls, Controls, LCLType, LMessages, LCLProc,
 ////////////////////////////////////////////////////
-  WSCheckLst, WSLCLClasses;
+  WSCheckLst, Gtk2WSControls,{$ifdef wsintf}Gtk2WSStdCtrls, WSLCLClasses_Intf{$else}WSLCLClasses{$endif};
 
 type
 
@@ -41,26 +43,33 @@ type
 
   { TGtk2WSCustomCheckListBox }
 
-  TGtk2WSCustomCheckListBox = class(TWSCustomCheckListBox)
+  TGtk2WSCustomCheckListBox = class({$ifndef wsintf}TWSCustomCheckListBox{$else}TGtk2WSCustomListBox, IWSCustomCheckListBox{$endif})
   private
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer): Boolean; override;
-    class function GetState(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer): TCheckBoxState; override;
-    class procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer; const AEnabled: Boolean); override;
-    class procedure SetState(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer; const AState: TCheckBoxState); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean; rootoverride;
+    imptype function GetState(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): TCheckBoxState; rootoverride;
+    imptype procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AEnabled: Boolean); rootoverride;
+    imptype procedure SetState(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AState: TCheckBoxState); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer; rootoverride;
+    imptype function GetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean; rootoverride;
+    imptype procedure SetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AHeader: Boolean); rootoverride;
+    {$endif}
   end;
 
 
 implementation
 
 uses
-  Gtk2WSControls, Gtk2Proc, Gtk2CellRenderer;
+  Gtk2Proc, Gtk2CellRenderer;
 
 const
   gtk2CLBState = 0; // byte
@@ -156,7 +165,7 @@ begin
   //SignalConnect(PGtkWidget(Selection), 'changed', @Gtk2WS_ListBoxChange, AWidgetInfo);
 end;
 
-class function TGtk2WSCustomCheckListBox.CreateHandle(
+imptype function TGtk2WSCustomCheckListBox.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   TreeViewWidget: PGtkWidget;
@@ -236,7 +245,7 @@ begin
   SetCallbacks(p, WidgetInfo);
 end;
 
-class function TGtk2WSCustomCheckListBox.GetItemEnabled(
+imptype function TGtk2WSCustomCheckListBox.GetItemEnabled(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer): Boolean;
 var
   Iter : TGtkTreeIter;
@@ -257,7 +266,7 @@ begin
   end;
 end;
 
-class function TGtk2WSCustomCheckListBox.GetState(
+imptype function TGtk2WSCustomCheckListBox.GetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer
   ): TCheckBoxState;
 var
@@ -279,7 +288,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomCheckListBox.SetItemEnabled(
+imptype procedure TGtk2WSCustomCheckListBox.SetItemEnabled(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AEnabled: Boolean);
 var
@@ -299,7 +308,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomCheckListBox.SetState(
+imptype procedure TGtk2WSCustomCheckListBox.SetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AState: TCheckBoxState);
 var
@@ -317,5 +326,21 @@ begin
     gtk_list_store_set(ListStore, @Iter, [gtk2CLBState, Byte(AState), -1]);
   end;
 end;
+{$ifdef wsintf}
+imptype function TGtk2WSCustomCheckListBox.GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer;
+begin
+  Result := 0;
+end;
 
+imptype function TGtk2WSCustomCheckListBox.GetHeader(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer): Boolean;
+begin
+  Result := False;
+end;
+
+imptype procedure TGtk2WSCustomCheckListBox.SetHeader(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer; const AHeader: Boolean);
+begin
+end;
+{$endif}
 end.

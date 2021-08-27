@@ -33,7 +33,7 @@ uses
   {$ifdef UseStatusIcon}Gtk2Ext, {$endif}
   LCLProc, ExtCtrls, Controls, Graphics, LCLType,
   // widgetset
-  WSExtCtrls, WSLCLClasses,
+  WSExtCtrls, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf, Gtk2WSStdCtrls{$endif},
   Gtk2WSControls, Gtk2Proc, Gtk2Globals;
 
 type
@@ -138,14 +138,14 @@ type
 
   { TGtk2WSCustomPanel }
 
-  TGtk2WSCustomPanel = class(TWSCustomPanel)
+  TGtk2WSCustomPanel = class({$ifndef wsintf}TWSCustomPanel{$else}TGtk2WSCustomControl{$endif})
   protected
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetDefaultColor(const {%H-}AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function GetDefaultColor(const {%H-}AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
   end;
 
   { TGtk2WSPanel }
@@ -156,12 +156,16 @@ type
 
   { TGtk2WSCustomTrayIcon }
 
-  TGtk2WSCustomTrayIcon = class(TWSCustomTrayIcon)
-  published
-    class function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class function Show(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); override;
-    class function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; override;
+  TGtk2WSCustomTrayIcon = class({$ifndef wsintf}TWSCustomTrayIcon{$else}TWSLCLComponent, IWSCustomTrayIcon{$endif})
+  impsection
+    imptype function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype function Show(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); rootoverride;
+    imptype function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; rootoverride;
+    {$ifdef wsintf}
+    imptype function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas; rootoverride;
+    {$endif}
   end;
 
 implementation
@@ -182,7 +186,7 @@ begin
   TGtk2WSWinControl.SetCallbacks(PGtkObject(AGtkWidget), TComponent(AWidgetInfo^.LCLObject));
 end;
 
-class function TGtk2WSCustomPanel.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomPanel.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Frame, WidgetClient: PGtkWidget;
@@ -241,7 +245,7 @@ begin
   Result := TLCLIntfHandle({%H-}PtrUInt(Frame));
 end;
 
-class function TGtk2WSCustomPanel.GetDefaultColor(const AControl: TControl;
+imptype function TGtk2WSCustomPanel.GetDefaultColor(const AControl: TControl;
   const ADefaultColorType: TDefaultColorType): TColor;
 const
   DefColors: array[TDefaultColorType] of TColor = (
@@ -252,7 +256,7 @@ begin
   Result := DefColors[ADefaultColorType];
 end;
 
-class procedure TGtk2WSCustomPanel.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomPanel.SetColor(const AWinControl: TWinControl);
 var
   MainWidget: PGtkWidget;
 begin
@@ -267,7 +271,7 @@ begin
   UpdateWidgetStyleOfControl(AWinControl);
 end;
 
-class procedure TGtk2WSCustomPanel.SetBorderStyle(
+imptype procedure TGtk2WSCustomPanel.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 var
   Frame: PGtkWidget;

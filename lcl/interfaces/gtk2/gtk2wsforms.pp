@@ -29,7 +29,7 @@ uses
   // LCL
   LCLType, Controls, LMessages, InterfaceBase, Graphics, Forms,
   Gtk2Int, Gtk2Proc, Gtk2Def, Gtk2Extra, Gtk2Globals, Gtk2WSControls,
-  WSForms, WSProc,
+  WSForms, WSProc, WSControls,
   // LazUtils
   LazLoggerBase;
 
@@ -37,73 +37,89 @@ type
 
   { TGtk2WSScrollingWinControl }
 
-  TGtk2WSScrollingWinControl = class(TWSScrollingWinControl)
+  TGtk2WSScrollingWinControl = class({$ifndef wsintf}TWSScrollingWinControl{$else}TGtk2WSWinControl{$endif})
   protected
     class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
   end;
 
   { TGtk2WSScrollBox }
 
-  TGtk2WSScrollBox = class(TWSScrollBox)
+  TGtk2WSScrollBox = class({$ifndef wsintf}TWSScrollBox{$else}TGtk2WSScrollingWinControl{$endif})
   published
   end;
 
   { TGtk2WSCustomFrame }
 
-  TGtk2WSCustomFrame = class(TWSCustomFrame)
+  TGtk2WSCustomFrame = class({$ifndef wsintf}TWSCustomFrame{$else}TGtk2WSScrollingWinControl{$endif})
   published
   end;
 
   { TGtk2WSFrame }
 
-  TGtk2WSFrame = class(TWSFrame)
+  TGtk2WSFrame = class({$ifndef wsintf}TWSFrame{$else}TGtk2WSCustomFrame{$endif})
   published
   end;
 
   { TGtk2WSCustomForm }
 
-  TGtk2WSCustomForm = class(TWSCustomForm)
+  TGtk2WSCustomForm = class({$ifndef wsintf}TWSCustomForm{$else}TGtk2WSWinControl, IWSCustomForm{$endif})
   protected
     class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function CanFocus(const AWinControl: TWinControl): Boolean; override;
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); override;
-    class procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); override;
-    class procedure SetAlphaBlend(const ACustomForm: TCustomForm;
-       const AlphaBlend: Boolean; const Alpha: Byte); override;
-    class procedure SetFormBorderStyle(const AForm: TCustomForm;
-                             const AFormBorderStyle: TFormBorderStyle); override;
-    class procedure SetFormStyle(const AForm: TCustomform; const AFormStyle,
-                       {%H-}AOldFormStyle: TFormStyle); override;
-    class procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); override;
-    class procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
-    class procedure ShowModal(const {%H-}AForm: TCustomForm); override;
-    class procedure SetBorderIcons(const AForm: TCustomForm;
-                                   const ABorderIcons: TBorderIcons); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetRealPopupParent(const ACustomForm: TCustomForm;
-       const APopupParent: TCustomForm); override;
+  impsection
+    imptype function CanFocus(const AWinControl: TWinControl): Boolean; override;
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); override;
+    imptype procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); rootoverride;
+    imptype procedure SetAlphaBlend(const ACustomForm: TCustomForm;
+       const AlphaBlend: Boolean; const Alpha: Byte); rootoverride;
+    imptype procedure SetFormBorderStyle(const AForm: TCustomForm;
+                             const AFormBorderStyle: TFormBorderStyle); rootoverride;
+    imptype procedure SetFormStyle(const AForm: TCustomform; const AFormStyle,
+                       {%H-}AOldFormStyle: TFormStyle); rootoverride;
+    imptype procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); rootoverride;
+    imptype procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype procedure ShowModal(const {%H-}AForm: TCustomForm); rootoverride;
+    imptype procedure SetBorderIcons(const AForm: TCustomForm;
+                                   const ABorderIcons: TBorderIcons); rootoverride;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetRealPopupParent(const ACustomForm: TCustomForm;
+       const APopupParent: TCustomForm); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure CloseModal(const ACustomForm: TCustomForm); rootoverride;
+    imptype procedure SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult); rootoverride;
+    imptype procedure SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition); rootoverride;
+    imptype function GetDefaultDoubleBuffered: Boolean; rootoverride;
+
+    imptype function ActiveMDIChild(const AForm: TCustomForm): TCustomForm; rootoverride;
+    imptype function Cascade(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function GetClientHandle(const AForm: TCustomForm): HWND; rootoverride;
+    imptype function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm; rootoverride;
+    imptype function Next(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function Previous(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function Tile(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function ArrangeIcons(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function MDIChildCount(const AForm: TCustomForm): Integer; rootoverride;
+    {$endif}
   end;
 
   { TGtk2WSForm }
 
-  TGtk2WSForm = class(TWSForm)
+  TGtk2WSForm = class({$ifndef wsintf}TWSForm{$else}TGtk2WSCustomForm{$endif})
   published
   end;
 
   { TGtk2WSHintWindow }
 
-  TGtk2WSHintWindow = class(TWSHintWindow)
+  TGtk2WSHintWindow = class({$ifndef wsintf}TWSHintWindow{$else}TGtk2WSCustomForm{$endif})
   protected
     class procedure SetCallbacks(const AWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo); virtual;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
   end;
 
   { TGtk2WSScreen }
@@ -332,7 +348,7 @@ begin
     gtk_signal_func(@Gtk2FormEvent), AWidgetInfo^.LCLObject);
 end;
 
-class function TGtk2WSCustomForm.CanFocus(const AWinControl: TWinControl
+imptype function TGtk2WSCustomForm.CanFocus(const AWinControl: TWinControl
   ): Boolean;
 var
   Widget: PGtkWidget;
@@ -345,7 +361,7 @@ begin
     Result := False;
 end;
 
-class function TGtk2WSCustomForm.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSCustomForm.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   WidgetInfo: PWidgetInfo;
@@ -473,7 +489,7 @@ begin
   g_idle_remove_by_data(Data);
 end;
 
-class procedure TGtk2WSCustomForm.ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer);
+imptype procedure TGtk2WSCustomForm.ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer);
 var
   Layout: PGtkLayout;
   WidgetInfo: PWidgetInfo;
@@ -518,7 +534,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomForm.SetIcon(const AForm: TCustomForm;
+imptype procedure TGtk2WSCustomForm.SetIcon(const AForm: TCustomForm;
   const Small, Big: HICON);
 
   procedure SetSmallBigIcon;
@@ -609,7 +625,7 @@ begin
   {$ENDIF}
 end;
 
-class procedure TGtk2WSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm;
+imptype procedure TGtk2WSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm;
   const AlphaBlend: Boolean; const Alpha: Byte);
 begin
   if not WSCheckHandleAllocated(ACustomForm, 'SetAlphaBlend') then
@@ -621,7 +637,7 @@ begin
       gtk_window_set_opacity({%H-}PGtkWindow(ACustomForm.Handle), 1);
 end;
 
-class procedure TGtk2WSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
+imptype procedure TGtk2WSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
   const AFormBorderStyle: TFormBorderStyle);
 var
   Widget: PGtkWidget;
@@ -659,7 +675,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomForm.SetFormStyle(const AForm: TCustomform;
+imptype procedure TGtk2WSCustomForm.SetFormStyle(const AForm: TCustomform;
   const AFormStyle, AOldFormStyle: TFormStyle);
 begin
   if not WSCheckHandleAllocated(AForm, 'SetFormStyle') then
@@ -671,7 +687,7 @@ begin
       GBoolean(AFormStyle in fsAllStayOnTop));
 end;
 
-class procedure TGtk2WSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
+imptype procedure TGtk2WSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
   AValue: Boolean);
 begin
   if AValue then
@@ -681,7 +697,7 @@ begin
     gtk_drag_dest_unset({%H-}PGtkWidget(AForm.Handle));
 end;
 
-class procedure TGtk2WSCustomForm.SetShowInTaskbar(const AForm: TCustomForm;
+imptype procedure TGtk2WSCustomForm.SetShowInTaskbar(const AForm: TCustomForm;
   const AValue: TShowInTaskbar);
 begin
   if not WSCheckHandleAllocated(AForm, 'SetShowInTaskbar')
@@ -690,7 +706,7 @@ begin
   SetFormShowInTaskbar(AForm,AValue);
 end;
 
-class procedure TGtk2WSCustomForm.ShowHide(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomForm.ShowHide(const AWinControl: TWinControl);
 var
   {$IFDEF HASX}
   TempGdkWindow: PGdkWindow;
@@ -843,26 +859,31 @@ begin
   InvalidateLastWFPResult(AWinControl, AWinControl.BoundsRect);
 end;
 
-class procedure TGtk2WSCustomForm.ShowModal(const AForm: TCustomForm);
+imptype procedure TGtk2WSCustomForm.ShowModal(const AForm: TCustomForm);
 begin
   // modal is started in ShowHide
 end;
 
-class procedure TGtk2WSCustomForm.SetBorderIcons(const AForm: TCustomForm;
+imptype procedure TGtk2WSCustomForm.SetBorderIcons(const AForm: TCustomForm;
   const ABorderIcons: TBorderIcons);
 begin
   if not WSCheckHandleAllocated(AForm, 'SetBorderIcons')
   then Exit;
-
+  {$ifndef wsintf}
   inherited SetBorderIcons(AForm, ABorderIcons);
+  {$endif}
 end;
 
-class procedure TGtk2WSCustomForm.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSCustomForm.SetColor(const AWinControl: TWinControl);
 var
   AScrolled: PGtkWidget;
   AColor: TColor;
 begin
+  {$ifndef wsintf}
   TGtk2WSWinControl.SetColor(AWinControl);
+  {$else}
+  inherited SetColor(AWinControl);
+  {$endif}
 
   // Forms: GtkWindow->GtkVBox->gtkScrolledWindow->GtkLayout
   // we need to set the color of the GtkLayout so that the whole viewport
@@ -881,7 +902,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSCustomForm.SetRealPopupParent(
+imptype procedure TGtk2WSCustomForm.SetRealPopupParent(
   const ACustomForm: TCustomForm; const APopupParent: TCustomForm);
 begin
   if not WSCheckHandleAllocated(ACustomForm, 'SetRealPopupParent') then Exit;
@@ -891,8 +912,69 @@ begin
   else
     gtk_window_set_transient_for({%H-}PGtkWindow(ACustomForm.Handle), nil);
 end;
+{$ifdef wsintf}
+imptype procedure TGtk2WSCustomForm.CloseModal(const ACustomForm: TCustomForm);
+begin
+end;
 
+imptype procedure TGtk2WSCustomForm.SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult);
+begin
+end;
 
+imptype procedure TGtk2WSCustomForm.SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition);
+begin
+end;
+
+imptype function TGtk2WSCustomForm.GetDefaultDoubleBuffered: Boolean;
+begin
+  Result := false;
+end;
+
+imptype function TGtk2WSCustomForm.ActiveMDIChild(const AForm: TCustomForm): TCustomForm;
+begin
+  Result := nil;
+end;
+
+imptype function TGtk2WSCustomForm.Cascade(const AForm: TCustomForm): Boolean;
+begin
+  Result := false;
+end;
+
+imptype function TGtk2WSCustomForm.GetClientHandle(const AForm: TCustomForm): HWND;
+begin
+  Result := 0;
+end;
+
+imptype function TGtk2WSCustomForm.GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm;
+begin
+  Result := nil;
+end;
+
+imptype function TGtk2WSCustomForm.Next(const AForm: TCustomForm): Boolean;
+begin
+  Result := false;
+end;
+
+imptype function TGtk2WSCustomForm.Previous(const AForm: TCustomForm): Boolean;
+begin
+  Result := false;
+end;
+
+imptype function TGtk2WSCustomForm.Tile(const AForm: TCustomForm): Boolean;
+begin
+  Result := false;
+end;
+
+imptype function TGtk2WSCustomForm.ArrangeIcons(const AForm: TCustomForm): Boolean;
+begin
+  Result := false;
+end;
+
+imptype function TGtk2WSCustomForm.MDIChildCount(const AForm: TCustomForm): Integer;
+begin
+  Result := 0;
+end;
+{$endif}
 { TGtk2WSScrollingWinControl }
 
 class procedure TGtk2WSScrollingWinControl.SetCallbacks(
@@ -912,7 +994,7 @@ begin
   end;
 end;
 
-class function TGtk2WSScrollingWinControl.CreateHandle(
+imptype function TGtk2WSScrollingWinControl.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   Scrolled: PGtkScrolledWindow;
@@ -983,7 +1065,7 @@ begin
   end;
 end;
 
-class procedure TGtk2WSScrollingWinControl.SetColor(const AWinControl: TWinControl);
+imptype procedure TGtk2WSScrollingWinControl.SetColor(const AWinControl: TWinControl);
 var
   AColor: TColor;
 begin
@@ -1021,7 +1103,7 @@ begin
     end;
 end;
 
-class function TGtk2WSHintWindow.CreateHandle(const AWinControl: TWinControl;
+imptype function TGtk2WSHintWindow.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   TempWidget : PGTKWidget;       // pointer to gtk-widget (local use when neccessary)
@@ -1074,7 +1156,7 @@ begin
   SetCallbacks(P, WidgetInfo);
 end;
 
-class procedure TGtk2WSHintWindow.ShowHide(const AWinControl: TWinControl);
+imptype procedure TGtk2WSHintWindow.ShowHide(const AWinControl: TWinControl);
 var
   bVisible: boolean;
 begin

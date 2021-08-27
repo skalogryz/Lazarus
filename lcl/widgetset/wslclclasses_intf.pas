@@ -67,9 +67,15 @@ type
   IWSLCLComponent = interface
     ['{3B826F70-BEA2-4F4D-B6EE-A10335918977}']
     function DebugName: shortstring;
+    // this is a legacy implementation support. WSPrivate should be removed
+    procedure SetPrivateClass(AWSPrivate: TWSPrivateClass);
+    function WSPrivate: TWSPrivateClass;
   end;
   TWSLCLComponent = class(TInterfacedObject, IWSLCLComponent)
+    fWSPrivate: TWSPrivateClass;
     function DebugName: shortstring;
+    procedure SetPrivateClass(AWSPrivate: TWSPrivateClass);
+    function WSPrivate: TWSPrivateClass;
   end;
   TWSLCLComponentClass = IWSLCLComponent; // for LCL compatibility
 
@@ -92,9 +98,9 @@ function FindWSComponentClass(const AComponent: TComponentClass): IWSLCLComponen
 {$ifndef WSINTF}
 function IsWSComponentInheritsFrom(const AComponent: TComponentClass;
   InheritFromClass: TWSLCLComponentClass): Boolean;
+{$endif}
 procedure RegisterWSComponent(AComponent: TComponentClass;
   AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass = nil);
-{$endif}
 function RegisterNewWSComp(AComponent: TComponentClass): IWSLCLComponent; //inline;
 
 // Only for non-TComponent based objects
@@ -105,9 +111,6 @@ function GetWSLazDeviceAPIs: TWSObjectClass;
 procedure RegisterWSLazDeviceAPIs(const AWSObject: TWSObjectClass);
 // ~bk Search for already registered classes
 function FindWSRegistered(const AComponent: TComponentClass): IWSLCLComponent; //inline;
-procedure RegisterWSComponent(AComponent: TComponentClass;
-    AWSComponent: IWSLCLComponent);
-
 
 { Debug : Dump the WSClassesList nodes }
 {$IFDEF VerboseWSBrunoK}
@@ -300,6 +303,16 @@ begin
   Result := Self.ClassName;
 end;
 
+procedure TWSLCLComponent.SetPrivateClass(AWSPrivate: TWSPrivateClass);
+begin
+  fWSPrivate:=AWSPrivate;
+end;
+
+function TWSLCLComponent.WSPrivate: TWSPrivateClass;
+begin
+  Result := fWSPrivate;
+end;
+
 
 { TWSLCLHandleComponent }
 
@@ -334,8 +347,6 @@ begin
   {$ENDIF}
 end;
 
-{$ifdef WSINTF}
-
 function FindWSRegistered(const AComponent: TComponentClass): IWSLCLComponent; //inline;
 var
   nd : TClassNode;
@@ -350,7 +361,7 @@ begin
 end;
 
 procedure RegisterWSComponent(AComponent: TComponentClass;
-  AWSComponent: IWSLCLComponent);
+  AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass = nil);
 var
   idx : integer;
   p : TClassNode;
@@ -367,9 +378,9 @@ begin
     // previously was something different
     WSClassesList.Delete(avl);
   end;
+  AWSComponent.SetPrivateClass(AWSPrivate);
   RegisterWSComponentInt(AComponent, AWSComponent);
 end;
-{$endif}
 
 finalization
   DoFinalization;

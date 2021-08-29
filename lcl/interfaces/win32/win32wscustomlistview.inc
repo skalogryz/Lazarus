@@ -1207,7 +1207,7 @@ begin
   {$ifdef wsintf}
   inherited SetFont(AWinControl, AFont);
   {$else}
-  WSWinControlClass(ClassParent).SetFont(AWinControl, AFont);
+  GetWSWinControl(ClassParent).SetFont(AWinControl, AFont);
   {$endif}
   Color := AFont.Color;
   if Color = clDefault then

@@ -147,7 +147,7 @@ begin
   {$ifdef wsintf}
   inherited DestroyHandle(AWinControl);
   {$else}
-  WSWinControlClass(ClassParent).DestroyHandle(AWinControl);
+  GetWSWinControl(ClassParent).DestroyHandle(AWinControl);
   {$endif}
 end;
 

@@ -1958,7 +1958,7 @@ begin
   {$ifdef wsintf}
   inherited SetText(AWinControl, AText);
   {$else}
-  WSWinControlClass( ClassParent).SetText(AWinControl, AText);
+  GetWSWinControl(ClassParent).SetText(AWinControl, AText);
   {$endif}
 end;
 

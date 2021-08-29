@@ -32,7 +32,7 @@ uses
   Controls, Forms, Menus, Graphics, LCLType, LMessages, LCLProc, Classes,
   LCLMessageGlue, LCLStrConsts,
   // Widgetset
-  WSMenus, WSLCLClasses,
+  WSMenus, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif},
   // LCL Cocoa
   Cocoa_extra,
   CocoaPrivate, CocoaWSCommon, CocoaUtils, CocoaGDIObjects;
@@ -117,46 +117,54 @@ type
 
   { TCocoaWSMenuItem }
 
-  TCocoaWSMenuItem = class(TWSMenuItem)
+  TCocoaWSMenuItem = class({$ifndef wsintf}TWSMenuItem{$else}TWSLCLComponent, IWSMenuItem{$endif})
   private
     class procedure Do_SetCheck(const ANSMenuItem: NSMenuItem; const Checked: boolean);
     // used from the MenuMadness example
     class function NSMenuCheckmark: NSImage;
     class function NSMenuRadio: NSImage;
     class function isSeparator(const ACaption: AnsiString): Boolean;
-  published
-    class procedure AttachMenu(const AMenuItem: TMenuItem); override;
-    class function  CreateHandle(const AMenuItem: TMenuItem): HMENU; override;
-    class procedure DestroyHandle(const AMenuItem: TMenuItem); override;
-    class procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); override;
-    class procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); override;
-    class procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); override;
-    class function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; override;
-    class function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; override;
-    class function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean; override;
+  impsection
+    imptype procedure AttachMenu(const AMenuItem: TMenuItem); rootoverride;
+    imptype function  CreateHandle(const AMenuItem: TMenuItem): HMENU; rootoverride;
+    imptype procedure DestroyHandle(const AMenuItem: TMenuItem); rootoverride;
+    imptype procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); rootoverride;
+    imptype procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+    imptype procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); rootoverride;
+    imptype function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; rootoverride;
+    imptype function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; rootoverride;
+    imptype function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean; rootoverride;
     //class function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; override;
-    class procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap); override;
+    imptype procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap); rootoverride;
+    {$ifdef wsintf}
+    imptype function  OpenCommand: LongInt; rootoverride;
+    imptype procedure CloseCommand(ACommand: LongInt); rootoverride;
+    imptype function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSMenu }
 
-  TCocoaWSMenu = class(TWSMenu)
-  published
-    class function CreateHandle(const AMenu: TMenu): HMENU; override;
+  TCocoaWSMenu = class({$ifndef wsintf}TWSMenu{$else}TWSLCLComponent, IWSMenu{$endif})
+  impsection
+    imptype function CreateHandle(const AMenu: TMenu): HMENU; rootoverride;
+    {$ifdef wsintf}
+    imptype procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSMainMenu }
 
-  TCocoaWSMainMenu = class(TWSMainMenu)
-  published
-    class function CreateHandle(const AMenu: TMenu): HMENU; override;
+  TCocoaWSMainMenu = class({$ifndef wsintf}TWSMainMenu{$else}TCocoaWSMenu{$endif})
+  impsection
+    imptype function CreateHandle(const AMenu: TMenu): HMENU; override;
   end;
 
   { TCocoaWSPopupMenu }
 
-  TCocoaWSPopupMenu = class(TWSPopupMenu)
-  published
-    class procedure Popup(const APopupMenu: TPopupMenu; const X, Y: Integer); override;
+  TCocoaWSPopupMenu = class({$ifndef wsintf}TWSPopupMenu{$else}TCocoaWSMenu, IWSPopupMenu{$endif})
+  impsection
+    imptype procedure Popup(const APopupMenu: TPopupMenu; const X, Y: Integer); rootoverride;
   end;
 
 procedure NSMenuItemSetBitmap(mn: NSMenuItem; bmp: TBitmap);
@@ -491,15 +499,19 @@ end;
 
   Creates new menu in Cocoa interface
  ------------------------------------------------------------------------------}
-class function TCocoaWSMenu.CreateHandle(const AMenu: TMenu): HMENU;
+imptype function TCocoaWSMenu.CreateHandle(const AMenu: TMenu): HMENU;
 begin
   //WriteLn(':>[TCocoaWSMenu.CreateHandle]');
   Result := HMENU(AllocCocoaMenu);
 end;
-
+{$ifdef wsintf}
+imptype procedure TCocoaWSMenu.SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean);
+begin
+end;
+{$endif}
 { TCocoaWSMainMenu }
 
-class function TCocoaWSMainMenu.CreateHandle(const AMenu: TMenu): HMENU;
+imptype function TCocoaWSMainMenu.CreateHandle(const AMenu: TMenu): HMENU;
 begin
   Result := HMENU(AllocCocoaMenu);
   TCocoaMenu(Result).createAppleMenu();
@@ -536,7 +548,7 @@ end;
 
   Attaches menu item to its parent menu in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
+imptype procedure TCocoaWSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
 var
   ParObj  : NSObject;
   Parent  : TCocoaMenu;
@@ -595,7 +607,7 @@ end;
 
   Creates new menu item in Cocoa interface
  ------------------------------------------------------------------------------}
-class function TCocoaWSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
+imptype function TCocoaWSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
 var
   item    : NSMenuItem;
   ANSMenu : NSMenu;
@@ -662,7 +674,7 @@ end;
 
   Destroys menu item in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
+imptype procedure TCocoaWSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
 var
   callback: IMenuItemCallback;
   callbackObject: TObject;
@@ -702,7 +714,7 @@ end;
 
   Sets the caption of menu item in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSMenuItem.SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
+imptype procedure TCocoaWSMenuItem.SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
 var
   ns : NSString;
   s: string;
@@ -729,7 +741,7 @@ end;
 
   Sets the shortcut of menu item in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSMenuItem.SetShortCut(const AMenuItem: TMenuItem;
+imptype procedure TCocoaWSMenuItem.SetShortCut(const AMenuItem: TMenuItem;
   const ShortCutK1, ShortCutK2: TShortCut);
 var
   ShiftState: NSUInteger;
@@ -747,7 +759,7 @@ end;
 
   Sets the visibility of menu item in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSMenuItem.SetVisible(const AMenuItem: TMenuItem;
+imptype procedure TCocoaWSMenuItem.SetVisible(const AMenuItem: TMenuItem;
   const Visible: boolean);
 begin
   if not Assigned(AMenuItem) or (AMenuItem.Handle=0) then Exit;
@@ -766,7 +778,7 @@ end;
 
   Sets the check of menu item in Cocoa interface
  ------------------------------------------------------------------------------}
-class function TCocoaWSMenuItem.SetCheck(const AMenuItem: TMenuItem;
+imptype function TCocoaWSMenuItem.SetCheck(const AMenuItem: TMenuItem;
   const Checked: boolean): boolean;
 var
   lHandle: NSMenuItem;
@@ -789,7 +801,7 @@ end;
 
   Sets the enabled of menu item in Cocoa interface
  ------------------------------------------------------------------------------}
-class function TCocoaWSMenuItem.SetEnable(const AMenuItem: TMenuItem;
+imptype function TCocoaWSMenuItem.SetEnable(const AMenuItem: TMenuItem;
   const Enabled: boolean): boolean;
 begin
   Result:=Assigned(AMenuItem) and (AMenuItem.Handle<>0);
@@ -809,7 +821,7 @@ end;
 
   Sets the radio behaviour of menu item in Cocoa interface
  ------------------------------------------------------------------------------}
-class function TCocoaWSMenuItem.SetRadioItem(const AMenuItem: TMenuItem;
+imptype function TCocoaWSMenuItem.SetRadioItem(const AMenuItem: TMenuItem;
   const RadioItem: boolean): boolean;
 const
   menustate : array [Boolean] of NSInteger = (NSOffState, NSOnState);
@@ -834,7 +846,7 @@ begin
     mn.setImage(TCocoaBitmap(bmp.Handle).Image);
 end;
 
-class procedure TCocoaWSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
+imptype procedure TCocoaWSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
   const HasIcon: Boolean; const AIcon: TBitmap);
 var
   mn : NSMenuItem;
@@ -845,6 +857,23 @@ begin
     NSMenuItemSetBitmap( NSMenuItem(AMenuItem.Handle), AIcon);
 end;
 
+{$ifdef wsintf}
+imptype function TCocoaWSMenuItem.OpenCommand: LongInt;
+begin
+  Result := CreateMenuCommand;
+end;
+
+imptype procedure TCocoaWSMenuItem.CloseCommand(ACommand: LongInt);
+begin
+  ReleaseMenuCommand(ACommand);
+end;
+
+imptype function TCocoaWSMenuItem.SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
+begin
+  // todo:
+end;
+
+{$endif}
 { TCocoaWSPopupMenu }
 
 {------------------------------------------------------------------------------
@@ -854,7 +883,7 @@ end;
 
   Popups menu in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X,
+imptype procedure TCocoaWSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X,
   Y: Integer);
 var
   res : Boolean;

@@ -31,7 +31,7 @@ uses
   // LazUtils
   LazUTF8, TextStrings,
   // Widgetset
-  WSStdCtrls, WSLCLClasses, WSControls, WSProc,
+  WSStdCtrls, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif}, WSControls, WSProc,
   // LCL Cocoa
   CocoaWSCommon, CocoaPrivate, CocoaUtils, CocoaGDIObjects, CocoaButtons,
   CocoaTables, CocoaTextEdits, CocoaScrollers, Cocoa_Extra;
@@ -40,21 +40,21 @@ type
 
   { TCocoaWSScrollBar }
 
-  TCocoaWSScrollBar = class(TWSScrollBar)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetKind(const AScrollBar: TCustomScrollBar; const AIsHorizontal: Boolean); override;
-    class procedure SetParams(const AScrollBar: TCustomScrollBar); override;
+  TCocoaWSScrollBar = class({$ifndef wsintf}TWSScrollBar{$else}TCocoaWSWinControl, IWSScrollBar{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetKind(const AScrollBar: TCustomScrollBar; const AIsHorizontal: Boolean); rootoverride;
+    imptype procedure SetParams(const AScrollBar: TCustomScrollBar); rootoverride;
   end;
 
   { TCocoaWSCustomGroupBox }
 
   TCocoaWSCustomGroupBox = class(TWSCustomGroupBox)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
   end;
 
   { TLCLComboboxCallback }
@@ -73,95 +73,119 @@ type
 
   { TCocoaWSCustomComboBox }
 
-  TCocoaWSCustomComboBox = class(TWSCustomComboBox)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
+  TCocoaWSCustomComboBox = class({$ifndef wsintf}TWSCustomComboBox{$else}TCocoaWSWinControl, IWSCustomComboBox{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
 
-    class function GetDroppedDown(const ACustomComboBox: TCustomComboBox): Boolean; override;
+    imptype function GetDroppedDown(const ACustomComboBox: TCustomComboBox): Boolean; rootoverride;
     {class function  GetSelStart(const ACustomComboBox: TCustomComboBox): integer; override;
     class function  GetSelLength(const ACustomComboBox: TCustomComboBox): integer; override;}
-    class function  GetItemIndex(const ACustomComboBox: TCustomComboBox): integer; override;
+    imptype function  GetItemIndex(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
     {class function  GetMaxLength(const ACustomComboBox: TCustomComboBox): integer; override;
 
     class procedure SetSelStart(const ACustomComboBox: TCustomComboBox; NewStart: integer); override;
     class procedure SetSelLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); override;}
-    class procedure SetItemIndex(const ACustomComboBox: TCustomComboBox; NewIndex: integer); override;
+    imptype procedure SetItemIndex(const ACustomComboBox: TCustomComboBox; NewIndex: integer); rootoverride;
     {class procedure SetMaxLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); override;}
-    class procedure SetStyle(const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle); override;
-    class procedure SetReadOnly(const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean); override;
-    class procedure SetDropDownCount(const ACustomComboBox: TCustomComboBox; NewCount: Integer); override;
+    imptype procedure SetStyle(const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle); rootoverride;
+    imptype procedure SetReadOnly(const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean); rootoverride;
+    imptype procedure SetDropDownCount(const ACustomComboBox: TCustomComboBox; NewCount: Integer); rootoverride;
 
-    class function  GetItems(const ACustomComboBox: TCustomComboBox): TStrings; override;
+    imptype function  GetItems(const ACustomComboBox: TCustomComboBox): TStrings; rootoverride;
     {class procedure Sort(const ACustomComboBox: TCustomComboBox; AList: TStrings; IsSorted: boolean); override;}
 
-    class function GetItemHeight(const ACustomComboBox: TCustomComboBox): Integer; override;
-    class procedure SetItemHeight(const ACustomComboBox: TCustomComboBox; const AItemHeight: Integer); override;
-    class procedure GetPreferredSize(
+    imptype function GetItemHeight(const ACustomComboBox: TCustomComboBox): Integer; rootoverride;
+    imptype procedure SetItemHeight(const ACustomComboBox: TCustomComboBox; const AItemHeight: Integer); rootoverride;
+    imptype procedure GetPreferredSize(
        const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
        WithThemeSpace: Boolean); override;
 
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class procedure SetTextHint(const ACustomComboBox: TCustomComboBox; const ATextHint: string); override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype procedure SetTextHint(const ACustomComboBox: TCustomComboBox; const ATextHint: string); rootoverride;
+
+    {$ifdef wsintf}
+    imptype function GetSelStart(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype function GetSelLength(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype function GetMaxLength(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype procedure SetArrowKeysTraverseList(const ACustomComboBox: TCustomComboBox;
+      NewTraverseList: boolean); rootoverride;
+    imptype procedure SetDroppedDown(const ACustomComboBox: TCustomComboBox; ADroppedDown: Boolean); rootoverride;
+    imptype procedure SetSelStart(const ACustomComboBox: TCustomComboBox; NewStart: integer); rootoverride;
+    imptype procedure SetSelLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); rootoverride;
+    imptype procedure SetMaxLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); rootoverride;
+    imptype procedure FreeItems(var AItems: TStrings); rootoverride;
+    imptype procedure Sort(const ACustomComboBox: TCustomComboBox; AList: TStrings; IsSorted: boolean); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSCustomListBox }
 
-  TCocoaWSCustomListBox = class(TWSCustomListBox)
-  published
-    class procedure DragStart(const ACustomListBox: TCustomListBox); override;
+  TCocoaWSCustomListBox = class({$ifndef wsintf}TWSCustomListBox{$else}TCocoaWSWinControl, IWSCustomListBox{$endif})
+  impsection
+    imptype procedure DragStart(const ACustomListBox: TCustomListBox); rootoverride;
 
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetIndexAtXY(const ACustomListBox: TCustomListBox; X, Y: integer): integer; override;
-    class function GetItemIndex(const ACustomListBox: TCustomListBox): integer; override;
-    class function GetItemRect(const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect): boolean; override;
-    class function GetSelCount(const ACustomListBox: TCustomListBox): integer; override;
-    class function GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean; override;
-    class function GetStrings(const ACustomListBox: TCustomListBox): TStrings; override;
-    class function GetTopIndex(const ACustomListBox: TCustomListBox): integer; override;
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function GetIndexAtXY(const ACustomListBox: TCustomListBox; X, Y: integer): integer; rootoverride;
+    imptype function GetItemIndex(const ACustomListBox: TCustomListBox): integer; rootoverride;
+    imptype function GetItemRect(const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect): boolean; rootoverride;
+    imptype function GetSelCount(const ACustomListBox: TCustomListBox): integer; rootoverride;
+    imptype function GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean; rootoverride;
+    imptype function GetStrings(const ACustomListBox: TCustomListBox): TStrings; rootoverride;
+    imptype function GetTopIndex(const ACustomListBox: TCustomListBox): integer; rootoverride;
 
-    class procedure SelectItem(const ACustomListBox: TCustomListBox; AIndex: integer; ASelected: boolean); override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
+    imptype procedure SelectItem(const ACustomListBox: TCustomListBox; AIndex: integer; ASelected: boolean); rootoverride;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
     //class procedure SetBorder(const ACustomListBox: TCustomListBox); override;
-    class procedure SetItemIndex(const ACustomListBox: TCustomListBox; const AIndex: integer); override;
-    class procedure SetSelectionMode(const ACustomListBox: TCustomListBox; const AExtendedSelect, AMultiSelect: boolean); override;
-    class procedure SetStyle(const ACustomListBox: TCustomListBox); override;
+    imptype procedure SetItemIndex(const ACustomListBox: TCustomListBox; const AIndex: integer); rootoverride;
+    imptype procedure SetSelectionMode(const ACustomListBox: TCustomListBox; const AExtendedSelect, AMultiSelect: boolean); rootoverride;
+    imptype procedure SetStyle(const ACustomListBox: TCustomListBox); rootoverride;
     {class procedure SetSorted(const ACustomListBox: TCustomListBox; AList: TStrings; ASorted: boolean); override;}
-    class procedure SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer); override;
+    imptype procedure SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetScrollWidth(const ACustomListBox: TCustomListBox): Integer; rootoverride;
+    imptype procedure FreeStrings(var AStrings: TStrings); rootoverride;
+    imptype procedure SelectRange(const ACustomListBox: TCustomListBox;
+      ALow, AHigh: integer; ASelected: boolean); rootoverride;
+    imptype procedure SetBorder(const ACustomListBox: TCustomListBox); rootoverride;
+    imptype procedure SetColumnCount(const ACustomListBox: TCustomListBox; ACount: Integer); rootoverride;
+    imptype procedure SetScrollWidth(const ACustomListBox: TCustomListBox; const AScrollWidth: Integer); rootoverride;
+    imptype procedure SetSorted(const ACustomListBox: TCustomListBox; AList: TStrings; ASorted: boolean); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSCustomEdit }
 
-  TCocoaWSCustomEdit = class(TWSCustomEdit)
+  TCocoaWSCustomEdit = class({$ifdef wsintf}TWSCustomEdit{$else}TCocoaWSWinControl, IWSCustomEdit{$endif})
   public
     class function GetTextField(AWinControl: TWinControl): TCocoaTextField;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
 
     // WSControl functions
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
 
     // WSEdit functions
-    class function  GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
-    class function  GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
-    class procedure SetAlignment(const ACustomEdit: TCustomEdit; const NewAlignment: TAlignment); override;
+    imptype function  GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
+    imptype function  GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
+    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const NewAlignment: TAlignment); override;
 
     {class procedure SetCharCase(const ACustomEdit: TCustomEdit; NewCase: TEditCharCase); override;
     class procedure SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode); override;}
-    class procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char); override;
-    class procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
-    class procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
-    class procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
+    imptype procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
+    imptype procedure SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char); override;
+    imptype procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
+    imptype procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
+    imptype procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
 
-    class procedure Cut(const ACustomEdit: TCustomEdit); override;
-    class procedure Copy(const ACustomEdit: TCustomEdit); override;
-    class procedure Paste(const ACustomEdit: TCustomEdit); override;
-    class procedure Undo(const ACustomEdit: TCustomEdit); override;
+    imptype procedure Cut(const ACustomEdit: TCustomEdit); override;
+    imptype procedure Copy(const ACustomEdit: TCustomEdit); override;
+    imptype procedure Paste(const ACustomEdit: TCustomEdit); override;
+    imptype procedure Undo(const ACustomEdit: TCustomEdit); override;
 
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class procedure SetTextHint(const ACustomEdit: TCustomEdit; const ATextHint: string); override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype procedure SetTextHint(const ACustomEdit: TCustomEdit; const ATextHint: string); override;
   end;
   
   { TCocoaMemoStrings }
@@ -187,38 +211,41 @@ type
 
   { TCocoaWSCustomMemo }
 
-  TCocoaWSCustomMemo = class(TWSCustomMemo)
+  TCocoaWSCustomMemo = class({$ifndef wsintf}TWSCustomMemo{$else}TCocoaWSCustomEdit, IWSCustomMemo{$endif})
   public
     class function GetTextView(AWinControl: TWinControl): TCocoaTextView;
     class function GetScrollView(AWinControl: TWinControl): TCocoaScrollView;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
 
     // WSControl functions
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
-    class procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
+    imptype procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
 
     // WSEdit functions
     //class function GetCanUndo(const ACustomEdit: TCustomEdit): Boolean; override;
-    class function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; override;
-    class function GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
-    class function GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
-    class procedure SetAlignment(const ACustomEdit: TCustomEdit; const NewAlignment: TAlignment); override;
+    imptype function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; override;
+    imptype function GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
+    imptype function GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
+    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const NewAlignment: TAlignment); override;
 
     // WSMemo functions
-    class function GetStrings(const ACustomMemo: TCustomMemo): TStrings; override;
-    class procedure AppendText(const ACustomMemo: TCustomMemo; const AText: string); override;
-    class procedure SetScrollbars(const ACustomMemo: TCustomMemo; const NewScrollbars: TScrollStyle); override;
-    class procedure SetWantReturns(const ACustomMemo: TCustomMemo; const NewWantReturns: boolean); override;
-    class procedure SetWantTabs(const ACustomMemo: TCustomMemo; const NewWantTabs: boolean); override;
-    class procedure SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean); override;
-    class procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
+    imptype function GetStrings(const ACustomMemo: TCustomMemo): TStrings; rootoverride;
+    imptype procedure AppendText(const ACustomMemo: TCustomMemo; const AText: string); rootoverride;
+    imptype procedure SetScrollbars(const ACustomMemo: TCustomMemo; const NewScrollbars: TScrollStyle); rootoverride;
+    imptype procedure SetWantReturns(const ACustomMemo: TCustomMemo; const NewWantReturns: boolean); rootoverride;
+    imptype procedure SetWantTabs(const ACustomMemo: TCustomMemo; const NewWantTabs: boolean); rootoverride;
+    imptype procedure SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean); rootoverride;
+    imptype procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
 
-    class function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    {$ifdef wsintf}
+    imptype procedure FreeStrings(var AStrings: TStrings); rootoverride;
+    {$endif}
   end;
 
   { TLCLButtonCallback }
@@ -257,14 +284,17 @@ type
 
   { TCocoaWSButton }
 
-  TCocoaWSButton = class(TWSButton)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetDefault(const AButton: TCustomButton; ADefault: Boolean); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
-    class function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+  TCocoaWSButton = class({$ifndef wsintf}TWSButton{$else}TCocoaWSWinControl, IWSButton{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetDefault(const AButton: TCustomButton; ADefault: Boolean); rootoverride;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    {$ifdef wsintf}
+    imptype procedure SetShortCut(const AButton: TCustomButton; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+    {$endif}
   end;
 
   { TLCLCheckBoxCallback }
@@ -277,23 +307,27 @@ type
 
   { TCocoaWSCustomCheckBox }
 
-  TCocoaWSCustomCheckBox = class(TWSCustomCheckBox)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; override;
-    class procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); override;
+  TCocoaWSCustomCheckBox = class({$ifndef wsintf}TWSCustomCheckBox{$else}TCocoaWSWinControl, IWSCustomCheckBox)
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; rootoverride;
+    imptype procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); rootoverride;
     //
-    class procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; {%H-}WithThemeSpace: Boolean); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
-    class function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; {%H-}WithThemeSpace: Boolean); override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
+    {$ifdef wsintf}
+    imptype procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+    imptype procedure SetAlignment(const ACustomCheckBox: TCustomCheckBox; const NewAlignment: TLeftRight); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSToggleBox }
 
-  TCocoaWSToggleBox = class(TWSToggleBox)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  TCocoaWSToggleBox = class({$ifndef wsintf}TWSToggleBox{$else}TCocoaWSCustomCheckBox{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TLCLRadioButtonCallback }
@@ -305,20 +339,24 @@ type
 
   { TCocoaWSRadioButton }
 
-  TCocoaWSRadioButton = class(TWSRadioButton)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); override;
+  TCocoaWSRadioButton = class({$ifndef wsintf}TWSRadioButton{$else}TCocoaWSCustomCheckBox{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); override;
   end;
 
   { TCocoaWSCustomStaticText }
 
-  TCocoaWSCustomStaticText = class(TWSCustomStaticText)
+  TCocoaWSCustomStaticText = class({$ifndef wsintf}TWSCustomStaticText{$else}TCocoaWSWinControl, IWSCustomStaticText{$endif})
   private
   protected
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
 //    class procedure SetAlignment(const ACustomStaticText: TCustomStaticText; const NewAlignment: TAlignment); override;
+    {$ifdef wsintf}
+    imptype procedure SetAlignment(const ACustomStaticText: TCustomStaticText; const NewAlignment: TAlignment); rootoverride;
+    imptype procedure SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle); rootoverride;
+    {$endif}
   end;
 
 function AllocTextView(ATarget: TWinControl; const AParams: TCreateParams; fieldEditor: Boolean): NSTextView;
@@ -750,7 +788,7 @@ end;
 
   Creates new button control in Cocoa interface with the specified parameters
  ------------------------------------------------------------------------------}
-class function TCocoaWSButton.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSButton.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   btn: TCocoaButton;
@@ -769,7 +807,7 @@ end;
 
   Sets button default indication in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSButton.SetDefault(const AButton: TCustomButton; ADefault: Boolean);
+imptype procedure TCocoaWSButton.SetDefault(const AButton: TCustomButton; ADefault: Boolean);
 var
   cf: NSString;
 const
@@ -782,7 +820,7 @@ begin
   cf.release;
 end;
 
-class procedure TCocoaWSButton.SetText(const AWinControl: TWinControl; const AText: String);
+imptype procedure TCocoaWSButton.SetText(const AWinControl: TWinControl; const AText: String);
 var
   btn : NSButton;
 begin
@@ -790,21 +828,21 @@ begin
   btn.setTitle(ControlTitleToNSStr(AText));
 end;
 
-class function TCocoaWSButton.GetText(const AWinControl: TWinControl;
+imptype function TCocoaWSButton.GetText(const AWinControl: TWinControl;
   var AText: String): Boolean;
 begin
   // The text is static, so let the LCL fallback to FCaption
   Result := false;
 end;
 
-class function TCocoaWSButton.GetTextLen(const AWinControl: TWinControl;
+imptype function TCocoaWSButton.GetTextLen(const AWinControl: TWinControl;
   var ALength: Integer): Boolean;
 begin
   // The text is static, so let the LCL fallback to FCaption
   Result := false;
 end;
 
-class procedure TCocoaWSButton.SetFont(const AWinControl: TWinControl;
+imptype procedure TCocoaWSButton.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 begin
   if not (AWinControl.HandleAllocated) then Exit;
@@ -812,7 +850,12 @@ begin
   TCocoaButton(AWinControl.Handle).adjustFontToControlSize := (AFont.Name = 'default')
     and (AFont.Size = 0);
 end;
-
+{$ifdef wsintf}
+imptype procedure TCocoaWSButton.SetShortCut(const AButton: TCustomButton; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+begin
+  // not supported on macOS
+end;
+{$endif}
 { TCocoaWSCustomCheckBox }
 
 {------------------------------------------------------------------------------
@@ -913,10 +956,18 @@ class function TCocoaWSCustomCheckBox.GetTextLen(
 begin
   Result := TCocoaWSButton.GetTextLen(AWinControl, ALength);
 end;
+{$ifdef wsintf}
+imptype procedure TCocoaWSCustomCheckBox.SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut);
+begin
+end;
 
+imptype procedure TCocoaWSCustomCheckBox.SetAlignment(const ACustomCheckBox: TCustomCheckBox; const NewAlignment: TLeftRight);
+begin
+end;
+{$endif}
 { TCocoaWSRadioButton }
 
-class function TCocoaWSRadioButton.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSRadioButton.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   btn: TCocoaButton;
@@ -925,7 +976,7 @@ begin
   Result := TLCLIntfHandle(btn);
 end;
 
-class procedure TCocoaWSRadioButton.SetState(
+imptype procedure TCocoaWSRadioButton.SetState(
   const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
 var
   btn : NSButton;
@@ -939,7 +990,7 @@ end;
 
 { TCocoaWSCustomStaticText }
 
-class function TCocoaWSCustomStaticText.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomStaticText.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   field: NSTextField;
@@ -958,7 +1009,15 @@ begin
   {$endif}
   Result:=TLCLIntfHandle(field);
 end;
+{$ifdef wsintf}
+imptype procedure TCocoaWSCustomStaticText.SetAlignment(const ACustomStaticText: TCustomStaticText; const NewAlignment: TAlignment);
+begin
+end;
 
+imptype procedure TCocoaWSCustomStaticText.SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle);
+begin
+end;
+{$endif}
 { TCocoaWSCustomEdit }
 
 class function TCocoaWSCustomEdit.GetTextField(AWinControl: TWinControl): TCocoaTextField;
@@ -977,7 +1036,7 @@ begin
   Result := TCocoaTextField(AWinControl.Handle);
 end;
 
-class function TCocoaWSCustomEdit.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TCocoaWSCustomEdit.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   field : NSTextField;
   cell  : NSTextFieldCell;
@@ -999,7 +1058,7 @@ begin
   Result:=TLCLIntfHandle(field);
 end;
 
-class procedure TCocoaWSCustomEdit.SetColor(const AWinControl: TWinControl);
+imptype procedure TCocoaWSCustomEdit.SetColor(const AWinControl: TWinControl);
 var
   field : TCocoaTextField;
   w     : NSWindow;
@@ -1025,7 +1084,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomEdit.SetBorderStyle(
+imptype procedure TCocoaWSCustomEdit.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 var
   field : TCocoaTextField;
@@ -1042,7 +1101,7 @@ begin
   UpdateFocusRing(field, ABorderStyle);
 end;
 
-class function TCocoaWSCustomEdit.GetSelStart(const ACustomEdit: TCustomEdit): integer;
+imptype function TCocoaWSCustomEdit.GetSelStart(const ACustomEdit: TCustomEdit): integer;
 var
   field : TCocoaTextField;
   txt   :  NSText;
@@ -1056,7 +1115,7 @@ begin
   Result:=txt.selectedRange.location;
 end;
 
-class function TCocoaWSCustomEdit.GetSelLength(const ACustomEdit: TCustomEdit): integer;
+imptype function TCocoaWSCustomEdit.GetSelLength(const ACustomEdit: TCustomEdit): integer;
 var
   field : TCocoaTextField;
   txt   :  NSText;
@@ -1070,7 +1129,7 @@ begin
   Result:=txt.selectedRange.length;
 end;
 
-class procedure TCocoaWSCustomEdit.SetAlignment(const ACustomEdit: TCustomEdit;
+imptype procedure TCocoaWSCustomEdit.SetAlignment(const ACustomEdit: TCustomEdit;
   const NewAlignment: TAlignment);
 var
   field: TCocoaTextField;
@@ -1080,7 +1139,7 @@ begin
   TextFieldSetAllignment(field, NewAlignment);
 end;
 
-class procedure TCocoaWSCustomEdit.SetMaxLength(const ACustomEdit: TCustomEdit;
+imptype procedure TCocoaWSCustomEdit.SetMaxLength(const ACustomEdit: TCustomEdit;
   NewLength: integer);
 var
   field: NSTextField;
@@ -1093,14 +1152,14 @@ begin
     {%H-}NSTextField_LCLExt(field).lclSetMaxLength(NewLength);
 end;
 
-class procedure TCocoaWSCustomEdit.SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char);
+imptype procedure TCocoaWSCustomEdit.SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char);
 begin
   if (NewChar<>#0) xor TCocoaTextField(ACustomEdit.Handle).isKindOfClass_(NSSecureTextField) then
     RecreateWnd(ACustomEdit);
 end;
 
 
-class procedure TCocoaWSCustomEdit.SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean);
+imptype procedure TCocoaWSCustomEdit.SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean);
 var
   lHandle: TCocoaTextField;
   w : NSWindow;
@@ -1156,7 +1215,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomEdit.SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer);
+imptype procedure TCocoaWSCustomEdit.SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer);
 var
   lHandle: TCocoaTextField;
   curEditor:  NSText;
@@ -1171,7 +1230,7 @@ begin
   curEditor.setSelectedRange(lRange);
 end;
 
-class procedure TCocoaWSCustomEdit.SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer);
+imptype procedure TCocoaWSCustomEdit.SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer);
 var
   lHandle: TCocoaTextField;
   curEditor:  NSText;
@@ -1186,31 +1245,31 @@ begin
   curEditor.setSelectedRange(lRange);
 end;
 
-class procedure TCocoaWSCustomEdit.Cut(const ACustomEdit: TCustomEdit);
+imptype procedure TCocoaWSCustomEdit.Cut(const ACustomEdit: TCustomEdit);
 begin
   if not Assigned(ACustomEdit) or not (ACustomEdit.HandleAllocated) then Exit;
   NSApplication(NSApp).sendAction_to_from(objcselector('cut:'), nil, id(ACustomEdit.Handle));
 end;
 
-class procedure TCocoaWSCustomEdit.Copy(const ACustomEdit: TCustomEdit);
+imptype procedure TCocoaWSCustomEdit.Copy(const ACustomEdit: TCustomEdit);
 begin
   if not Assigned(ACustomEdit) or not (ACustomEdit.HandleAllocated) then Exit;
   NSApplication(NSApp).sendAction_to_from(objcselector('copy:'), nil, id(ACustomEdit.Handle));
 end;
 
-class procedure TCocoaWSCustomEdit.Paste(const ACustomEdit: TCustomEdit);
+imptype procedure TCocoaWSCustomEdit.Paste(const ACustomEdit: TCustomEdit);
 begin
   if not Assigned(ACustomEdit) or not (ACustomEdit.HandleAllocated) then Exit;
   NSApplication(NSApp).sendAction_to_from(objcselector('paste:'), nil, id(ACustomEdit.Handle));
 end;
 
-class procedure TCocoaWSCustomEdit.Undo(const ACustomEdit: TCustomEdit);
+imptype procedure TCocoaWSCustomEdit.Undo(const ACustomEdit: TCustomEdit);
 begin
   if not Assigned(ACustomEdit) or not (ACustomEdit.HandleAllocated) then Exit;
   NSApplication(NSApp).sendAction_to_from(objcselector('undo:'), nil, id(ACustomEdit.Handle));
 end;
 
-class procedure TCocoaWSCustomEdit.SetText(const AWinControl: TWinControl;
+imptype procedure TCocoaWSCustomEdit.SetText(const AWinControl: TWinControl;
   const AText: String);
 var
   txt : string;
@@ -1226,7 +1285,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomEdit.SetTextHint(const ACustomEdit: TCustomEdit;
+imptype procedure TCocoaWSCustomEdit.SetTextHint(const ACustomEdit: TCustomEdit;
   const ATextHint: string);
 begin
   if NSAppKitVersionNumber <= NSAppKitVersionNumber10_10 then Exit;
@@ -1488,7 +1547,7 @@ begin
   Result := TCocoaScrollView(AWinControl.Handle);
 end;
 
-class function TCocoaWSCustomMemo.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomMemo.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams):TLCLIntfHandle;
 var
   txt: TCocoaTextView;
@@ -1568,7 +1627,7 @@ begin
   Result := TLCLIntfHandle(scr);
 end;
 
-class procedure TCocoaWSCustomMemo.SetColor(const AWinControl: TWinControl);
+imptype procedure TCocoaWSCustomMemo.SetColor(const AWinControl: TWinControl);
 var
   txt: TCocoaTextView;
 begin
@@ -1581,7 +1640,7 @@ begin
     txt.setBackgroundColor( ColorToNSColor(ColorToRGB(AWinControl.Color)));
 end;
 
-class procedure TCocoaWSCustomMemo.SetSelStart(const ACustomEdit: TCustomEdit;
+imptype procedure TCocoaWSCustomMemo.SetSelStart(const ACustomEdit: TCustomEdit;
   NewStart: integer);
 var
   lRange: NSRange;
@@ -1596,7 +1655,7 @@ begin
   txt.scrollRangeToVisible(lRange);
 end;
 
-class procedure TCocoaWSCustomMemo.SetSelLength(const ACustomEdit: TCustomEdit;
+imptype procedure TCocoaWSCustomMemo.SetSelLength(const ACustomEdit: TCustomEdit;
   NewLength: integer);
 var
   lRange: NSRange;
@@ -1610,7 +1669,7 @@ begin
   txt.setSelectedRange(lRange);
 end;
 
-class procedure TCocoaWSCustomMemo.SetBorderStyle(
+imptype procedure TCocoaWSCustomMemo.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 var
   sv: TCocoaScrollView;
@@ -1622,7 +1681,7 @@ begin
   UpdateFocusRing(NSView(sv.documentView), ABorderStyle);
 end;
 
-class function TCocoaWSCustomMemo.GetCaretPos(const ACustomEdit: TCustomEdit): TPoint;
+imptype function TCocoaWSCustomMemo.GetCaretPos(const ACustomEdit: TCustomEdit): TPoint;
 var
   txt: TCocoaTextView;
   lValue: NSValue;
@@ -1664,7 +1723,7 @@ begin
   Result.X := lineRange.location;}
 end;
 
-class function TCocoaWSCustomMemo.GetSelStart(const ACustomEdit: TCustomEdit): integer;
+imptype function TCocoaWSCustomMemo.GetSelStart(const ACustomEdit: TCustomEdit): integer;
 var
   txt: TCocoaTextView;
 begin
@@ -1677,7 +1736,7 @@ begin
   Result := txt.selectedRange.location;
 end;
 
-class function TCocoaWSCustomMemo.GetSelLength(const ACustomEdit: TCustomEdit): integer;
+imptype function TCocoaWSCustomMemo.GetSelLength(const ACustomEdit: TCustomEdit): integer;
 var
   txt: TCocoaTextView;
   ns: NSArray;
@@ -1691,7 +1750,7 @@ begin
   Result := txt.selectedRange.length;
 end;
 
-class procedure TCocoaWSCustomMemo.SetAlignment(const ACustomEdit: TCustomEdit;
+imptype procedure TCocoaWSCustomMemo.SetAlignment(const ACustomEdit: TCustomEdit;
   const NewAlignment: TAlignment);
 var
   txt: TCocoaTextView;
@@ -1701,7 +1760,7 @@ begin
     TextViewSetAllignment(txt, NewAlignment);
 end;
 
-class function TCocoaWSCustomMemo.GetStrings(const ACustomMemo: TCustomMemo): TStrings;
+imptype function TCocoaWSCustomMemo.GetStrings(const ACustomMemo: TCustomMemo): TStrings;
 var
   txt: TCocoaTextView;
 begin
@@ -1712,13 +1771,13 @@ begin
     Result := nil
 end;
 
-class procedure TCocoaWSCustomMemo.AppendText(const ACustomMemo: TCustomMemo;
+imptype procedure TCocoaWSCustomMemo.AppendText(const ACustomMemo: TCustomMemo;
   const AText: string);
 begin
   //todo:
 end;
 
-class procedure TCocoaWSCustomMemo.SetReadOnly(const ACustomEdit:TCustomEdit;
+imptype procedure TCocoaWSCustomMemo.SetReadOnly(const ACustomEdit:TCustomEdit;
   NewReadOnly:boolean);
 var
   txt: TCocoaTextView;
@@ -1728,7 +1787,7 @@ begin
     txt.setEditable(not NewReadOnly);
 end;
 
-class function TCocoaWSCustomMemo.GetTextLen(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomMemo.GetTextLen(const AWinControl: TWinControl;
   var ALength: Integer): Boolean;
 var
   txt: TCocoaTextView;
@@ -1739,12 +1798,12 @@ begin
     ALength := txt.string_.lengthOfBytesUsingEncoding(NSUTF8StringEncoding);
 end;
 
-class procedure TCocoaWSCustomMemo.SetScrollbars(const ACustomMemo: TCustomMemo; const NewScrollbars: TScrollStyle);
+imptype procedure TCocoaWSCustomMemo.SetScrollbars(const ACustomMemo: TCustomMemo; const NewScrollbars: TScrollStyle);
 begin
   ScrollViewSetScrollStyles(TCocoaScrollView(ACustomMemo.Handle), NewScrollbars);
 end;
 
-class procedure TCocoaWSCustomMemo.SetWantTabs(const ACustomMemo: TCustomMemo;
+imptype procedure TCocoaWSCustomMemo.SetWantTabs(const ACustomMemo: TCustomMemo;
   const NewWantTabs: boolean);
 var
   txt: TCocoaTextView;
@@ -1755,7 +1814,7 @@ begin
 end;
 
 
-class procedure TCocoaWSCustomMemo.SetWantReturns(const ACustomMemo: TCustomMemo;
+imptype procedure TCocoaWSCustomMemo.SetWantReturns(const ACustomMemo: TCustomMemo;
   const NewWantReturns: boolean);
 var
   txt: TCocoaTextView;
@@ -1765,7 +1824,7 @@ begin
   txt.wantReturns := NewWantReturns;
 end;
 
-class procedure  TCocoaWSCustomMemo.SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean);
+imptype procedure  TCocoaWSCustomMemo.SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean);
 var
   txt: TCocoaTextView;
   lScroll: TCocoaScrollView;
@@ -1777,7 +1836,7 @@ begin
   TextViewSetWordWrap(txt, lScroll, NewWordWrap);
 end;
 
-class procedure TCocoaWSCustomMemo.SetText(const AWinControl:TWinControl;const AText:String);
+imptype procedure TCocoaWSCustomMemo.SetText(const AWinControl:TWinControl;const AText:String);
 var
   txt: TCocoaTextView;
 begin
@@ -1786,7 +1845,7 @@ begin
   SetNSText(txt, LineBreaksToUnix(AText));
 end;
 
-class function TCocoaWSCustomMemo.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
+imptype function TCocoaWSCustomMemo.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
 var
   txt: TCocoaTextView;
 begin
@@ -1795,14 +1854,20 @@ begin
   if Result then
     AText := NSStringToString(txt.string_);
 end;
-
+{$ifdef wsintf}
+imptype procedure TCocoaWSCustomMemo.FreeStrings(var AStrings: TStrings);
+begin
+  AStrings.Free;
+  AStrings := nil;
+end;
+{$endif}
 { TCocoaWSCustomComboBox }
 
 type
   TCustomComboBoxAccess = class(TCustomComboBox)
   end;
 
-class function TCocoaWSCustomComboBox.CreateHandle(const AWinControl:TWinControl;
+imptype function TCocoaWSCustomComboBox.CreateHandle(const AWinControl:TWinControl;
   const AParams:TCreateParams):TLCLIntfHandle;
 var
   cmb: TCocoaComboBox;
@@ -1846,7 +1911,7 @@ begin
   AWinControl.Constraints.SetInterfaceConstraints(0,COMBOBOX_MINI_HEIGHT,0,COMBOBOX_REG_HEIGHT);
 end;
 
-class procedure TCocoaWSCustomComboBox.SetBorderStyle(
+imptype procedure TCocoaWSCustomComboBox.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 var
   ACustomComboBox : TCustomComboBox;
@@ -1864,7 +1929,7 @@ begin
 
 end;
 
-class function TCocoaWSCustomComboBox.GetDroppedDown(
+imptype function TCocoaWSCustomComboBox.GetDroppedDown(
   const ACustomComboBox: TCustomComboBox): Boolean;
 var
   cb  : ICommonCallback;
@@ -1884,7 +1949,7 @@ begin
 
 end;
 
-class function TCocoaWSCustomComboBox.GetItemIndex(const ACustomComboBox:
+imptype function TCocoaWSCustomComboBox.GetItemIndex(const ACustomComboBox:
   TCustomComboBox):integer;
 var
   idx : NSInteger;
@@ -1905,7 +1970,7 @@ begin
     Result := Integer(idx);
 end;
 
-class procedure TCocoaWSCustomComboBox.SetItemIndex(const ACustomComboBox:
+imptype procedure TCocoaWSCustomComboBox.SetItemIndex(const ACustomComboBox:
   TCustomComboBox;NewIndex:integer);
 var
   rocmb: TCocoaReadOnlyComboBox;
@@ -1923,7 +1988,7 @@ begin
     TCocoaComboBox(ACustomComboBox.Handle).selectItemAtIndex(NewIndex);
 end;
 
-class procedure TCocoaWSCustomComboBox.SetStyle(
+imptype procedure TCocoaWSCustomComboBox.SetStyle(
   const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle);
 begin
   if (not Assigned(ACustomComboBox)) or (not ACustomComboBox.HandleAllocated) then
@@ -1931,7 +1996,7 @@ begin
   RecreateWnd(ACustomComboBox);
 end;
 
-class procedure TCocoaWSCustomComboBox.SetReadOnly(
+imptype procedure TCocoaWSCustomComboBox.SetReadOnly(
   const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean);
 var
   box : NSComboBox;
@@ -1948,7 +2013,7 @@ begin
   {$endif}
 end;
 
-class procedure TCocoaWSCustomComboBox.SetDropDownCount(const ACustomComboBox:
+imptype procedure TCocoaWSCustomComboBox.SetDropDownCount(const ACustomComboBox:
   TCustomComboBox;NewCount:Integer);
 begin
   if (not Assigned(ACustomComboBox)) or (not ACustomComboBox.HandleAllocated) then
@@ -1958,7 +2023,7 @@ begin
   TCocoaComboBox(ACustomComboBox.Handle).setNumberOfVisibleItems(NewCount);
 end;
 
-class function TCocoaWSCustomComboBox.GetItems(const ACustomComboBox: TCustomComboBox): TStrings;
+imptype function TCocoaWSCustomComboBox.GetItems(const ACustomComboBox: TCustomComboBox): TStrings;
 begin
   if (not Assigned(ACustomComboBox)) or (not ACustomComboBox.HandleAllocated) then
   begin
@@ -1972,7 +2037,7 @@ begin
     Result:=TCocoaComboBox(ACustomComboBox.Handle).list;
 end;
 
-class function TCocoaWSCustomComboBox.GetItemHeight(const ACustomComboBox:
+imptype function TCocoaWSCustomComboBox.GetItemHeight(const ACustomComboBox:
   TCustomComboBox):Integer;
 begin
   if (not Assigned(ACustomComboBox)) or (not ACustomComboBox.HandleAllocated) then
@@ -1987,7 +2052,7 @@ begin
     Result:=Round(TCocoaComboBox(ACustomComboBox.Handle).itemHeight);
 end;
 
-class procedure TCocoaWSCustomComboBox.SetItemHeight(const ACustomComboBox:
+imptype procedure TCocoaWSCustomComboBox.SetItemHeight(const ACustomComboBox:
   TCustomComboBox;const AItemHeight:Integer);
 begin
   if (not Assigned(ACustomComboBox)) or (not ACustomComboBox.HandleAllocated) then
@@ -1999,7 +2064,7 @@ begin
     TCocoaComboBox(ACustomComboBox.Handle).setItemHeight(AItemHeight);
 end;
 
-class procedure TCocoaWSCustomComboBox.GetPreferredSize(
+imptype procedure TCocoaWSCustomComboBox.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 begin
@@ -2008,14 +2073,14 @@ begin
   // once it's resolved, TCocoaWSCustomComboBox.GetPreferredSize could be removed
 end;
 
-class procedure TCocoaWSCustomComboBox.SetText(const AWinControl: TWinControl;
+imptype procedure TCocoaWSCustomComboBox.SetText(const AWinControl: TWinControl;
   const AText: String);
 begin
   if (AWinControl.HandleAllocated) then
     ControlSetTextWithChangeEvent(NSControl(AWinControl.Handle), AText);
 end;
 
-class procedure TCocoaWSCustomComboBox.SetTextHint(
+imptype procedure TCocoaWSCustomComboBox.SetTextHint(
   const ACustomComboBox: TCustomComboBox; const ATextHint: string);
 begin
   if NSAppKitVersionNumber <= NSAppKitVersionNumber10_10 then
@@ -2024,10 +2089,60 @@ begin
     Exit;
   ObjSetTextHint(NSObject(ACustomComboBox.Handle), ATextHint);
 end;
+{$ifdef wsintf}
 
+//todo: selection and MaxLength could be implemented, based on the "editor" implementation
+//      that has been done for TEdit
+imptype function TCocoaWSCustomComboBox.GetSelStart(const ACustomComboBox: TCustomComboBox): integer;
+begin
+  Result := -1;
+end;
+
+imptype function TCocoaWSCustomComboBox.GetSelLength(const ACustomComboBox: TCustomComboBox): integer;
+begin
+  Result := 0;
+end;
+
+imptype function TCocoaWSCustomComboBox.GetMaxLength(const ACustomComboBox: TCustomComboBox): integer;
+begin
+  Result := 0;
+end;
+
+imptype procedure TCocoaWSCustomComboBox.SetArrowKeysTraverseList(const ACustomComboBox: TCustomComboBox;
+  NewTraverseList: boolean);
+begin
+end;
+
+imptype procedure TCocoaWSCustomComboBox.SetDroppedDown(const ACustomComboBox: TCustomComboBox; ADroppedDown: Boolean);
+begin
+end;
+
+imptype procedure TCocoaWSCustomComboBox.SetSelStart(const ACustomComboBox: TCustomComboBox; NewStart: integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomComboBox.SetSelLength(const ACustomComboBox: TCustomComboBox; NewLength: integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomComboBox.SetMaxLength(const ACustomComboBox: TCustomComboBox; NewLength: integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomComboBox.FreeItems(var AItems: TStrings);
+begin
+  AItems.Free;
+  AItems := nil;
+end;
+
+imptype procedure TCocoaWSCustomComboBox.Sort(const ACustomComboBox: TCustomComboBox; AList: TStrings; IsSorted: boolean);
+begin
+end;
+
+{$endif}
 { TCocoaWSToggleBox }
 
-class function TCocoaWSToggleBox.CreateHandle(const AWinControl:TWinControl;
+imptype function TCocoaWSToggleBox.CreateHandle(const AWinControl:TWinControl;
   const AParams:TCreateParams):TLCLIntfHandle;
 var
   btn: NSButton;
@@ -2041,7 +2156,7 @@ end;
 
 { TCocoaWSScrollBar }
 
-class function TCocoaWSScrollBar.CreateHandle(const AWinControl:TWinControl;
+imptype function TCocoaWSScrollBar.CreateHandle(const AWinControl:TWinControl;
   const AParams:TCreateParams):TLCLIntfHandle;
 var
   scr : TCocoaScrollBar;
@@ -2082,14 +2197,14 @@ end;
 
 // vertical/horizontal in Cocoa is set automatically according to
 // the geometry of the scrollbar, it cannot be forced to an unusual value
-class procedure TCocoaWSScrollBar.SetKind(const AScrollBar: TCustomScrollBar; const AIsHorizontal: Boolean);
+imptype procedure TCocoaWSScrollBar.SetKind(const AScrollBar: TCustomScrollBar; const AIsHorizontal: Boolean);
 begin
   // the scroll type can be changed when creating a scroll.
   // since the size got changed, we have to create the handle
   RecreateWnd(AScrollBar);
 end;
 
-class procedure TCocoaWSScrollBar.SetParams(const AScrollBar:TCustomScrollBar);
+imptype procedure TCocoaWSScrollBar.SetParams(const AScrollBar:TCustomScrollBar);
 var
   lScroller: TCocoaScrollBar;
   sz : integer;
@@ -2107,7 +2222,7 @@ end;
 
 { TCocoaWSCustomGroupBox }
 
-class function TCocoaWSCustomGroupBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomGroupBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   box: TCocoaGroupBox;
@@ -2136,7 +2251,7 @@ begin
   Result := TLCLIntfHandle(box);
 end;
 
-class function TCocoaWSCustomGroupBox.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
+imptype function TCocoaWSCustomGroupBox.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
 var
   box: TCocoaGroupBox;
 begin
@@ -2146,7 +2261,7 @@ begin
     AText := NSStringToString(box.title);
 end;
 
-class procedure TCocoaWSCustomGroupBox.SetText(const AWinControl: TWinControl; const AText: String);
+imptype procedure TCocoaWSCustomGroupBox.SetText(const AWinControl: TWinControl; const AText: String);
 var
   box: TCocoaGroupBox;
 begin
@@ -2154,7 +2269,7 @@ begin
   box.setTitle(ControlTitleToNSStr(AText));
 end;
 
-class procedure TCocoaWSCustomGroupBox.SetFont(const AWinControl: TWinControl;
+imptype procedure TCocoaWSCustomGroupBox.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 var
   box: TCocoaGroupBox;
@@ -2197,7 +2312,7 @@ begin
   //      noteHeightOfRowsWithIndexesChanged, should be sent to listview
 end;
 
-class procedure TCocoaWSCustomListBox.DragStart(
+imptype procedure TCocoaWSCustomListBox.DragStart(
   const ACustomListBox: TCustomListBox);
 var
   view: TCocoaTableListView;
@@ -2208,7 +2323,7 @@ begin
   cb.BlockCocoaMouseMove:=true;
 end;
 
-class function TCocoaWSCustomListBox.CreateHandle(const AWinControl:TWinControl;
+imptype function TCocoaWSCustomListBox.CreateHandle(const AWinControl:TWinControl;
   const AParams:TCreateParams):TLCLIntfHandle;
 var
   list    : TCocoaTableListView;
@@ -2258,7 +2373,7 @@ begin
   Result := TLCLIntfHandle(scroll);
 end;
 
-class function TCocoaWSCustomListBox.GetIndexAtXY(const ACustomListBox: TCustomListBox; X, Y: integer): integer;
+imptype function TCocoaWSCustomListBox.GetIndexAtXY(const ACustomListBox: TCustomListBox; X, Y: integer): integer;
 var
   list: TCocoaTableListView;
   lPoint: NSPoint;
@@ -2273,7 +2388,7 @@ begin
   Result := LCLCoordToRow(list, x,y);
 end;
 
-class function TCocoaWSCustomListBox.GetItemRect(const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect): boolean;
+imptype function TCocoaWSCustomListBox.GetItemRect(const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect): boolean;
 var
   view: TCocoaTableListView;
   r:NSRect;
@@ -2285,7 +2400,7 @@ begin
   Result := LCLGetItemRect(view, Index, 0, ARect);
 end;
 
-class function TCocoaWSCustomListBox.GetItemIndex(const ACustomListBox: TCustomListBox): integer;
+imptype function TCocoaWSCustomListBox.GetItemIndex(const ACustomListBox: TCustomListBox): integer;
 var
   view: TCocoaTableListView;
   indexset: NSIndexSet;
@@ -2300,7 +2415,7 @@ begin
     Result := indexset.firstIndex;
 end;
 
-class function TCocoaWSCustomListBox.GetSelCount(const ACustomListBox: TCustomListBox): integer;
+imptype function TCocoaWSCustomListBox.GetSelCount(const ACustomListBox: TCustomListBox): integer;
 var
   view: TCocoaTableListView;
   selection: NSIndexSet;
@@ -2312,7 +2427,7 @@ begin
 end;
 
 
-class function TCocoaWSCustomListBox.GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean;
+imptype function TCocoaWSCustomListBox.GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean;
 var
   view: TCocoaTableListView;
   selection: NSIndexSet;
@@ -2324,7 +2439,7 @@ begin
   Result := selection.containsIndex(AIndex);
 end;
 
-class function TCocoaWSCustomListBox.GetStrings(const ACustomListBox: TCustomListBox):TStrings;
+imptype function TCocoaWSCustomListBox.GetStrings(const ACustomListBox: TCustomListBox):TStrings;
 var
   view: TCocoaTableListView;
   cb : TLCLListBoxCallback;
@@ -2334,7 +2449,7 @@ begin
   Result := cb.strings;
 end;
 
-class function TCocoaWSCustomListBox.GetTopIndex(const ACustomListBox: TCustomListBox): integer;
+imptype function TCocoaWSCustomListBox.GetTopIndex(const ACustomListBox: TCustomListBox): integer;
 var
   view: TCocoaTableListView;
 begin
@@ -2343,7 +2458,7 @@ begin
   Result := LCLGetTopRow(view);
 end;
 
-class procedure TCocoaWSCustomListBox.SelectItem(const ACustomListBox: TCustomListBox; AIndex: integer; ASelected: boolean);
+imptype procedure TCocoaWSCustomListBox.SelectItem(const ACustomListBox: TCustomListBox; AIndex: integer; ASelected: boolean);
 var
   list: TCocoaTableListView;
 begin
@@ -2357,7 +2472,7 @@ begin
     list.deselectRow(AIndex);
 end;
 
-class procedure TCocoaWSCustomListBox.SetBorderStyle(
+imptype procedure TCocoaWSCustomListBox.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 var
   list: TCocoaTableListView;
@@ -2369,7 +2484,7 @@ begin
   UpdateFocusRing(list, ABorderStyle);
 end;
 
-class procedure TCocoaWSCustomListBox.SetItemIndex(const ACustomListBox: TCustomListBox; const AIndex: integer);
+imptype procedure TCocoaWSCustomListBox.SetItemIndex(const ACustomListBox: TCustomListBox; const AIndex: integer);
 var
   list: TCocoaTableListView;
 begin
@@ -2385,7 +2500,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomListBox.SetSelectionMode(const ACustomListBox: TCustomListBox; const AExtendedSelect, AMultiSelect: boolean);
+imptype procedure TCocoaWSCustomListBox.SetSelectionMode(const ACustomListBox: TCustomListBox; const AExtendedSelect, AMultiSelect: boolean);
 var
   list: TCocoaTableListView;
 begin
@@ -2394,7 +2509,7 @@ begin
   list.setAllowsMultipleSelection(AMultiSelect);
 end;
 
-class procedure TCocoaWSCustomListBox.SetStyle(const ACustomListBox: TCustomListBox);
+imptype procedure TCocoaWSCustomListBox.SetStyle(const ACustomListBox: TCustomListBox);
 var
   view: TCocoaTableListView;
 begin
@@ -2403,7 +2518,7 @@ begin
   view.setNeedsDisplay_(true);
 end;
 
-class procedure TCocoaWSCustomListBox.SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer);
+imptype procedure TCocoaWSCustomListBox.SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer);
 var
   view: TCocoaTableListView;
 begin
@@ -2411,7 +2526,50 @@ begin
   if not Assigned(view) then Exit();
   view.scrollRowToVisible(NewTopIndex);
 end;
+{$ifdef wsintf}
+imptype function TCocoaWSCustomListBox.GetScrollWidth(const ACustomListBox: TCustomListBox): Integer;
+begin
+  Result := 0;
+end;
 
+imptype procedure TCocoaWSCustomListBox.FreeStrings(var AStrings: TStrings);
+begin
+  AStrings.Free;
+  AStrings := nil;
+end;
+
+imptype procedure TCocoaWSCustomListBox.SelectRange(const ACustomListBox: TCustomListBox;
+  ALow, AHigh: integer; ASelected: boolean);
+var
+  OldTopIndex, i: Integer;
+begin  // A default implementation. A widgetset can override it with a better one.
+  OldTopIndex := ACustomListBox.TopIndex; //prevent scrolling to last Item selected on Windows, Issue #0036929
+  ACustomListBox.Items.BeginUpdate; //prevent visual update when selecting large ranges on Windows, Issue #0036929
+  try
+    for i := ALow to AHigh do
+      SelectItem(ACustomListBox, i, ASelected);
+    ACustomListBox.TopIndex := OldTopIndex;
+  finally
+    ACustomListBox.Items.EndUpdate;
+  end;
+end;
+
+imptype procedure TCocoaWSCustomListBox.SetBorder(const ACustomListBox: TCustomListBox);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListBox.SetColumnCount(const ACustomListBox: TCustomListBox; ACount: Integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListBox.SetScrollWidth(const ACustomListBox: TCustomListBox; const AScrollWidth: Integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListBox.SetSorted(const ACustomListBox: TCustomListBox; AList: TStrings; ASorted: boolean);
+begin
+end;
+{$endif}
 procedure ControlSetTextWithChangeEvent(ctrl: NSControl; const text: string);
 var
   cb: ICommonCallBack;

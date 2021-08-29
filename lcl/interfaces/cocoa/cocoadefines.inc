@@ -74,3 +74,16 @@
 // The File Dialog is loosing its accessory view (file type selection).
 {$define COCOA_ACTIVATION_REORDER}
 {$endif}
+
+{$define WSINTF}
+
+{$macro on}
+{$ifdef wsintf}
+{$define imptype:=}
+{$define impsection:=public}
+{$define rootoverride:=virtual}
+{$else}
+{$define imptype:=class}
+{$define impsection:=published}
+{$define rootoverride:=override}
+{$endif}

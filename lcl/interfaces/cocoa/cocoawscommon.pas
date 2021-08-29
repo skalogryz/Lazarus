@@ -12,7 +12,8 @@ uses
   CGGeometry, CocoaAll, cocoa_extra,
   Classes, Controls, SysUtils,
   //
-  WSControls, LCLType, LMessages, LCLProc, Graphics, Forms,
+  WSControls
+  ,LCLType, LMessages, LCLProc, Graphics, Forms,
   CocoaPrivate, CocoaGDIObjects, CocoaCaret, CocoaUtils, LCLMessageGlue,
   CocoaScrollers;
 
@@ -118,43 +119,43 @@ type
 
   { TCocoaWSControl }
 
-  TCocoaWSControl = class(TWSControl)
-  published
-    class function GetCanvasScaleFactor(const AControl: TControl): Double; override;
+  TCocoaWSControl = class(TWSControl{$ifdef wsintf},IWSControl{$endif})
+  impsection
+    imptype function GetCanvasScaleFactor(const AControl: TControl): Double; override;
   end;
 
   { TCocoaWSWinControl }
 
-  TCocoaWSWinControl = class(TWSWinControl)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TCocoaWSWinControl = class({$ifdef wsintf}TWSWinControl{$else}TCocoaWSControl, IWSWinControl{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
-    class function GetCanvasScaleFactor(const AControl: TControl): Double; override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
-    class function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
+    imptype function GetCanvasScaleFactor(const AControl: TControl): Double; override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
 
-    class function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
-    class function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
-    class procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
-    class procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); override;
-    class procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    class procedure SetColor(const AWinControl: TWinControl); override;
-    class procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer; const AChildren: TFPList); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
-    class procedure Invalidate(const AWinControl: TWinControl); override;
-    class procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); override;
+    imptype function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
+    imptype function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
+    imptype procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); override;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
+    imptype procedure SetColor(const AWinControl: TWinControl); override;
+    imptype procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer; const AChildren: TFPList); override;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype procedure Invalidate(const AWinControl: TWinControl); override;
+    imptype procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); override;
   end;
 
   { TCocoaWSCustomControl }
 
-  TCocoaWSCustomControl = class(TWSCustomControl)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TCocoaWSCustomControl = class({$ifndef wsintf}TWSCustomControl{$else}TCocoaWSWinControl{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl;
       const ABorderStyle: TBorderStyle); override;
   end;
 
@@ -1585,13 +1586,13 @@ end;
 
 { TCocoaWSWinControl }
 
-class function TCocoaWSWinControl.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSWinControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 begin
   Result := TCocoaWSCustomControl.CreateHandle(AWinControl, AParams);
 end;
 
-class procedure TCocoaWSWinControl.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TCocoaWSWinControl.DestroyHandle(const AWinControl: TWinControl);
 var
   obj: NSObject;
   Callback: ICommonCallback;
@@ -1633,7 +1634,7 @@ begin
   obj.release;
 end;
 
-class function TCocoaWSWinControl.GetCanvasScaleFactor(const AControl: TControl
+imptype function TCocoaWSWinControl.GetCanvasScaleFactor(const AControl: TControl
   ): Double;
 var
   obj: NSObject;
@@ -1660,7 +1661,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSWinControl.SetText(const AWinControl: TWinControl; const AText: String);
+imptype procedure TCocoaWSWinControl.SetText(const AWinControl: TWinControl; const AText: String);
 var
   obj: NSObject;
 begin
@@ -1671,7 +1672,7 @@ begin
     SetNSControlValue(NSControl(obj), AText);
 end;
 
-class function TCocoaWSWinControl.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
+imptype function TCocoaWSWinControl.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
 var
   obj: NSObject;
 begin
@@ -1684,7 +1685,7 @@ begin
     AText := GetNSControlValue(NSControl(obj));
 end;
 
-class function TCocoaWSWinControl.GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean;
+imptype function TCocoaWSWinControl.GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean;
 var
   obj: NSObject;
   s: NSString;
@@ -1704,7 +1705,7 @@ begin
     ALength := 0
 end;
 
-class function TCocoaWSWinControl.GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
+imptype function TCocoaWSWinControl.GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
 begin
   Result := AWinControl.HandleAllocated;
   if Result then
@@ -1720,7 +1721,7 @@ begin
     OffsetRect(ARect, -ARect.Left, -ARect.Top);
 end;
 
-class procedure TCocoaWSWinControl.GetPreferredSize(
+imptype procedure TCocoaWSWinControl.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 var
@@ -1747,7 +1748,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSWinControl.SetBounds(const AWinControl: TWinControl;
+imptype procedure TCocoaWSWinControl.SetBounds(const AWinControl: TWinControl;
   const ALeft, ATop, AWidth, AHeight: Integer);
 var
   cb : ICommonCallBack;
@@ -1763,7 +1764,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSWinControl.SetCursor(const AWinControl: TWinControl;
+imptype procedure TCocoaWSWinControl.SetCursor(const AWinControl: TWinControl;
   const ACursor: HCursor);
 begin
   //debugln('SetCursor '+AWinControl.name+' '+dbgs(ACursor));
@@ -1784,7 +1785,7 @@ type
     procedure setTextColor(clr: NSColor); message 'setTextColor:';
   end;
 
-class procedure TCocoaWSWinControl.SetFont(const AWinControl: TWinControl; const AFont: TFont);
+imptype procedure TCocoaWSWinControl.SetFont(const AWinControl: TWinControl; const AFont: TFont);
 var
   Obj: NSObject;
   Cell: NSCell;
@@ -1808,7 +1809,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSWinControl.SetColor(const AWinControl: TWinControl);
+imptype procedure TCocoaWSWinControl.SetColor(const AWinControl: TWinControl);
 begin
   invalidate(AWinControl);
 end;
@@ -1837,7 +1838,7 @@ begin
   else Result:=NSOrderedSame;
 end;
 
-class procedure TCocoaWSWinControl.SetChildZPosition(const AWinControl,
+imptype procedure TCocoaWSWinControl.SetChildZPosition(const AWinControl,
   AChild: TWinControl; const AOldPos, ANewPos: Integer; const AChildren: TFPList
   );
 var
@@ -1897,7 +1898,7 @@ begin
   //inherited SetChildZPosition(AWinControl, AChild, AOldPos, ANewPos, AChildren);
 end;
 
-class procedure TCocoaWSWinControl.ShowHide(const AWinControl: TWinControl);
+imptype procedure TCocoaWSWinControl.ShowHide(const AWinControl: TWinControl);
 var
   lShow: Boolean;
 begin
@@ -1910,13 +1911,13 @@ begin
   end;
 end;
 
-class procedure TCocoaWSWinControl.Invalidate(const AWinControl: TWinControl);
+imptype procedure TCocoaWSWinControl.Invalidate(const AWinControl: TWinControl);
 begin
   if AWinControl.HandleAllocated then
      NSObject(AWinControl.Handle).lclInvalidate;
 end;
 
-class procedure TCocoaWSWinControl.PaintTo(const AWinControl: TWinControl;
+imptype procedure TCocoaWSWinControl.PaintTo(const AWinControl: TWinControl;
   ADC: HDC; X, Y: Integer);
 var
   bc : TCocoaBitmapContext;
@@ -1943,7 +1944,7 @@ end;
 
 { TCocoaWSCustomControl }
 
-class function TCocoaWSCustomControl.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   ctrl : TCocoaCustomControl;
@@ -1970,7 +1971,7 @@ begin
   Result := TLCLIntfHandle(hs);
 end;
 
-class procedure TCocoaWSCustomControl.SetBorderStyle(
+imptype procedure TCocoaWSCustomControl.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 begin
   if not Assigned(AWinControl) or not (AWinControl.HandleAllocated) then Exit;

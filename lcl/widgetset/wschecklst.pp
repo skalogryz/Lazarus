@@ -64,7 +64,7 @@ type
   TWSCustomCheckListBoxClass = IWSCustomCheckListBox;
   {$endif}
 
-  TWSCustomCheckListBox = class(TWSCustomListBox)
+  TWSCustomCheckListBox = class(TWSCustomListBox{$ifdef wsintf},IWSCustomCheckListBox{$endif})
   impsection
     imptype function GetCheckWidth(const ACheckListBox: TCustomCheckListBox):
       integer; virtual;

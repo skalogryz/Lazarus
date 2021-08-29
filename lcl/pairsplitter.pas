@@ -25,6 +25,7 @@
 unit PairSplitter;
 
 {$mode objfpc}{$H+}
+{$I lcl_defines.inc}
 
 interface
 
@@ -157,7 +158,7 @@ procedure Register;
 implementation
 
 uses
-  WSPairSplitter;
+  WSPairSplitter,{$ifdef wsintf}WSLCLClasses_Intf{$else}WSLCLClasses{$endif};
   
 procedure Register;
 begin
@@ -250,6 +251,9 @@ end;
 
 { TCustomPairSplitter }
 
+var
+  wsSpl : TWSCustomPairSplitterClass = nil;
+
 function TCustomPairSplitter.GetSides(Index: integer): TPairSplitterSide;
 begin
   if (Index < 0) or (Index > 1) then
@@ -267,7 +271,7 @@ end;
 procedure TCustomPairSplitter.SetPosition(const AValue: integer);
 begin
   if (FPosition = AValue) and
-    (GetWSCustomPairSplitter(WidgetSetClass).GetPosition(Self) = FPosition)
+    (wsSpl.GetPosition(Self) = FPosition)
   then
     Exit;
 
@@ -275,7 +279,7 @@ begin
   if FPosition < 0 then
     FPosition := 0;
   if HandleAllocated and (not (csLoading in ComponentState)) then
-    GetWSCustomPairSplitter(WidgetSetClass).SetPosition(Self, FPosition);
+    wsSpl.SetPosition(Self, FPosition);
 end;
 
 procedure TCustomPairSplitter.SetSplitterType(const AValue: TPairSplitterType);
@@ -313,7 +317,7 @@ begin
     begin
       FSides[i] := ASide;
       if HandleAllocated then
-        GetWSCustomPairSplitter(WidgetSetClass).AddSide(Self, ASide, i);
+        wsSpl.AddSide(Self, ASide, i);
       break;
     end;
     inc(i);
@@ -332,7 +336,7 @@ begin
     if FSides[i]=ASide then
     begin
       if HandleAllocated and ASide.HandleAllocated then
-        GetWSCustomPairSplitter(WidgetSetClass).RemoveSide(Self, ASide, i);
+        wsSpl.RemoveSide(Self, ASide, i);
       FSides[i] := nil;
     end;
   // if the user deletes a side at designtime, autocreate a new one
@@ -342,9 +346,18 @@ begin
 end;
 
 class procedure TCustomPairSplitter.WSRegisterClass;
+var
+  c : TWSLCLComponentClass;
 begin
+  if Assigned(wsSpl) then Exit;
   inherited WSRegisterClass;
   RegisterCustomPairSplitter;
+
+  c := FindWSRegistered(TCustomPairSplitter);
+  if Assigned(c) then
+    wsSpl := GetWSCustomPairSplitter(c);
+  if not Assigned(wsSpl) then
+    wsSPL := TWSCustomPairSplitter{$ifdef wsintf}.Create{$endif};
 end;
 
 function TCustomPairSplitter.GetCursor: TCursor;
@@ -354,7 +367,7 @@ begin
   
   // if widgetset class do not want to get cursor (has no internal splitter) then
   // use default lcl handler
-  if not GetWSCustomPairSplitter(WidgetSetClass).GetSplitterCursor(Self, Result) then
+  if not wsSpl.GetSplitterCursor(Self, Result) then
     Result := inherited GetCursor;
 end;
 
@@ -365,7 +378,7 @@ begin
     Exit;
   // if widgetset class do not want to set cursor (has no internal splitter) then
   // use default lcl handler
-  if not GetWSCustomPairSplitter(WidgetSetClass).SetSplitterCursor(Self, Value) then
+  if not wsSpl.SetSplitterCursor(Self, Value) then
     inherited SetCursor(Value);
 end;
 
@@ -404,9 +417,9 @@ begin
   inherited CreateWnd;
   for i := Low(FSides) to High(FSides) do
     if FSides[i] <> nil then
-      GetWSCustomPairSplitter(WidgetSetClass).AddSide(Self, FSides[i], i);
+      wsSpl.AddSide(Self, FSides[i], i);
   APosition := FPosition;
-  GetWSCustomPairSplitter(WidgetSetClass).SetPosition(Self, APosition);
+  wsSpl.SetPosition(Self, APosition);
   SetCursor(FLoadCursor);
   if not (csLoading in ComponentState) then
     FPosition := APosition;
@@ -419,7 +432,7 @@ begin
   if HandleAllocated then
   begin
     CurPosition := -1;
-    GetWSCustomPairSplitter(WidgetSetClass).SetPosition(Self, CurPosition);
+    wsSpl.SetPosition(Self, CurPosition);
     FPosition := CurPosition;
   end;
 end;
@@ -447,7 +460,7 @@ begin
   inherited Loaded;
   CreateSides;
   if HandleAllocated then
-    GetWSCustomPairSplitter(WidgetSetClass).SetPosition(Self, FPosition);
+    wsSpl.SetPosition(Self, FPosition);
 end;
 
 function TCustomPairSplitter.ChildClassAllowed(ChildClass: TClass): boolean;
@@ -455,5 +468,8 @@ begin
   Result := ChildClass.InheritsFrom(TPairSplitterSide) or
             ChildClass.InheritsFrom(TSplitter);
 end;
+
+finalization
+  wsSpl := nil;
 
 end.

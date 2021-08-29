@@ -365,7 +365,7 @@ end;
 function GetWSCustomTrayIcon(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTrayIconClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomTrayIcon);
+  AWidgetSetClass.QueryInterface(IWSCustomTrayIcon, Result);
   {$else}
   Result := TWSCustomTrayIconClass(AWidgetSetClass);
   {$endif}

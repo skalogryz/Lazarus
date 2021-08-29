@@ -151,7 +151,11 @@ begin
   Result := False;
   if Done then exit;
   if not WSRegisterCustomGrid then
+    {$ifndef wsintf}
     RegisterWSComponent(TCustomGrid, TWSCustomGrid{$ifdef wsintf}.Create{$endif});
+    {$else}
+    ;
+    {$endif}
   Done := True;
   Result := True;
 end;
@@ -159,7 +163,7 @@ end;
 function GetWSCustomGrid(AWidgetSetClass: TWSLCLComponentClass): TWSCustomGridClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomGrid);
+  AWidgetSetClass.QueryInterface(IWSCustomGrid, Result);
   {$else}
   Result := TWSCustomGridClass(AWidgetSetClass);
   {$endif}

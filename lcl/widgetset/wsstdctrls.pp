@@ -1058,7 +1058,7 @@ end;
 function GetWSScrollBar(AWidgetSetClass: TWSLCLComponentClass): TWSScrollBarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSScrollBar);
+  AWidgetSetClass.QueryInterface(IWSScrollBar, Result);
   {$else}
   Result := TWSScrollBarClass(AWidgetSetClass);
   {$endif}
@@ -1067,7 +1067,7 @@ end;
 function GetWSCustomComboBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomComboBoxClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomComboBox);
+  AWidgetSetClass.QueryInterface(IWSCustomComboBox, Result);
   {$else}
   Result := TWSCustomComboBoxClass(AWidgetSetClass);
   {$endif}
@@ -1076,7 +1076,7 @@ end;
 function GetWSCustomListBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomListBoxClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomListBox);
+  AWidgetSetClass.QueryInterface(IWSCustomListBox, Result);
   {$else}
   Result := TWSCustomListBoxClass(AWidgetSetClass);
   {$endif}
@@ -1085,7 +1085,7 @@ end;
 function GetWSCustomEdit(AWidgetSetClass: TWSLCLComponentClass): TWSCustomEditClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomEdit);
+  AWidgetSetClass.QueryInterface(IWSCustomEdit, Result);
   {$else}
   Result := TWSCustomEditClass(AWidgetSetClass);
   {$endif}
@@ -1094,7 +1094,7 @@ end;
 function GetWSCustomMemo(AWidgetSetClass: TWSLCLComponentClass): TWSCustomMemoClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomMemo);
+  AWidgetSetClass.QueryInterface(IWSCustomMemo, Result);
   {$else}
   Result := TWSCustomMemoClass(AWidgetSetClass);
   {$endif}
@@ -1103,7 +1103,7 @@ end;
 function GetWSCustomStaticText(AWidgetSetClass: TWSLCLComponentClass): TWSCustomStaticTextClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomStaticText);
+  AWidgetSetClass.QueryInterface(IWSCustomStaticText, Result);
   {$else}
   Result := TWSCustomStaticTextClass(AWidgetSetClass);
   {$endif}
@@ -1112,7 +1112,7 @@ end;
 function GetWSButton(AWidgetSetClass: TWSLCLComponentClass): TWSButtonClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSButton);
+  AWidgetSetClass.QueryInterface(IWSButton, Result);
   {$else}
   Result := TWSButtonClass(AWidgetSetClass);
   {$endif}
@@ -1121,7 +1121,7 @@ end;
 function GetWSCustomCheckBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckBoxClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomCheckBox);
+  AWidgetSetClass.QueryInterface(IWSCustomCheckBox, Result);
   {$else}
   Result := TWSCustomCheckBoxClass(AWidgetSetClass);
   {$endif}

@@ -104,14 +104,18 @@ begin
   if Done then exit;
   RegisterPropertyToSkip(TCustomFloatSpinEdit, 'MaxLength', 'VCL compatibility property', '');
   if not WSRegisterCustomFloatSpinEdit then
-    RegisterWSComponent(TCustomFloatSpinEdit, TWSCustomFloatSpinEdit{$ifdef wsintf}.Create{$endif});
+    {$ifndef wsintf}
+    RegisterWSComponent(TCustomFloatSpinEdit, TWSCustomFloatSpinEdit);
+    {$else}
+    ;
+    {$endif}
   Done := True;
 end;
 
 function GetWSCustomFloatSpinEdit(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFloatSpinEditClass;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomFloatSpinEdit);
+  AWidgetSetClass.QueryInterface(IWSCustomFloatSpinEdit, Result);
   {$else}
   Result := TWSCustomFloatSpinEditClass(AWidgetSetClass);
   {$endif}

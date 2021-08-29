@@ -127,7 +127,11 @@ begin
   if Done then exit;
   //WSRegisterCustomShellTreeView;
   if not WSRegisterCustomShellTreeView then
-    RegisterWSComponent(TCustomShellTreeView, TWSCustomShellTreeView{$ifdef wsintf}.Create{$endif});
+    {$ifndef wsintf}
+    RegisterWSComponent(TCustomShellTreeView, TWSCustomShellTreeView);
+    {$else}
+    ;
+    {$endif}
   Done := True;
 end;
 
@@ -138,14 +142,18 @@ begin
   if Done then exit;
 //  WSRegisterCustomShellListView;
   if not WSRegisterCustomShellListView then
-    RegisterWSComponent(TCustomShellListView, TWSCustomShellListView{$ifdef wsintf}.Create{$endif});
+    {$ifndef wsintf}
+    RegisterWSComponent(TCustomShellListView, TWSCustomShellListView);
+    {$else}
+    ;
+    {$endif}
   Done := True;
 end;
 
 function GetWSCustomShellTreeView(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellTreeViewClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomShellTreeView);
+  AWidgetSetClass.QueryInterface(IWSCustomShellTreeView, Result);
   {$else}
   Result := TWSCustomShellTreeViewClass(AWidgetSetClass);
   {$endif}
@@ -154,7 +162,7 @@ end;
 function GetWSCustomShellListView(AWidgetSetClass: TWSLCLComponentClass): TWSCustomShellListViewClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomShellListView);
+  AWidgetSetClass.QueryInterface(IWSCustomShellListView, Result);
   {$else}
   Result := TWSCustomShellListViewClass(AWidgetSetClass);
   {$endif}

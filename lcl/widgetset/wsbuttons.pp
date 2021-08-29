@@ -137,7 +137,7 @@ end;
 function GetWSBitBtn(AWidgetSetClass: TWSLCLComponentClass): TWSBitBtnClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSBitBtn);
+  AWidgetSetClass.QueryInterface(IWSBitBtn, Result);
   {$else}
   Result := TWSBitBtnClass(AWidgetSetClass);
   {$endif}

@@ -294,7 +294,7 @@ end;
 function GetWSCommonDialog(AWidgetSetClass: TWSLCLComponentClass): TWSCommonDialogClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCommonDialog);
+  AWidgetSetClass.QueryInterface(IWSCommonDialog, Result);
   {$else}
   Result := TWSCommonDialogClass(AWidgetSetClass);
   {$endif}

@@ -551,7 +551,11 @@ const
 begin
   if Done then exit;
   if not WSRegisterControl then
+    {$ifndef wsintf}
     RegisterWSComponent(TControl, TWSControl{$ifdef wsintf}.Create{$endif});
+    {$else}
+    ;
+    {$endif}
   Done := True;
 end;
 
@@ -561,7 +565,11 @@ const
 begin
   if Done then exit;
   if not WSRegisterWinControl then
+    {$ifndef wsintf}
     RegisterWSComponent(TWinControl, TWSWinControl{$ifdef wsintf}.Create{$endif});
+    {$else}
+    ;
+    {$endif}
   Done := True;
 end;
 
@@ -590,7 +598,7 @@ end;
 function GetWSDragImageListResolution(AWidgetSetClass: TWSLCLComponentClass): TWSDragImageListResolutionClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSDragImageListResolution);
+  AWidgetSetClass.QueryInterface(IWSDragImageListResolution, Result);
   {$else}
   Result := TWSDragImageListResolutionClass(AWidgetSetClass);
   {$endif}
@@ -599,7 +607,7 @@ end;
 function GetWSControl(AWidgetSetClass: TWSLCLComponentClass): TWSControlClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSControl);
+  AWidgetSetClass.QueryInterface(IWSControl, Result);
   {$else}
   Result := TWSControlClass(AWidgetSetClass);
   {$endif}
@@ -608,7 +616,7 @@ end;
 function GetWSWinControl(AWidgetSetClass: {$ifndef wsintf}TClass{$else}TWSLCLComponentClass{$endif}): TWSWinControlClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSWinControl);
+  AWidgetSetClass.QueryInterface(IWSWinControl, Result);
   {$else}
   Result := TWSWinControlClass(AWidgetSetClass);
   {$endif}

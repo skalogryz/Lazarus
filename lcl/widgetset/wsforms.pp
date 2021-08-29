@@ -386,7 +386,7 @@ end;
 function GetWSCustomForm(AWidgetSetClass: TWSLCLComponentClass): TWSCustomFormClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomForm);
+  AWidgetSetClass.QueryInterface(IWSCustomForm, Result);
   {$else}
   Result := TWSCustomFormClass(AWidgetSetClass);
   {$endif}

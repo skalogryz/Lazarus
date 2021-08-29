@@ -1191,7 +1191,7 @@ end;
 function GetWSCustomPage(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPageClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomPage);
+  AWidgetSetClass.QueryInterface(IWSCustomPage, Result);
   {$else}
   Result := TWSCustomPageClass(AWidgetSetClass);
   {$endif}
@@ -1200,7 +1200,7 @@ end;
 function GetWSCustomTabControl(AWidgetSetClass: TWSLCLComponentClass): TWSCustomTabControlClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomTabControl);
+  AWidgetSetClass.QueryInterface(IWSCustomTabControl, Result);
   {$else}
   Result := TWSCustomTabControlClass(AWidgetSetClass);
   {$endif}
@@ -1209,7 +1209,7 @@ end;
 function GetWSStatusBar(AWidgetSetClass: TWSLCLComponentClass): TWSStatusBarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSStatusBar);
+  AWidgetSetClass.QueryInterface(IWSStatusBar, Result);
   {$else}
   Result := TWSStatusBarClass(AWidgetSetClass);
   {$endif}
@@ -1218,7 +1218,7 @@ end;
 function GetWSCustomListView(AWidgetSetClass: TWSLCLComponentClass): TWSCustomListViewClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomListView);
+  AWidgetSetClass.QueryInterface(IWSCustomListView, Result);
   {$else}
   Result := TWSCustomListViewClass(AWidgetSetClass);
   {$endif}
@@ -1227,7 +1227,7 @@ end;
 function GetWSProgressBar(AWidgetSetClass: TWSLCLComponentClass): TWSProgressBarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSProgressBar);
+  AWidgetSetClass.QueryInterface(IWSProgressBar, Result);
   {$else}
   Result := TWSProgressBarClass(AWidgetSetClass);
   {$endif}
@@ -1236,7 +1236,7 @@ end;
 function GetWSCustomUpDown(AWidgetSetClass: TWSLCLComponentClass): TWSCustomUpDownClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomUpDown);
+  AWidgetSetClass.QueryInterface(IWSCustomUpDown, Result);
   {$else}
   Result := TWSCustomUpDownClass(AWidgetSetClass);
   {$endif}
@@ -1245,7 +1245,7 @@ end;
 function GetWSTrackBar(AWidgetSetClass: TWSLCLComponentClass): TWSTrackBarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSTrackBar);
+  AWidgetSetClass.QueryInterface(IWSTrackBar, Result);
   {$else}
   Result := TWSTrackBarClass(AWidgetSetClass);
   {$endif}

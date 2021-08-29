@@ -152,7 +152,7 @@ end;
 function GetWSCustomCheckListBox(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCheckListBoxClass;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomCheckListBox);
+  AWidgetSetClass.QueryInterface(IWSCustomCheckListBox, Result);
   {$else}
   Result := TWSCustomCheckListBoxClass(AWidgetSetClass);
   {$endif}

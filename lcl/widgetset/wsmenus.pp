@@ -314,7 +314,7 @@ end;
 function GetWSMenuItem(AWidgetSetClass: TWSLCLComponentClass): TWSMenuItemClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSMenuItem);
+  AWidgetSetClass.QueryInterface(IWSMenuItem, Result);
   {$else}
   Result := TWSMenuItemClass(AWidgetSetClass);
   {$endif}
@@ -323,7 +323,7 @@ end;
 function GetWSMenu(AWidgetSetClass: TWSLCLComponentClass): TWSMenuClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSMenu);
+  AWidgetSetClass.QueryInterface(IWSMenu, Result);
   {$else}
   Result := TWSMenuClass(AWidgetSetClass);
   {$endif}
@@ -332,7 +332,7 @@ end;
 function GetWSPopupMenu(AWidgetSetClass: TWSLCLComponentClass): TWSPopupMenuClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSPopupMenu);
+  AWidgetSetClass.QueryInterface(IWSPopupMenu, Result);
   {$else}
   Result := TWSPopupMenuClass(AWidgetSetClass);
   {$endif}

@@ -90,7 +90,7 @@ end;
 function GetWSCustomRubberBand(AWidgetSetClass: TWSLCLComponentClass): TWSCustomRubberBandClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomRubberBand);
+  AWidgetSetClass.QueryInterface(IWSCustomRubberBand, Result);
   {$else}
   Result := TWSCustomRubberBandClass(AWidgetSetClass);
   {$endif}

@@ -249,8 +249,7 @@ end;
 function GetWSCustomPairSplitter(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPairSplitterClass;
 begin
   {$ifdef wsintf}
-  if AWidgetSetClass.QueryInterface(IWSCustomPairSplitter, Result) <> 0 then
-    Result := nil;
+  AWidgetSetClass.QueryInterface(IWSCustomPairSplitter, Result);
   {$else}
   Result := TWSCustomPairSplitterClass(AWidgetSetClass);
   {$endif}

@@ -129,7 +129,7 @@ end;
 function GetWSCustomCalendar(AWidgetSetClass: TWSLCLComponentClass): TWSCustomCalendarClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomCalendar);
+  AWidgetSetClass.QueryInterface(IWSCustomCalendar, Result);
   {$else}
   Result := TWSCustomCalendarClass(AWidgetSetClass);
   {$endif}

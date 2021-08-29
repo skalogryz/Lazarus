@@ -293,7 +293,7 @@ end;
 function GetWSCustomImageListResolution(AWidgetSetClass: TWSLCLComponentClass): TWSCustomImageListResolutionClass; inline;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomImageListResolution);
+  AWidgetSetClass.QueryInterface(IWSCustomImageListResolution, Result);
   {$else}
   Result := TWSCustomImageListResolutionClass(AWidgetSetClass);
   {$endif}

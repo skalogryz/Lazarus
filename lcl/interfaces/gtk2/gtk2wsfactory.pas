@@ -157,11 +157,7 @@ end;
 
 function RegisterWinControl: Boolean; alias : 'WSRegisterWinControl';
 begin
-  {$ifdef wsintf}
-  RegisterWSComponent(TWinControl, TGtk2WSWinControl.Create);
-  {$else}
-  RegisterWSComponent(TWinControl, TGtk2WSWinControl, TGtkPrivateWidget);
-  {$endif}
+  RegisterWSComponent(TWinControl, TGtk2WSWinControl{$ifdef wsintf}.Create{$endif}, TGtkPrivateWidget);
   //RegisterWSComponent(TWinControl, TGtk2WSWinControl);
   Result := True;
 end;
@@ -321,11 +317,7 @@ end;
 
 function RegisterCustomListBox: Boolean; alias : 'WSRegisterCustomListBox';
 begin
-  {$ifdef wsintf}
-  RegisterWSComponent(TCustomListBox, TGtk2WSCustomListBox.Create);
-  {$else}
-  RegisterWSComponent(TCustomListBox, TGtk2WSCustomListBox, TGtk2PrivateList);
-  {$endif}
+  RegisterWSComponent(TCustomListBox, TGtk2WSCustomListBox{$ifdef wsintf}.Create{$endif}, TGtk2PrivateList);
 //  RegisterWSComponent(TListBox, TGtk2WSListBox);
   Result := True;
 end;
@@ -340,11 +332,9 @@ end;
 function RegisterCustomMemo: Boolean; alias : 'WSRegisterCustomMemo';
 begin
 //  RegisterWSComponent(TMemo, TGtk2WSMemo);
-  {$ifndef wsintf}
-  RegisterWSComponent(TCustomMemo, TGtk2WSCustomMemo, TGtk2PrivateMemo);
+  RegisterWSComponent(TCustomMemo, TGtk2WSCustomMemo{$ifdef wsintf}.Create{$endif}, TGtk2PrivateMemo);
+  {$ifndef wsintf} // for whatever reason it was double registered. Due to merge conflict?
   RegisterWSComponent(TCustomMemo, TGtk2WSCustomMemo);
-  {$else}
-  RegisterWSComponent(TCustomMemo, TGtk2WSCustomMemo.Create);
   {$endif}
   Result := True;
 end;
@@ -357,11 +347,9 @@ end;
 
 function RegisterCustomButton: Boolean; alias : 'WSRegisterCustomButton';
 begin
-  {$ifndef wsintf}
-  RegisterWSComponent(TCustomButton, TGtk2WSButton, TGtk2PrivateButton); { enabled(ifdef) in GTK1 }
+  RegisterWSComponent(TCustomButton, TGtk2WSButton{$ifdef wsintf}.Create{$endif}, TGtk2PrivateButton); { enabled(ifdef) in GTK1 }
+  {$ifndef wsintf} // for whatever reason it was double registered. Due to merge conflict?
   RegisterWSComponent(TCustomButton, TGtk2WSButton);
-  {$else}
-  RegisterWSComponent(TCustomButton, TGtk2WSButton.Create);
   {$endif}
   Result := True;
 end;
@@ -409,11 +397,7 @@ end;
 
 function RegisterCustomNotebook: Boolean; alias : 'WSRegisterCustomNotebook';
 begin
-  {$ifdef wsintf}
-  RegisterWSComponent(TCustomTabControl, TGtk2WSCustomTabControl.Create);
-  {$else}
-  RegisterWSComponent(TCustomTabControl, TGtk2WSCustomTabControl, TGtk2PrivateNotebook);
-  {$endif}
+  RegisterWSComponent(TCustomTabControl, TGtk2WSCustomTabControl{$ifdef wsintf}.Create{$endif}, TGtk2PrivateNotebook);
 //  RegisterWSComponent(TNotebook, TGtk2WSNotebook);
   Result := True;
 end;
@@ -539,11 +523,7 @@ end;
 // Buttons
 function RegisterCustomBitBtn: Boolean; alias : 'WSRegisterCustomBitBtn';
 begin
-  {$ifdef wsintf}
-  RegisterWSComponent(TCustomBitBtn, TGtk2WSBitBtn{$ifdef wsintf}.Create{$endif});
-  {$else}
-  RegisterWSComponent(TCustomBitBtn, TGtk2WSBitBtn, TGtk2PrivateButton);
-  {$endif}
+  RegisterWSComponent(TCustomBitBtn, TGtk2WSBitBtn{$ifdef wsintf}.Create{$endif}, TGtk2PrivateButton);
   Result := True;
 end;
 
@@ -563,11 +543,7 @@ end;
 // Forms
 function RegisterScrollingWinControl: Boolean; alias : 'WSRegisterScrollingWinControl';
 begin
-  {$ifdef wsintf}
-  RegisterWSComponent(TScrollingWinControl, TGtk2WSScrollingWinControl{$ifdef wsintf}.Create{$endif});
-  {$else}
-  RegisterWSComponent(TScrollingWinControl, TGtk2WSScrollingWinControl, TGtkPrivateScrollingWinControl);
-  {$endif}
+  RegisterWSComponent(TScrollingWinControl, TGtk2WSScrollingWinControl{$ifdef wsintf}.Create{$endif}, TGtkPrivateScrollingWinControl);
   Result := True;
 end;
 

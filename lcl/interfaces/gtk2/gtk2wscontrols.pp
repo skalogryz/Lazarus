@@ -777,7 +777,6 @@ begin
 
   if not WSCheckHandleAllocated(AChild, 'SetChildZPosition (child)') then
     Exit;
-  {$ifndef wsintf}
   if (ANewPos <= 0) or (ANewPos >= AChildren.Count - 1) then
   begin
     // simple
@@ -798,7 +797,6 @@ begin
           Child.WidgetSetClass.WSPrivate).SetZPosition(Child, wszpBack);
     end;
   end;
-  {$endif}
 end;
 
 imptype procedure TGtk2WSWinControl.SetCursor(const AWinControl: TWinControl; const ACursor: HCursor);
@@ -807,14 +805,12 @@ var
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetCursor')
   then Exit;
-  {$ifndef wsintf}
   WidgetInfo := GetWidgetInfo({%H-}Pointer(AWinControl.Handle));
   if WidgetInfo^.ControlCursor <> ACursor then
   begin
     WidgetInfo^.ControlCursor := ACursor;
     TGtkPrivateWidgetClass(AWinControl.WidgetSetClass.WSPrivate).UpdateCursor(WidgetInfo);
   end;
-  {$endif}
 end;
 
 imptype procedure TGtk2WSWinControl.SetFont(const AWinControl: TWinControl;

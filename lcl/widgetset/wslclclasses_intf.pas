@@ -72,9 +72,11 @@ type
     function WSPrivate: TWSPrivateClass;
   end;
   TWSLCLComponent = class(TInterfacedObject, IWSLCLComponent)
+  private
     fWSPrivate: TWSPrivateClass;
+  protected
     function DebugName: shortstring;
-    procedure SetPrivateClass(AWSPrivate: TWSPrivateClass);
+    procedure SetPrivateClass(AWSPrivate: TWSPrivateClass); deprecated;
     function WSPrivate: TWSPrivateClass;
   end;
   TWSLCLComponentClass = IWSLCLComponent; // for LCL compatibility
@@ -100,7 +102,9 @@ function IsWSComponentInheritsFrom(const AComponent: TComponentClass;
   InheritFromClass: TWSLCLComponentClass): Boolean;
 {$endif}
 procedure RegisterWSComponent(AComponent: TComponentClass;
-  AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass = nil);
+  AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass); deprecated; // don't use PrivateClass anymore
+procedure RegisterWSComponent(AComponent: TComponentClass;
+  AWSComponent: TWSLCLComponentClass);
 function RegisterNewWSComp(AComponent: TComponentClass): IWSLCLComponent; //inline;
 
 // Only for non-TComponent based objects
@@ -229,6 +233,7 @@ end;
 
 var
   WSClassesList: TClassNodeAVLTree = nil;
+  WSAnyPrivate: Boolean = false;
   WSLazAccessibleObjectClass: TWSObjectClass;
   WSLazDeviceAPIsClass: TWSObjectClass;
 
@@ -249,12 +254,32 @@ end;
 procedure RegisterWSComponentInt(AComponent: TComponentClass;
   AWSComponent: IWSLCLComponent);
 var
-  p : TClassNode;
+  p  : TClassNode;
+  c  : TClass;
+  nd : TClassNode;
 begin
   p := TClassNode.Create;
   p.WSClass := AWSComponent;
   p.LCLClass := AComponent;
   WSClassesList.Add(Pointer(p));
+  if Assigned(p.WSClass.WSPrivate) then
+    WSAnyPrivate:=true;
+
+  if not (WSAnyPrivate) then Exit;
+
+  // WSPrivate are used by Gtk2.
+  if not Assigned(p.WSClass.WSPrivate) then begin
+    // searching for all the prior classes, IF they have any privates to be used
+    c := Acomponent.ClassParent;
+    while (c.InheritsFrom(TComponent)) do begin
+      nd := FindClassNode(TComponentClass(c));
+      if Assigned(nd) and Assigned(nd.WSClass.WSPrivate) then begin
+        p.WSClass.SetPrivateClass(nd.WSClass.WSPrivate);
+        Exit;
+      end;
+      c := c.ClassParent;
+    end;
+  end;
 end;
 
 // Do not create VClass at runtime but use normal Object Pascal class creation.
@@ -361,10 +386,10 @@ begin
 end;
 
 procedure RegisterWSComponent(AComponent: TComponentClass;
-  AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass = nil);
+  AWSComponent: TWSLCLComponentClass);
 var
   idx : integer;
-  p : TClassNode;
+  p   : TClassNode;
   avl : TAVLTreeNode;
 begin
   if not Assigned(WSClassesList) then
@@ -378,7 +403,14 @@ begin
     // previously was something different
     WSClassesList.Delete(avl);
   end;
-  AWSComponent.SetPrivateClass(AWSPrivate);
+  RegisterWSComponentInt(AComponent, AWSComponent);
+end;
+
+procedure RegisterWSComponent(AComponent: TComponentClass;
+  AWSComponent: TWSLCLComponentClass; AWSPrivate: TWSPrivateClass);
+begin
+  if Assigned(AWSComponent) then
+    AWSComponent.SetPrivateClass(AWSPrivate);
   RegisterWSComponentInt(AComponent, AWSComponent);
 end;
 

@@ -238,14 +238,19 @@ const
 begin
   if Done then exit;
   if not WSRegisterCustomPairSplitter then
-    RegisterWSComponent(TCustomPairSplitter, TWSCustomPairSplitter{$ifdef wsintf}.Create{$endif});
+    {$ifndef wsintf}
+    RegisterWSComponent(TCustomPairSplitter, TWSCustomPairSplitter);
+    {$else}
+    ;
+    {$endif}
   Done := True;
 end;
 
 function GetWSCustomPairSplitter(AWidgetSetClass: TWSLCLComponentClass): TWSCustomPairSplitterClass;
 begin
   {$ifdef wsintf}
-  Result := (AWidgetSetClass as IWSCustomPairSplitter);
+  if AWidgetSetClass.QueryInterface(IWSCustomPairSplitter, Result) <> 0 then
+    Result := nil;
   {$else}
   Result := TWSCustomPairSplitterClass(AWidgetSetClass);
   {$endif}

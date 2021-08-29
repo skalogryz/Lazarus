@@ -28,7 +28,7 @@ uses
   // LCL
   Classes, Controls, ExtCtrls, LCLType, LCLProc, Graphics, Math, SysUtils,
   // widgetset
-  WSExtCtrls, WSLCLClasses, WSControls, WSProc,
+  WSExtCtrls, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif}, WSControls, WSProc,
   // LCL Cocoa
   CocoaPrivate, CocoaWSMenus, CocoaWSCommon, CocoaGDIObjects, CocoaScrollers
   ,Cocoa_Extra;
@@ -61,9 +61,9 @@ type
 
   { TCocoaWSCustomSplitter }
 
-  TCocoaWSCustomSplitter = class(TWSCustomSplitter)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TCocoaWSCustomSplitter = class({$ifdef wsintf}TWSCustomSplitter{$else}TCocoaWSWinControl{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
@@ -173,13 +173,16 @@ type
 
   { TCocoaWSCustomTrayIcon }
 
-  TCocoaWSCustomTrayIcon = class(TWSCustomTrayIcon)
-  published
-    class function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class function Show(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); override;
-    class function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; override;
+  TCocoaWSCustomTrayIcon = class({$ifndef wsintf}TWSCustomTrayIcon{$else}TWSLCLComponent, IWSCustomTrayIcon{$endif})
+  impsection
+    imptype function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype function Show(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); rootoverride;
+    imptype function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; rootoverride;
+    imptype function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
+    {$endif}
   end;
 
 implementation
@@ -219,7 +222,7 @@ begin
   inherited dealloc;
 end;
 
-class function TCocoaWSCustomSplitter.CreateHandle(
+imptype function TCocoaWSCustomSplitter.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   ctrl : TCocoaSplitterOwnerControl;

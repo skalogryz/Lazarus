@@ -17,6 +17,7 @@ unit CocoaWSSpin;
 
 {$mode objfpc}{$H+}
 {$modeswitch objectivec1}
+{$include cocoadefines.inc}
 
 interface
 
@@ -24,21 +25,24 @@ uses
   // rtl+lcl
   Controls, Spin, LCLType,
   // widgetset
-  WSSpin, WSLCLClasses,
+  WSSpin, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif},
   // cocoa ws
-  CocoaPrivate, CocoaWSCommon, CocoaTextEdits;
+  CocoaPrivate, CocoaWSCommon, CocoaTextEdits, CocoaWSStdCtrls;
 
 type
 
   { TCocoaWSCustomFloatSpinEdit }
 
-  TCocoaWSCustomFloatSpinEdit = class(TWSCustomFloatSpinEdit)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
-    class function  GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double; override;
-    class procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit); override;
-    class procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
+  TCocoaWSCustomFloatSpinEdit = class({$ifndef wsintf}TWSCustomFloatSpinEdit{$else}TCocoaWSCustomEdit, IWSCustomFloatSpinEdit{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
+    imptype function  GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double; rootoverride;
+    imptype procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit); rootoverride;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
+    {$ifdef wsintf}
+    imptype procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean); rootoverride;
+    {$endif}
   end;
 
 implementation
@@ -58,7 +62,7 @@ end;
 
   Creates new spin edit in Carbon interface with the specified parameters
  ------------------------------------------------------------------------------}
-class function TCocoaWSCustomFloatSpinEdit.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomFloatSpinEdit.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   lSpin: TCocoaSpinEdit;
@@ -73,11 +77,15 @@ begin
     TCocoaSpinEditStepper(lSpin.Stepper).callback:=lSpin.callback;
 end;
 
-class procedure TCocoaWSCustomFloatSpinEdit.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TCocoaWSCustomFloatSpinEdit.DestroyHandle(const AWinControl: TWinControl);
 begin
   if not AWinControl.HandleAllocated then Exit;
   TCocoaSpinEdit(AWinControl.Handle).lclReleaseSubcontrols;
+  {$ifndef wsintf}
   TCocoaWSWinControl.DestroyHandle(AWinControl);
+  {$else}
+  inherited DestroyHandle(AWinControl);
+  {$endif}
 end;
 
 {------------------------------------------------------------------------------
@@ -85,7 +93,7 @@ end;
   Params:  ACustomFloatSpinEdit - LCL custom float spin edit
   Returns: The float spin edit value
  ------------------------------------------------------------------------------}
-class function TCocoaWSCustomFloatSpinEdit.GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double;
+imptype function TCocoaWSCustomFloatSpinEdit.GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double;
 var
   lSpin: TCocoaSpinEdit;
 begin
@@ -104,7 +112,7 @@ end;
   Update the value, min, max and increment of custom float spin edit in Cocoa
   interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSCustomFloatSpinEdit.UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
+imptype procedure TCocoaWSCustomFloatSpinEdit.UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
 var
   lSpin: TCocoaSpinEdit;
 begin
@@ -114,7 +122,7 @@ begin
   UpdateControlLCLToCocoa(ACustomFloatSpinEdit, lSpin);
 end;
 
-class procedure TCocoaWSCustomFloatSpinEdit.SetBounds(
+imptype procedure TCocoaWSCustomFloatSpinEdit.SetBounds(
   const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer);
 var
   lSpin: TCocoaSpinEdit;
@@ -123,9 +131,16 @@ begin
   if ACustomFloatSpinEdit = nil then Exit;
   if not ACustomFloatSpinEdit.HandleAllocated then Exit;
   lSpin := TCocoaSpinEdit(ACustomFloatSpinEdit.Handle);
-
+  {$ifndef wsintf}
   TCocoaWSWinControl.SetBounds(AWinControl, ALeft, ATop, AWidth, AHeight);
+  {$else}
+  inherited SetBounds(AWinControl, ALeft, ATop, AWidth, AHeight);
+  {$endif}
   lSpin.PositionSubcontrols(ALeft, ATop, AWidth, AHeight);
 end;
-
+{$ifdef wsintf}
+imptype procedure TCocoaWSCustomFloatSpinEdit.SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean);
+begin
+end;
+{$endif}
 end.

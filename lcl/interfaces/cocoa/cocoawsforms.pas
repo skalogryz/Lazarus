@@ -28,7 +28,7 @@ uses
   // LCL
   Controls, Forms, Graphics, LCLType, Messages, LMessages, LCLProc,
   // Widgetset
-  WSForms, WSLCLClasses, WSProc, LCLMessageGlue,
+  WSControls, WSForms, WSLCLClasses, WSProc, LCLMessageGlue,
   // LCL Cocoa
   CocoaPrivate, CocoaUtils, CocoaWSCommon, CocoaWSStdCtrls, CocoaWSMenus,
   CocoaGDIObjects,
@@ -69,17 +69,17 @@ type
 
   { TCocoaWSScrollingWinControl }
 
-  TCocoaWSScrollingWinControl = class(TWSScrollingWinControl)
+  TCocoaWSScrollingWinControl = class({$ifndef wsintf}TWSScrollingWinControl{$else}TCocoaWSWinControl{$endif})
   private
   protected
-  public
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
   end;
 
   { TCocoaWSScrollBox }
 
-  TCocoaWSScrollBox = class(TWSScrollBox)
+  TCocoaWSScrollBox = class({$ifndef wsintf}TWSScrollBox{$else}TCocoaWSScrollingWinControl{$endif})
   private
   protected
   public
@@ -87,7 +87,7 @@ type
 
   { TCocoaWSCustomFrame }
 
-  TCocoaWSCustomFrame = class(TWSCustomFrame)
+  TCocoaWSCustomFrame = class({$ifndef wsintf}TWSCustomFrame{$else}TCocoaWSScrollingWinControl{$endif})
   private
   protected
   public
@@ -95,15 +95,15 @@ type
 
   { TCocoaWSFrame }
 
-  TCocoaWSFrame = class(TWSFrame)
+  TCocoaWSFrame = class({$ifndef wsintf}TWSFrame{$else}TCocoaWSCustomFrame{$endif})
   private
   protected
   public
   end;
 
   { TCocoaWSCustomForm }
-  TCocoaWSCustomFormClass = class of TCocoaWSCustomForm;
-  TCocoaWSCustomForm = class(TWSCustomForm)
+  {$ifndef wsintf}TCocoaWSCustomFormClass = class of TCocoaWSCustomForm;{$endif}
+  TCocoaWSCustomForm = class({$ifndef wsintf}TWSCustomForm{$else}TCocoaWSScrollingWinControl, IWSCustomForm{$endif})
   private
     class function GetStyleMaskFor(ABorderStyle: TFormBorderStyle; ABorderIcons: TBorderIcons): NSUInteger;
     class procedure UpdateWindowIcons(AWindow: NSWindow; ABorderStyle: TFormBorderStyle; ABorderIcons: TBorderIcons);
@@ -111,38 +111,53 @@ type
     class procedure UpdateWindowMask(AWindow: NSWindow; ABorderStyle: TFormBorderStyle; ABorderIcons: TBorderIcons);
     class function GetWindowFromHandle(const ACustomForm: TCustomForm): TCocoaWindow;
     class function GetWindowContentFromHandle(const ACustomForm: TCustomForm): TCocoaWindowContent;
-  published
-    class function AllocWindowHandle: TCocoaWindow; virtual;
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
+  impsection
+    class function AllocWindowHandle: TCocoaWindow; {$ifndef wsintf}virtual;{$endif}
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
 
-    class function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
-    class function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
 
-    class procedure CloseModal(const ACustomForm: TCustomForm); override;
-    class procedure ShowModal(const ACustomForm: TCustomForm); override;
-    class procedure SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult); override;
+    imptype procedure CloseModal(const ACustomForm: TCustomForm); rootoverride;
+    imptype procedure ShowModal(const ACustomForm: TCustomForm); rootoverride;
+    imptype procedure SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult); rootoverride;
 
-    class procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); override;
-    class procedure SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean; const Alpha: Byte); override;
-    class procedure SetBorderIcons(const AForm: TCustomForm; const ABorderIcons: TBorderIcons); override;
-    class procedure SetFormBorderStyle(const AForm: TCustomForm; const AFormBorderStyle: TFormBorderStyle); override;
-    class procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle); override;
-    class procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); override;
-    class procedure SetRealPopupParent(const ACustomForm: TCustomForm;
-      const APopupParent: TCustomForm); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); rootoverride;
+    imptype procedure SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean; const Alpha: Byte); rootoverride;
+    imptype procedure SetBorderIcons(const AForm: TCustomForm; const ABorderIcons: TBorderIcons); rootoverride;
+    imptype procedure SetFormBorderStyle(const AForm: TCustomForm; const AFormBorderStyle: TFormBorderStyle); rootoverride;
+    imptype procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle); rootoverride;
+    imptype procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); rootoverride;
+    imptype procedure SetRealPopupParent(const ACustomForm: TCustomForm;
+      const APopupParent: TCustomForm); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
 
     {need to override these }
-    class function GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
-    class function GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
-    class procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
+    imptype function GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
+    imptype function GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
+    {$ifdef wsintf}
+    imptype procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); rootoverride;
+    imptype procedure SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition); rootoverride;
+    imptype function GetDefaultDoubleBuffered: Boolean; rootoverride;
+
+    imptype function ActiveMDIChild(const AForm: TCustomForm): TCustomForm; rootoverride;
+    imptype function Cascade(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function GetClientHandle(const AForm: TCustomForm): HWND; rootoverride;
+    imptype function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm; rootoverride;
+    imptype function Next(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function Previous(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function Tile(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function ArrangeIcons(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function MDIChildCount(const AForm: TCustomForm): Integer; rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSForm }
 
-  TCocoaWSForm = class(TWSForm)
+  TCocoaWSForm = class({$ifndef wsintf}TWSForm{$else}TCocoaWSCustomForm{$endif})
   private
   protected
   public
@@ -150,13 +165,13 @@ type
 
   { TCocoaWSHintWindow }
 
-  TCocoaWSHintWindow = class(TWSHintWindow)
+  TCocoaWSHintWindow = class({$ifndef wsintf}TWSHintWindow{$else}TCocoaWSCustomForm{$endif})
   private
   protected
   public
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
   end;
 
   { TCocoaWSScreen }
@@ -239,7 +254,7 @@ end;
 
 { TCocoaWSHintWindow }
 
-class function TCocoaWSHintWindow.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSHintWindow.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   win: TCocoaPanel;
@@ -311,10 +326,14 @@ begin
   Result := TLCLIntfHandle(cnt);
 end;
 
-class procedure TCocoaWSHintWindow.SetText(const AWinControl: TWinControl;
+imptype procedure TCocoaWSHintWindow.SetText(const AWinControl: TWinControl;
   const AText: String);
 begin
+  {$ifndef wsintf}
   TCocoaWSCustomForm.SetText(AWinControl, AText);
+  {$else}
+  inherited SetText(AWinControl, AText);
+  {$endif}
   //todo: this is a workaround. For some reason, when moving a hint window
   //      from one control to another (of the same type), the contents
   //      of the hint window is not invalidated.
@@ -532,7 +551,7 @@ end;
 
 { TCocoaWSScrollingWinControl}
 
-class function  TCocoaWSScrollingWinControl.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function  TCocoaWSScrollingWinControl.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   scrollcon: TCocoaScrollView;
   docview: TCocoaCustomControl;
@@ -556,7 +575,7 @@ begin
   Result := TLCLIntfHandle(scrollcon);
 end;
 
-class procedure TCocoaWSScrollingWinControl.SetBorderStyle(
+imptype procedure TCocoaWSScrollingWinControl.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 begin
   if not Assigned(AWinControl) or not AWincontrol.HandleAllocated then Exit;
@@ -700,7 +719,7 @@ begin
   Result := TCocoaWindow(TCocoaWindow.alloc);
 end;
 
-class function TCocoaWSCustomForm.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomForm.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   Form: TCustomForm absolute AWinControl;
@@ -837,7 +856,7 @@ begin
   Result := TLCLIntfHandle(cnt);
 end;
 
-class procedure TCocoaWSCustomForm.DestroyHandle(const AWinControl: TWinControl
+imptype procedure TCocoaWSCustomForm.DestroyHandle(const AWinControl: TWinControl
   );
 var
   win : NSWindow;
@@ -869,12 +888,15 @@ begin
     win.lclClearCallback();
     win.release;
   end;
-
+  {$ifndef wsintf}
   TCocoaWSWinControl.DestroyHandle(AWinControl);
+  {$else}
+  inherited DestroyHandle(AWinControl);
+  {$endif}
 end;
 
 
-class function TCocoaWSCustomForm.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
+imptype function TCocoaWSCustomForm.GetText(const AWinControl: TWinControl; var AText: String): Boolean;
 var
   win : NSWindow;
 begin
@@ -889,7 +911,7 @@ begin
   end;
 end;
 
-class function TCocoaWSCustomForm.GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean;
+imptype function TCocoaWSCustomForm.GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean;
 var
   win : NSWindow;
 begin
@@ -906,7 +928,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomForm.SetText(const AWinControl: TWinControl; const AText: String);
+imptype procedure TCocoaWSCustomForm.SetText(const AWinControl: TWinControl; const AText: String);
 var
   ns: NSString;
   win : NSWindow;
@@ -922,12 +944,12 @@ begin
   ns.release;
 end;
 
-class procedure TCocoaWSCustomForm.CloseModal(const ACustomForm: TCustomForm);
+imptype procedure TCocoaWSCustomForm.CloseModal(const ACustomForm: TCustomForm);
 begin
   CocoaWidgetSet.EndModal(NSView(ACustomForm.Handle).window);
 end;
 
-class procedure TCocoaWSCustomForm.ShowModal(const ACustomForm: TCustomForm);
+imptype procedure TCocoaWSCustomForm.ShowModal(const ACustomForm: TCustomForm);
 var
   lWinContent: TCocoaWindowContent;
   win: TCocoaWindow;
@@ -979,14 +1001,14 @@ begin
 end;
 
 // If ShowModal will not be fully blocking in the future this can be removed
-class procedure TCocoaWSCustomForm.SetModalResult(const ACustomForm: TCustomForm;
+imptype procedure TCocoaWSCustomForm.SetModalResult(const ACustomForm: TCustomForm;
   ANewValue: TModalResult);
 begin
   if (CocoaWidgetSet.CurModalForm = NSView(ACustomForm.Handle).window) and (ANewValue <> 0) then
     CloseModal(ACustomForm);
 end;
 
-class procedure TCocoaWSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
+imptype procedure TCocoaWSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
   AValue: Boolean);
 var
   view : NSView;
@@ -1001,7 +1023,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean; const Alpha: Byte);
+imptype procedure TCocoaWSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm; const AlphaBlend: Boolean; const Alpha: Byte);
 var
   win : NSWindow;
 begin
@@ -1017,7 +1039,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomForm.SetBorderIcons(const AForm: TCustomForm;
+imptype procedure TCocoaWSCustomForm.SetBorderIcons(const AForm: TCustomForm;
   const ABorderIcons: TBorderIcons);
 var
   win : NSWindow;
@@ -1030,7 +1052,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
+imptype procedure TCocoaWSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
   const AFormBorderStyle: TFormBorderStyle);
 var
   win : NSWindow;
@@ -1043,7 +1065,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomForm.SetFormStyle(const AForm: TCustomform;
+imptype procedure TCocoaWSCustomForm.SetFormStyle(const AForm: TCustomform;
   const AFormStyle, AOldFormStyle: TFormStyle);
 var
   win : NSWindow;
@@ -1055,7 +1077,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomForm.SetIcon(const AForm: TCustomForm;
+imptype procedure TCocoaWSCustomForm.SetIcon(const AForm: TCustomForm;
   const Small, Big: HICON);
 var
   win : NSWindow;
@@ -1080,7 +1102,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomForm.SetRealPopupParent(
+imptype procedure TCocoaWSCustomForm.SetRealPopupParent(
   const ACustomForm: TCustomForm; const APopupParent: TCustomForm);
 var
   win : NSWindow;
@@ -1091,12 +1113,11 @@ begin
   if Assigned(win.parentWindow) then
     win.parentWindow.removeChildWindow(win);
   if Assigned(APopupParent) then begin
-     writeln('SetRealPopupParent ',APopupParent.ClassName);
     NSWindow( NSView(APopupParent.Handle).window).addChildWindow_ordered(win, NSWindowAbove);
   end;
 end;
 
-class procedure TCocoaWSCustomForm.ShowHide(const AWinControl: TWinControl);
+imptype procedure TCocoaWSCustomForm.ShowHide(const AWinControl: TWinControl);
 var
   lShow : Boolean;
   w : NSWindow;
@@ -1123,7 +1144,11 @@ begin
       // without this invalidation, Cocoa might should the previously cached contents
       TCocoaWindowContent(AWinControl.Handle).documentView.setNeedsDisplay_(true);
     end;
+    {$ifndef wsintf}
     TCocoaWSWinControl.ShowHide(AWinControl);
+    {$else}
+    inherited ShowHide(AWinControl);
+    {$endif}
 
     // ShowHide() also actives (sets focus to) the window
     if lShow and Assigned(w) and not (w.isKindOfClass(NSPanel)) then
@@ -1134,7 +1159,7 @@ begin
     ArrangeTabOrder(AWinControl);
 end;
 
-class function TCocoaWSCustomForm.GetClientBounds(
+imptype function TCocoaWSCustomForm.GetClientBounds(
   const AWincontrol: TWinControl; var ARect: TRect): Boolean;
 begin
   Result := False;
@@ -1143,7 +1168,7 @@ begin
   Result := True;
 end;
 
-class function TCocoaWSCustomForm.GetClientRect(const AWincontrol: TWinControl;
+imptype function TCocoaWSCustomForm.GetClientRect(const AWincontrol: TWinControl;
   var ARect: TRect): Boolean;
 var
   x, y: Integer;
@@ -1157,7 +1182,7 @@ begin
   MoveRect(ARect, x, y);
 end;
 
-class procedure TCocoaWSCustomForm.SetBounds(const AWinControl: TWinControl;
+imptype procedure TCocoaWSCustomForm.SetBounds(const AWinControl: TWinControl;
   const ALeft, ATop, AWidth, AHeight: Integer);
 begin
   if AWinControl.HandleAllocated then
@@ -1167,6 +1192,66 @@ begin
     TCocoaWindowContent(AwinControl.Handle).callback.boundsDidChange(NSObject(AWinControl.Handle));
   end;
 end;
+
+{$ifdef wsintf}
+imptype procedure TCocoaWSCustomForm.SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar);
+begin
+end;
+
+imptype procedure TCocoaWSCustomForm.SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition);
+begin
+end;
+
+imptype function TCocoaWSCustomForm.GetDefaultDoubleBuffered: Boolean;
+begin
+  Result := true;
+end;
+
+imptype function TCocoaWSCustomForm.ActiveMDIChild(const AForm: TCustomForm): TCustomForm;
+begin
+  Result := nil;
+end;
+
+imptype function TCocoaWSCustomForm.Cascade(const AForm: TCustomForm): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TCocoaWSCustomForm.GetClientHandle(const AForm: TCustomForm): HWND;
+begin
+  Result := 0;
+end;
+
+imptype function TCocoaWSCustomForm.GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm;
+begin
+  Result := nil;
+end;
+
+imptype function TCocoaWSCustomForm.Next(const AForm: TCustomForm): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TCocoaWSCustomForm.Previous(const AForm: TCustomForm): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TCocoaWSCustomForm.Tile(const AForm: TCustomForm): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TCocoaWSCustomForm.ArrangeIcons(const AForm: TCustomForm): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TCocoaWSCustomForm.MDIChildCount(const AForm: TCustomForm): Integer;
+begin
+  Result := 0;
+end;
+{$endif}
 
 function HWNDToForm(AFormHandle: HWND): TCustomForm;
 var

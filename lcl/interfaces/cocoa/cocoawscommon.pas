@@ -126,27 +126,44 @@ type
 
   { TCocoaWSWinControl }
 
-  TCocoaWSWinControl = class({$ifdef wsintf}TWSWinControl{$else}TCocoaWSControl, IWSWinControl{$endif})
+  TCocoaWSWinControl = class({$ifndef wsintf}TWSWinControl{$else}TCocoaWSControl, IWSWinControl{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
-      const AParams: TCreateParams): TLCLIntfHandle; override;
-    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
+      const AParams: TCreateParams): TLCLIntfHandle; rootoverride;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); rootoverride;
     imptype function GetCanvasScaleFactor(const AControl: TControl): Double; override;
-    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
-    imptype function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); rootoverride;
+    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; rootoverride;
+    imptype function GetTextLen(const AWinControl: TWinControl; var ALength: Integer): Boolean; rootoverride;
 
-    imptype function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
-    imptype function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; override;
-    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
-    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
-    imptype procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); override;
-    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    imptype procedure SetColor(const AWinControl: TWinControl); override;
-    imptype procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer; const AChildren: TFPList); override;
-    imptype procedure ShowHide(const AWinControl: TWinControl); override;
-    imptype procedure Invalidate(const AWinControl: TWinControl); override;
-    imptype procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); override;
+    imptype function  GetClientBounds(const AWincontrol: TWinControl; var ARect: TRect): Boolean; rootoverride;
+    imptype function  GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean; rootoverride;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); rootoverride;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); rootoverride;
+    imptype procedure SetCursor(const AWinControl: TWinControl; const ACursor: HCursor); rootoverride;
+    imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); rootoverride;
+    imptype procedure SetColor(const AWinControl: TWinControl); rootoverride;
+    imptype procedure SetChildZPosition(const AWinControl, AChild: TWinControl; const AOldPos, ANewPos: Integer; const AChildren: TFPList); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); rootoverride;
+    imptype procedure Invalidate(const AWinControl: TWinControl); rootoverride;
+    imptype procedure PaintTo(const AWinControl: TWinControl; ADC: HDC; X, Y: Integer); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean; rootoverride;
+    imptype function CanFocus(const AWincontrol: TWinControl): Boolean; rootoverride;
+    imptype function GetDefaultClientRect(const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect): boolean; rootoverride;
+    imptype function GetDoubleBuffered(const AWinControl: TWinControl): Boolean; rootoverride;
+    imptype procedure SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean); rootoverride;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); rootoverride;
+    imptype procedure SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer); rootoverride;
+    imptype procedure SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer); rootoverride;
+    imptype procedure SetShape(const AWinControl: TWinControl; const AShape: HBITMAP); rootoverride;
+    imptype procedure AdaptBounds(const AWinControl: TWinControl;
+          var Left, Top, Width, Height: integer; var SuppressMove: boolean); rootoverride;
+    imptype procedure ConstraintsChange(const AWinControl: TWinControl); rootoverride;
+    imptype procedure DefaultWndHandler(const AWinControl: TWinControl; var AMessage); rootoverride;
+    imptype procedure Repaint(const AWinControl: TWinControl); rootoverride;
+    imptype procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSCustomControl }
@@ -1575,7 +1592,7 @@ end;
 
 { TCocoaWSControl }
 
-class function TCocoaWSControl.GetCanvasScaleFactor(const AControl: TControl
+imptype function TCocoaWSControl.GetCanvasScaleFactor(const AControl: TControl
   ): Double;
 begin
   if Assigned(AControl.Parent) then
@@ -1588,8 +1605,29 @@ end;
 
 imptype function TCocoaWSWinControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
+var
+  ctrl : TCocoaCustomControl;
+  sl   : TCocoaManualScrollView;
+  hs   : TCocoaManualScrollHost;
+  lcl  : TLCLCommonCallback;
+
 begin
-  Result := TCocoaWSCustomControl.CreateHandle(AWinControl, AParams);
+  ctrl := TCocoaCustomControl(TCocoaCustomControl.alloc.lclInitWithCreateParams(AParams));
+  lcl := TLCLCommonCallback.Create(ctrl, AWinControl);
+  lcl.BlockCocoaUpDown := true;
+  lcl.BlockCocoaKeyBeep := true; // prevent "dings" on keyDown for custom controls (i.e. SynEdit)
+  ctrl.callback := lcl;
+
+  sl := EmbedInManualScrollView(ctrl);
+  sl.callback := ctrl.callback;
+
+  hs := EmbedInManualScrollHost(sl);
+  hs.callback := ctrl.callback;
+  lcl.HandleFrame:=hs;
+
+  ScrollViewSetBorderStyle(hs, TCustomControl(AWinControl).BorderStyle );
+
+  Result := TLCLIntfHandle(hs);
 end;
 
 imptype procedure TCocoaWSWinControl.DestroyHandle(const AWinControl: TWinControl);
@@ -1712,7 +1750,7 @@ begin
     ARect := NSObject(AWinControl.Handle).lclClientFrame;
 end;
 
-class function TCocoaWSWinControl.GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
+imptype function TCocoaWSWinControl.GetClientRect(const AWincontrol: TWinControl; var ARect: TRect): Boolean;
 begin
   Result:=(AWinControl.Handle<>0);
   if not Result then Exit;
@@ -1941,34 +1979,77 @@ begin
     NSMakeRect(0,0, f.size.width, f.size.height),
     f, b);
 end;
+{$ifdef wsintf}
+imptype function TCocoaWSWinControl.GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean;
+begin
+  Result := False;
+end;
 
+imptype function TCocoaWSWinControl.CanFocus(const AWincontrol: TWinControl): Boolean;
+begin
+  Result := True;
+end;
+
+imptype function TCocoaWSWinControl.GetDefaultClientRect(const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect): boolean;
+begin
+  Result:=false;
+end;
+
+imptype function TCocoaWSWinControl.GetDoubleBuffered(const AWinControl: TWinControl): Boolean;
+begin
+  Result := AWinControl.DoubleBuffered;
+end;
+
+imptype procedure TCocoaWSWinControl.SetBiDiMode(const AWinControl: TWinControl; UseRightToLeftAlign, UseRightToLeftReading, UseRightToLeftScrollBar : Boolean);
+begin
+end;
+
+imptype procedure TCocoaWSWinControl.SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
+begin
+end;
+
+imptype procedure TCocoaWSWinControl.SetPos(const AWinControl: TWinControl; const ALeft, ATop: Integer);
+begin
+end;
+
+imptype procedure TCocoaWSWinControl.SetSize(const AWinControl: TWinControl; const AWidth, AHeight: Integer);
+begin
+end;
+
+imptype procedure TCocoaWSWinControl.SetShape(const AWinControl: TWinControl; const AShape: HBITMAP);
+begin
+end;
+
+imptype procedure TCocoaWSWinControl.AdaptBounds(const AWinControl: TWinControl;
+      var Left, Top, Width, Height: integer; var SuppressMove: boolean);
+begin
+end;
+
+imptype procedure TCocoaWSWinControl.ConstraintsChange(const AWinControl: TWinControl);
+begin
+end;
+
+imptype procedure TCocoaWSWinControl.DefaultWndHandler(const AWinControl: TWinControl; var AMessage);
+begin
+end;
+
+imptype procedure TCocoaWSWinControl.Repaint(const AWinControl: TWinControl);
+begin
+  // default WS implemention. it's questionable for macOS
+  AWinControl.Invalidate;
+  AWinControl.Update;
+end;
+
+imptype procedure TCocoaWSWinControl.ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer);
+begin
+end;
+{$endif}
 { TCocoaWSCustomControl }
 
 imptype function TCocoaWSCustomControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
-var
-  ctrl : TCocoaCustomControl;
-  sl   : TCocoaManualScrollView;
-  hs   : TCocoaManualScrollHost;
-  lcl  : TLCLCommonCallback;
-
 begin
-  ctrl := TCocoaCustomControl(TCocoaCustomControl.alloc.lclInitWithCreateParams(AParams));
-  lcl := TLCLCommonCallback.Create(ctrl, AWinControl);
-  lcl.BlockCocoaUpDown := true;
-  lcl.BlockCocoaKeyBeep := true; // prevent "dings" on keyDown for custom controls (i.e. SynEdit)
-  ctrl.callback := lcl;
-
-  sl := EmbedInManualScrollView(ctrl);
-  sl.callback := ctrl.callback;
-
-  hs := EmbedInManualScrollHost(sl);
-  hs.callback := ctrl.callback;
-  lcl.HandleFrame:=hs;
-
-  ScrollViewSetBorderStyle(hs, TCustomControl(AWinControl).BorderStyle );
-
-  Result := TLCLIntfHandle(hs);
+  Result := inherited CreateHandle(AWinControl, AParams);
 end;
 
 imptype procedure TCocoaWSCustomControl.SetBorderStyle(

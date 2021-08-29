@@ -18,6 +18,7 @@ unit CocoaWSCheckLst;
 {$mode objfpc}{$H+}
 {$modeswitch objectivec1}
 {$modeswitch objectivec2}
+{$include cocoadefines.inc}
 
 interface
 
@@ -27,7 +28,7 @@ uses
   // LCL
   Controls, StdCtrls, CheckLst, LCLType,
   // Widgetset
-  WSCheckLst, WSLCLClasses,
+  WSCheckLst, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif},
   // LCL Cocoa
   CocoaWSCommon, CocoaPrivate, CocoaUtils, CocoaWSStdCtrls, CocoaTables, CocoaGDIObjects,
   CocoaScrollers
@@ -65,11 +66,22 @@ type
 
   { TCocoaWSCustomCheckListBox }
 
-  TCocoaWSCustomCheckListBox = class(TWSCustomCheckListBox)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetState(const ACheckListBox: TCustomCheckListBox; const AIndex: integer): TCheckBoxState; override;
-    class procedure SetState(const ACheckListBox: TCustomCheckListBox; const AIndex: integer; const AState: TCheckBoxState); override;
+  TCocoaWSCustomCheckListBox = class({$ifndef wsintf}TWSCustomCheckListBox{$else}TCocoaWSCustomListBox, IWSCustomCheckListBox{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function GetState(const ACheckListBox: TCustomCheckListBox; const AIndex: integer): TCheckBoxState; rootoverride;
+    imptype procedure SetState(const ACheckListBox: TCustomCheckListBox; const AIndex: integer; const AState: TCheckBoxState); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer; rootoverride;
+    imptype function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean; rootoverride;
+    imptype function GetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean; rootoverride;
+    imptype procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AEnabled: Boolean); rootoverride;
+    imptype procedure SetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AHeader: Boolean); rootoverride;
+    {$endif}
   end;
 
 function CtrlToCheckList(ctrl: TWinControl; out tbl: TCocoaTableListView; out cb: TLCLCheckboxListCallback): Boolean;
@@ -208,7 +220,7 @@ end;
 
   Creates new check list box in Cocoa interface with the specified parameters
  ------------------------------------------------------------------------------}
-class function TCocoaWSCustomCheckListBox.CreateHandle(
+imptype function TCocoaWSCustomCheckListBox.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   list: TCocoaTableListView;
@@ -256,7 +268,7 @@ end;
   Returns: If the specified item in check list box in Cocoa interface is
            checked, grayed or unchecked
  ------------------------------------------------------------------------------}
-class function TCocoaWSCustomCheckListBox.GetState(
+imptype function TCocoaWSCustomCheckListBox.GetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer): TCheckBoxState;
 var
   tbl: TCocoaTableListView;
@@ -287,7 +299,7 @@ end;
   Changes checked value of item with the specified index of check list box in
   Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSCustomCheckListBox.SetState(
+imptype procedure TCocoaWSCustomCheckListBox.SetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AState: TCheckBoxState);
 var
@@ -305,5 +317,32 @@ begin
   end;
   cb.SetCheckState(AIndex, cocoaSt, true);
 end;
+{$ifdef wsintf}
+imptype function TCocoaWSCustomCheckListBox.GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer;
+begin
+  Result := 0;
+end;
 
+imptype function TCocoaWSCustomCheckListBox.GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer): Boolean;
+begin
+  Result := True;
+end;
+
+imptype function TCocoaWSCustomCheckListBox.GetHeader(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer): Boolean;
+begin
+  Result := False;
+end;
+
+imptype procedure TCocoaWSCustomCheckListBox.SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer; const AEnabled: Boolean);
+begin
+end;
+
+imptype procedure TCocoaWSCustomCheckListBox.SetHeader(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer; const AHeader: Boolean);
+begin
+end;
+{$endif}
 end.

@@ -2,6 +2,7 @@ unit CocoaWSDatePicker;
 
 {$mode objfpc}{$H+}
 {$modeswitch objectivec1}
+{$include cocoadefines.inc}
 
 interface
 
@@ -26,12 +27,19 @@ const
   NSEraDatePickerElementFlag              = $0100;
 
 type
-  TCocoaWSCustomCalendar = class(TWSCustomCalendar)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; override;
-    class procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); override;
-    class function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; override;
+  TCocoaWSCustomCalendar = class({$ifndef wsintf}TWSCustomCalendar{$else}TCocoaWSWinControl, IWSCustomCalendar{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; rootoverride;
+    imptype procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); rootoverride;
+    imptype function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView; rootoverride;
+    imptype procedure SetDisplaySettings(const ACalendar: TCustomCalendar;
+      const ADisplaySettings: TDisplaySettings); rootoverride;
+    imptype procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
+      const ADayOfWeek: TCalDayOfWeek); rootoverride;
+    {$endif}
   end;
 
 implementation
@@ -81,7 +89,7 @@ begin
   end;
 end;
 
-class function TCocoaWSCustomCalendar.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TCocoaWSCustomCalendar.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   dp: TCocoaDatePicker;
   Params: TCreateParams;
@@ -98,17 +106,17 @@ begin
   Result:= TLCLIntfHandle(dp);
 end;
 
-class function  TCocoaWSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
+imptype function  TCocoaWSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
 begin
   Result:= NSDateToDateTime(NSDatePickerCell(ACalendar.Handle).dateValue);
 end;
 
-class procedure TCocoaWSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
+imptype procedure TCocoaWSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime);
 begin
   NSDatePickerCell(ACalendar.Handle).setDateValue(DateTimeToNSDate(ADateTime));
 end;
 
-class function TCocoaWSCustomCalendar.HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart;
+imptype function TCocoaWSCustomCalendar.HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart;
 begin
   // need to validate this decision...
   //Debugln('TCocoaWSCustomCalendar.HitTest Mouse Y : ' + IntToStr(APoint.y));
@@ -117,6 +125,21 @@ begin
   else
     Result:= cpTitle;
 end;
+{$ifdef wsintf}
+imptype function TCocoaWSCustomCalendar.GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView;
+begin
+  Result := cvMonth;
+end;
 
+imptype procedure TCocoaWSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar;
+  const ADisplaySettings: TDisplaySettings);
+begin
+end;
+
+imptype procedure TCocoaWSCustomCalendar.SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
+  const ADayOfWeek: TCalDayOfWeek);
+begin
+end;
+{$endif}
 end.
 

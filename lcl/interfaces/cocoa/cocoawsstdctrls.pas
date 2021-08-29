@@ -156,7 +156,7 @@ type
 
   { TCocoaWSCustomEdit }
 
-  TCocoaWSCustomEdit = class({$ifdef wsintf}TWSCustomEdit{$else}TCocoaWSWinControl, IWSCustomEdit{$endif})
+  TCocoaWSCustomEdit = class({$ifndef wsintf}TWSCustomEdit{$else}TCocoaWSWinControl, IWSCustomEdit{$endif})
   public
     class function GetTextField(AWinControl: TWinControl): TCocoaTextField;
   impsection
@@ -167,25 +167,35 @@ type
     imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
 
     // WSEdit functions
-    imptype function  GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
-    imptype function  GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
-    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const NewAlignment: TAlignment); override;
+    imptype function  GetSelStart(const ACustomEdit: TCustomEdit): integer; rootoverride;
+    imptype function  GetSelLength(const ACustomEdit: TCustomEdit): integer; rootoverride;
+    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const NewAlignment: TAlignment); rootoverride;
 
     {class procedure SetCharCase(const ACustomEdit: TCustomEdit; NewCase: TEditCharCase); override;
     class procedure SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode); override;}
-    imptype procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    imptype procedure SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char); override;
-    imptype procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
-    imptype procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
-    imptype procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
+    imptype procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); rootoverride;
+    imptype procedure SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char); rootoverride;
+    imptype procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); rootoverride;
+    imptype procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); rootoverride;
+    imptype procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); rootoverride;
 
-    imptype procedure Cut(const ACustomEdit: TCustomEdit); override;
-    imptype procedure Copy(const ACustomEdit: TCustomEdit); override;
-    imptype procedure Paste(const ACustomEdit: TCustomEdit); override;
-    imptype procedure Undo(const ACustomEdit: TCustomEdit); override;
+    imptype procedure Cut(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Copy(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Paste(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Undo(const ACustomEdit: TCustomEdit); rootoverride;
 
     imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    imptype procedure SetTextHint(const ACustomEdit: TCustomEdit; const ATextHint: string); override;
+    imptype procedure SetTextHint(const ACustomEdit: TCustomEdit; const ATextHint: string); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCanUndo(const ACustomEdit: TCustomEdit): Boolean; rootoverride;
+    imptype function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; rootoverride;
+    imptype procedure SetCaretPos(const ACustomEdit: TCustomEdit; const NewPos: TPoint); rootoverride;
+    imptype procedure SetCharCase(const ACustomEdit: TCustomEdit; NewCase: TEditCharCase); rootoverride;
+    imptype procedure SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode); rootoverride;
+    imptype procedure SetNumbersOnly(const ACustomEdit: TCustomEdit; NewNumbersOnly: Boolean); rootoverride;
+    imptype procedure SetHideSelection(const ACustomEdit: TCustomEdit; NewHideSelection: Boolean); rootoverride;
+    imptype procedure SetSelText(const ACustomEdit: TCustomEdit; const NewSelText: string); rootoverride;
+    {$endif}
   end;
   
   { TCocoaMemoStrings }
@@ -307,7 +317,7 @@ type
 
   { TCocoaWSCustomCheckBox }
 
-  TCocoaWSCustomCheckBox = class({$ifndef wsintf}TWSCustomCheckBox{$else}TCocoaWSWinControl, IWSCustomCheckBox)
+  TCocoaWSCustomCheckBox = class({$ifndef wsintf}TWSCustomCheckBox{$else}TCocoaWSWinControl, IWSCustomCheckBox{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
     imptype function RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; rootoverride;
@@ -846,12 +856,16 @@ imptype procedure TCocoaWSButton.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 begin
   if not (AWinControl.HandleAllocated) then Exit;
+  {$ifndef wsintf}
   TCocoaWSWinControl.SetFont(AWinControl, AFont);
+  {$else}
+  inherited SetFont(AWinControl, AFont);
+  {$endif}
   TCocoaButton(AWinControl.Handle).adjustFontToControlSize := (AFont.Name = 'default')
     and (AFont.Size = 0);
 end;
 {$ifdef wsintf}
-imptype procedure TCocoaWSButton.SetShortCut(const AButton: TCustomButton; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+imptype procedure TCocoaWSButton.SetShortCut(const AButton: TCustomButton; const ShortCutK1, ShortCutK2: TShortCut);
 begin
   // not supported on macOS
 end;
@@ -866,7 +880,7 @@ end;
 
   Creates new check box in Cocoa interface with the specified parameters
  ------------------------------------------------------------------------------}
-class function TCocoaWSCustomCheckBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomCheckBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   btn: TCocoaButton;
@@ -892,7 +906,7 @@ end;
 
   Retrieves the state of check box in Cocoa interface
  ------------------------------------------------------------------------------}
-class function TCocoaWSCustomCheckBox.RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
+imptype function TCocoaWSCustomCheckBox.RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
 var
   state : NSInteger;
 begin
@@ -913,7 +927,7 @@ end;
 
   Sets the new state of check box in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSCustomCheckBox.SetState(
+imptype procedure TCocoaWSCustomCheckBox.SetState(
   const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
 const
   buttonState: array [TcheckBoxState] of NSInteger = (NSOffState, NSOnState, NSMixedState);
@@ -922,7 +936,7 @@ begin
   ButtonSetState(NSButton(ACustomCheckBox.Handle), NewState);
 end;
 
-class procedure TCocoaWSCustomCheckBox.GetPreferredSize(
+imptype procedure TCocoaWSCustomCheckBox.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 var
@@ -939,22 +953,31 @@ begin
   //lButton.setBoundsSize(lOldSize); This causes problems in SetText
 end;
 
-class procedure TCocoaWSCustomCheckBox.SetText(const AWinControl: TWinControl;
+imptype procedure TCocoaWSCustomCheckBox.SetText(const AWinControl: TWinControl;
   const AText: String);
+{$ifndef wsintf}
 begin
   TCocoaWSButton.SetText(AWinControl, AText);
 end;
+{$else}
+var
+  btn : NSButton;
+begin
+  btn := NSButton(AWinControl.Handle);
+  btn.setTitle(ControlTitleToNSStr(AText));
+end;
+{$endif}
 
-class function TCocoaWSCustomCheckBox.GetText(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomCheckBox.GetText(const AWinControl: TWinControl;
   var AText: String): Boolean;
 begin
-  Result := TCocoaWSButton.GetText(AWinControl, AText);
+  Result := false;
 end;
 
-class function TCocoaWSCustomCheckBox.GetTextLen(
+imptype function TCocoaWSCustomCheckBox.GetTextLen(
   const AWinControl: TWinControl; var ALength: Integer): Boolean;
 begin
-  Result := TCocoaWSButton.GetTextLen(AWinControl, ALength);
+  Result := false;
 end;
 {$ifdef wsintf}
 imptype procedure TCocoaWSCustomCheckBox.SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut);
@@ -1292,6 +1315,51 @@ begin
   if (ACustomEdit.HandleAllocated) then
     ObjSetTextHint(NSObject(ACustomEdit.Handle), ATextHint);
 end;
+{$ifdef wsintf}
+imptype function TCocoaWSCustomEdit.GetCanUndo(const ACustomEdit: TCustomEdit): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TCocoaWSCustomEdit.GetCaretPos(const ACustomEdit: TCustomEdit): TPoint;
+begin
+  Result := Point(0, 0);
+end;
+
+imptype procedure TCocoaWSCustomEdit.SetCaretPos(const ACustomEdit: TCustomEdit; const NewPos: TPoint);
+begin
+end;
+
+imptype procedure TCocoaWSCustomEdit.SetCharCase(const ACustomEdit: TCustomEdit; NewCase: TEditCharCase);
+begin
+end;
+
+imptype procedure TCocoaWSCustomEdit.SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode);
+begin
+end;
+
+imptype procedure TCocoaWSCustomEdit.SetHideSelection(const ACustomEdit: TCustomEdit; NewHideSelection: Boolean);
+begin
+end;
+
+imptype procedure TCocoaWSCustomEdit.SetSelText(const ACustomEdit: TCustomEdit; const NewSelText: string);
+var
+  OldText, NewText: string;
+  OldPos: Integer;
+begin
+  OldPos := ACustomEdit.SelStart;
+  OldText := ACustomEdit.Text;
+  NewText := UTF8Copy(OldText, 1, OldPos) +
+             NewSelText +
+             UTF8Copy(OldText, OldPos + ACustomEdit.SelLength + 1, MaxInt);
+  ACustomEdit.Text := NewText;
+  ACustomEdit.SelStart := OldPos + UTF8Length(NewSelText);
+end;
+
+imptype procedure TCocoaWSCustomEdit.SetNumbersOnly(const ACustomEdit: TCustomEdit; NewNumbersOnly: Boolean);
+begin
+end;
+{$endif}
 
 { TCocoaMemoStrings }
 

@@ -63,7 +63,7 @@ end;
 
 { TCocoaWSCustomTrayIcon }
 
-class function TCocoaWSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TCocoaWSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   StatusItemHandle: TCocoaStatusItemHandle;
   statusitem: NSStatusItem;
@@ -79,7 +79,7 @@ begin
   Result := True;
 end;
 
-class function TCocoaWSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TCocoaWSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   statusitem: NSStatusItem;
   bar: NSStatusBar;
@@ -128,7 +128,7 @@ begin
   {$endif VerboseCocoaTrayIcon}
 end;
 
-class procedure TCocoaWSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
+imptype procedure TCocoaWSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
 var
   StatusItemHandle: TCocoaStatusItemHandle;
 begin
@@ -138,13 +138,19 @@ begin
   StatusItemHandle.lclSetTrayIcon(ATrayIcon);
 end;
 
-class function TCocoaWSCustomTrayIcon.ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TCocoaWSCustomTrayIcon.ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean;
 begin
   Result := False;
 end;
 
-class function TCocoaWSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
+imptype function TCocoaWSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
 begin
   Result := Point(0, 0);
 end;
 
+{$ifdef wsintf}
+imptype function TCocoaWSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
+begin
+  Result := nil;
+end;
+{$endif}

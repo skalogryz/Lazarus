@@ -47,8 +47,8 @@ type
   { TCocoaWSFileDialog }
 
   TCocoaWSFileDialog = class(TWSFileDialog)
-  published
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+  impsection
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
   end;
 
   { TCocoaWSOpenDialog }
@@ -72,8 +72,8 @@ type
   { TCocoaWSColorDialog }
 
   TCocoaWSColorDialog = class(TWSColorDialog)
-  published
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+  impsection
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
   end;
 
   { TCocoaWSColorButton }
@@ -85,8 +85,8 @@ type
   { TCocoaWSFontDialog }
 
   TCocoaWSFontDialog = class(TWSFontDialog)
-  published
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+  impsection
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
   end;
 
   TColorPanelDelegate = objcclass(NSObject, NSWindowDelegateProtocol)
@@ -267,7 +267,7 @@ end;
   Params:  ACommonDialog - LCL common dialog
 
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSFileDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TCocoaWSFileDialog.ShowModal(const ACommonDialog: TCommonDialog);
  {
   Called by Execute method of TOpenDialog, TSaveDialog and TSelectDirectoryDialog.
  }
@@ -497,7 +497,7 @@ end;  {TCocoaWSFileDialog.ShowModal}
 
   Shows Cocoa interface color picker
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSColorDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TCocoaWSColorDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   colorDelegate: TColorPanelDelegate;
   ColorDialog: TColorDialog absolute ACommonDialog;
@@ -579,7 +579,7 @@ end;
 
   Shows Cocoa interface font panel
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSFontDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TCocoaWSFontDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   FontDialog: TFontDialog absolute ACommonDialog;
   FontDelegate: TFontPanelDelegate;

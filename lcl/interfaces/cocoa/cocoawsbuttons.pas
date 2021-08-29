@@ -13,10 +13,11 @@
   for details about the license.
  *****************************************************************************
 }
-unit cocoawsbuttons;
+unit CocoaWSButtons;
 
 {$mode objfpc}{$H+}
 {$modeswitch objectivec1}
+{$include cocoadefines.inc}
 
 interface
 
@@ -35,16 +36,20 @@ type
 
   { TCocoaWSBitBtn }
 
-  TCocoaWSBitBtn = class(TWSBitBtn)
+  TCocoaWSBitBtn = class({$ifndef wsintf}TWSBitBtn{$else}TCocoaWSButton, IWSBitBtn{$endif})
   private
     class function  LCLGlyphPosToCocoa(ALayout: TButtonLayout): NSCellImagePosition;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
     //
-    class procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
     //
-    class procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); override;
-    class procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); override;
+    imptype procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); rootoverride;
+    imptype procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); rootoverride;
+    imptype procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSSpeedButton }
@@ -80,7 +85,7 @@ end;
   Creates new bevel button with bitmap in Cocoa interface with the
   specified parameters
  ------------------------------------------------------------------------------}
-class function TCocoaWSBitBtn.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSBitBtn.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   btn: NSButton;
@@ -89,7 +94,7 @@ begin
   Result := TLCLIntfHandle(btn);
 end;
 
-class procedure TCocoaWSBitBtn.GetPreferredSize(const AWinControl: TWinControl;
+imptype procedure TCocoaWSBitBtn.GetPreferredSize(const AWinControl: TWinControl;
   var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
 var
   lButton: TCustomBitBtn absolute AWinControl;
@@ -117,7 +122,7 @@ end;
 
   Sets the bitmap of bevel button in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph);
+imptype procedure TCocoaWSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph);
 var
   Img: NSImage;
   AGlyph: TBitmap;
@@ -162,7 +167,7 @@ end;
 
   Sets the bitmap and caption layout of bevel button in Cocoa interface
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
+imptype procedure TCocoaWSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
   const AValue: TButtonLayout);
 var
   ImagePos: NSCellImagePosition;
@@ -174,5 +179,14 @@ begin
     ImagePos := NSNoImage;
   NSButton(ABitBtn.Handle).SetImagePosition(ImagePos);
 end;
+{$ifdef wsintf}
+imptype procedure TCocoaWSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer);
+begin
+end;
+
+imptype procedure TCocoaWSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer);
+begin
+end;
+{$endif}
 
 end.

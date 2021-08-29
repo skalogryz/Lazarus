@@ -33,14 +33,17 @@ type
     procedure DrawPanel(idx: Integer; const r: TRect);
   end;
 
-  TCocoaWSStatusBar = class(TWSStatusBar)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); override;
-    class procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); override;
-    class procedure Update(const AStatusBar: TStatusBar); override;
+  TCocoaWSStatusBar = class({$ifndef wsintf}TWSStatusBar{$else}TCocoaWSWinControl, IWSStatusBar{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); rootoverride;
+    imptype procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); rootoverride;
+    imptype procedure Update(const AStatusBar: TStatusBar); rootoverride;
     //
-    class procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
+    {$ifdef wsintf}
+    imptype procedure SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSTabSheet }
@@ -58,42 +61,51 @@ type
 
   { TCocoaWSCustomPage }
 
-  TCocoaWSCustomPage = class(TWSCustomPage)
+  TCocoaWSCustomPage = class({$ifndef wsintf}TWSCustomPage{$else}TCocoaWSWinControl, IWSCustomPage{$endif})
   public
     class function  GetCocoaTabPageFromHandle(AHandle: HWND): TCocoaTabPage;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
-    class procedure UpdateProperties(const ACustomPage: TCustomPage); override;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
+    imptype procedure UpdateProperties(const ACustomPage: TCustomPage); rootoverride;
     class procedure SetProperties(const ACustomPage: TCustomPage; ACocoaControl: NSTabViewItem);
     //
-    class procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
-    class procedure SetText(const AWinControl: TWinControl; const AText: String); override;
-    class function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
+    imptype procedure SetBounds(const AWinControl: TWinControl; const ALeft, ATop, AWidth, AHeight: Integer); override;
+    imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
+    imptype function GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;
   end;
 
   { TCocoaWSCustomTabControl }
 
-  TCocoaWSCustomTabControl = class(TWSCustomTabControl)
+  TCocoaWSCustomTabControl = class({$ifndef wsintf}TWSCustomTabControl{$else}TCocoaWSWinControl,IWSCustomTabControl{$endif})
   private
     class function LCLTabPosToNSTabStyle(AShowTabs: Boolean; ABorderWidth: Integer; ATabPos: TTabPosition): NSTabViewType;
   public
     class function  GetCocoaTabControlHandle(ATabControl: TCustomTabControl): TCocoaTabControl;
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
 
-    class procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer); override;
-    class procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer); override;
-    class procedure RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer); override;
+    imptype procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer); rootoverride;
+    imptype procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer); rootoverride;
+    imptype procedure RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer); rootoverride;
 
     //class function GetNotebookMinTabHeight(const AWinControl: TWinControl): integer; override;
     //class function GetNotebookMinTabWidth(const AWinControl: TWinControl): integer; override;
     //class function GetPageRealIndex(const ATabControl: TCustomTabControl; AIndex: Integer): Integer; override;
-    class function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer; override;
-    class function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect; override;
-    class procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer); override;
-    class procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition); override;
-    class procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean); override;
+    imptype function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer; rootoverride;
+    imptype function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect; rootoverride;
+    imptype procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer); rootoverride;
+    imptype procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition); rootoverride;
+    imptype procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetNotebookMinTabHeight(const AWinControl: TWinControl): integer; rootoverride;
+    imptype function GetNotebookMinTabWidth(const AWinControl: TWinControl): integer; rootoverride;
+    imptype function GetCapabilities: TCTabControlCapabilities; rootoverride;
+    imptype procedure SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer); rootoverride;
+    imptype procedure SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution); rootoverride;
+    imptype procedure SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string); rootoverride;
+    imptype procedure UpdateProperties(const ATabControl: TCustomTabControl); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSPageControl }
@@ -136,43 +148,43 @@ type
   TLCLListViewCallBackClass = class of TLCLListViewCallback;
 
 
-  TCocoaWSCustomListView = class(TWSCustomListView)
+  TCocoaWSCustomListView = class({$ifndef wsintf}TWSCustomListView{$else}TCocoaWSWinControl,IWSCustomListView{$endif})
   private
     class function CheckParams(out AScroll: TCocoaListView; out ATableControl: TCocoaTableListView; const ALV: TCustomListView): Boolean;
     class function CheckParamsCb(out AScroll: TCocoaListView; out ATableControl: TCocoaTableListView; out Cb: TLCLListViewCallback; const ALV: TCustomListView): Boolean;
     class function CheckColumnParams(out ATableControl: TCocoaTableListView;
       out ANSColumn: NSTableColumn; const ALV: TCustomListView; const AIndex: Integer; ASecondIndex: Integer = -1): Boolean;
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetBorderStyle(const AWinControl: TWinControl; const ABorderStyle: TBorderStyle); override;
     // Column
-    class procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); override;
-    class function  ColumnGetWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn): Integer; override;
-    class procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn); override;
-    class procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn); override;
-    class procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AAlignment: TAlignment); override;
-    class procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AAutoSize: Boolean); override;
-    class procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const ACaption: String); override;
-    class procedure ColumnSetImage(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AImageIndex: Integer); override;
-    class procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AMaxWidth: Integer); override;
-    class procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AMinWidth: integer); override;
-    class procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AWidth: Integer); override;
-    class procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AVisible: Boolean); override;
-    class procedure ColumnSetSortIndicator(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ASortIndicator: TSortIndicator); override;
+    imptype procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); rootoverride;
+    imptype function  ColumnGetWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn): Integer; rootoverride;
+    imptype procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn); rootoverride;
+    imptype procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn); rootoverride;
+    imptype procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AAlignment: TAlignment); rootoverride;
+    imptype procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AAutoSize: Boolean); rootoverride;
+    imptype procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const ACaption: String); rootoverride;
+    imptype procedure ColumnSetImage(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AImageIndex: Integer); rootoverride;
+    imptype procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AMaxWidth: Integer); rootoverride;
+    imptype procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AMinWidth: integer); rootoverride;
+    imptype procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AWidth: Integer); rootoverride;
+    imptype procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AColumn: TListColumn; const AVisible: Boolean); rootoverride;
+    imptype procedure ColumnSetSortIndicator(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ASortIndicator: TSortIndicator); rootoverride;
 
     // Item
-    class procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer); override;
-    class function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect; override;
-    class function  ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem): Boolean; override;
-    class function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint; override;
-    class function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; override; // returns True if supported
-    class procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem); override;
-    class procedure ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AChecked: Boolean); override;
-    class procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}ASubIndex, {%H-}AImageIndex: Integer); override;
+    imptype procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer); rootoverride;
+    imptype function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect; rootoverride;
+    imptype function  ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem): Boolean; rootoverride;
+    imptype function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint; rootoverride;
+    imptype function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; rootoverride; // returns True if supported
+    imptype procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem); rootoverride;
+    imptype procedure ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AChecked: Boolean); rootoverride;
+    imptype procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}ASubIndex, {%H-}AImageIndex: Integer); rootoverride;
     //carbon//class function ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean; override;*)
-    class procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean); override;
-    class procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}ASubIndex: Integer; const {%H-}AText: String); override;
-    class procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const PartialOK: Boolean); override;
+    imptype procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean); rootoverride;
+    imptype procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const {%H-}ASubIndex: Integer; const {%H-}AText: String); rootoverride;
+    imptype procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const {%H-}AItem: TListItem; const PartialOK: Boolean); rootoverride;
 
     // LV
     //available in 10.7 only//class procedure BeginUpdate(const ALV: TCustomListView); override;
@@ -180,53 +192,79 @@ type
 
     //class function GetBoundingRect(const ALV: TCustomListView): TRect; override;
     //carbon//class function GetDropTarget(const ALV: TCustomListView): Integer; override;
-    class function GetFocused(const ALV: TCustomListView): Integer; override;
+    imptype function GetFocused(const ALV: TCustomListView): Integer; rootoverride;
     //carbon//class function GetHoverTime(const ALV: TCustomListView): Integer; override;
-    class function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer; override;
-    class function GetSelCount(const ALV: TCustomListView): Integer; override;
-    class function GetSelection(const ALV: TCustomListView): Integer; override;
-    class function GetTopItem(const ALV: TCustomListView): Integer; override;
+    imptype function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer; rootoverride;
+    imptype function GetSelCount(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetSelection(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetTopItem(const ALV: TCustomListView): Integer; rootoverride;
     //class function GetViewOrigin(const ALV: TCustomListView): TPoint; override;
-    class function GetVisibleRowCount(const ALV: TCustomListView): Integer; override;
+    imptype function GetVisibleRowCount(const ALV: TCustomListView): Integer; rootoverride;
 
-    class procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean); override;
+    imptype procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean); rootoverride;
     //carbon//class procedure SetAllocBy(const ALV: TCustomListView; const AValue: Integer); override;
-    class procedure SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer); override;
+    imptype procedure SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer); rootoverride;
     //carbon//class procedure SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles); override;
     //carbon//class procedure SetHoverTime(const ALV: TCustomListView; const AValue: Integer); override;
-    class procedure SetImageList(const ALV: TCustomListView; const {%H-}AList: TListViewImageList; const {%H-}AValue: TCustomImageListResolution); override;
-    class procedure SetItemsCount(const ALV: TCustomListView; const Avalue: Integer); override;
-    class procedure SetOwnerData(const ALV: TCustomListView; const {%H-}AValue: Boolean); override;
-    class procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean); override;
-    class procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties); override;
-    class procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle); override;
-    class procedure SetSort(const ALV: TCustomListView; const {%H-}AType: TSortType; const {%H-}AColumn: Integer;
-      const {%H-}ASortDirection: TSortDirection); override;
-    class function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean; override;
+    imptype procedure SetImageList(const ALV: TCustomListView; const {%H-}AList: TListViewImageList; const {%H-}AValue: TCustomImageListResolution); rootoverride;
+    imptype procedure SetItemsCount(const ALV: TCustomListView; const Avalue: Integer); rootoverride;
+    imptype procedure SetOwnerData(const ALV: TCustomListView; const {%H-}AValue: Boolean); rootoverride;
+    imptype procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean); rootoverride;
+    imptype procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties); rootoverride;
+    imptype procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle); rootoverride;
+    imptype procedure SetSort(const ALV: TCustomListView; const {%H-}AType: TSortType; const {%H-}AColumn: Integer;
+      const {%H-}ASortDirection: TSortDirection); rootoverride;
+    imptype function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean; rootoverride;
     (*class procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); override;
     class procedure SetViewStyle(const ALV: TCustomListView; const AValue: TViewStyle); override;*)
+    {$ifdef wsintf}
+    imptype procedure ItemExchange(const ALV: TCustomListView; AItem: TListItem; const AIndex1, AIndex2: Integer); rootoverride;
+    imptype procedure ItemMove(const ALV: TCustomListView; AItem: TListItem; const AFromIndex, AToIndex: Integer); rootoverride;
+    imptype function  ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean; rootoverride;
+    imptype function ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean; rootoverride;
+    imptype procedure ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer); rootoverride;
+    imptype procedure ItemUpdate(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem); rootoverride;
+    imptype procedure BeginUpdate(const ALV: TCustomListView); rootoverride;
+    imptype procedure EndUpdate(const ALV: TCustomListView); rootoverride;
+    imptype function GetBoundingRect(const ALV: TCustomListView): TRect; rootoverride;
+    imptype function GetDropTarget(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests; rootoverride;
+    imptype function GetHoverTime(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetViewOrigin(const ALV: TCustomListView): TPoint; rootoverride;
+    imptype function GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem; rootoverride;
+    imptype procedure SetAllocBy(const ALV: TCustomListView; const AValue: Integer); rootoverride;
+    imptype procedure SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles); rootoverride;
+    imptype procedure SetHoverTime(const ALV: TCustomListView; const AValue: Integer); rootoverride;
+    imptype procedure SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement); rootoverride;
+    imptype procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); rootoverride;
+    imptype procedure SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSProgressBar }
 
-  TCocoaWSProgressBar = class(TWSProgressBar)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure ApplyChanges(const AProgressBar: TCustomProgressBar); override;
-    class procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); override;
-    class procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle); override;
+  TCocoaWSProgressBar = class({$ifndef wsintf}TWSProgressBar{$else}TCocoaWSWinControl, IWSProgressBar{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure ApplyChanges(const AProgressBar: TCustomProgressBar); rootoverride;
+    imptype procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); rootoverride;
+    imptype procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle); rootoverride;
   end;
 
   { TCocoaWSCustomUpDown }
 
-  TCocoaWSCustomUpDown = class(TWSCustomUpDown)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetIncrement(const AUpDown: TCustomUpDown; AValue: Double); override;
-    class procedure SetMaxPosition(const AUpDown: TCustomUpDown; AValue: Double); override;
-    class procedure SetMinPosition(const AUpDown: TCustomUpDown; AValue: Double); override;
-    class procedure SetPosition(const AUpDown: TCustomUpDown; AValue: Double); override;
-    class procedure SetWrap(const AUpDown: TCustomUpDown; ADoWrap: Boolean); override;
+  TCocoaWSCustomUpDown = class({$ifndef wsintf}TWSCustomUpDown{$else}TCocoaWSWinControl, IWSCustomUpDown{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetIncrement(const AUpDown: TCustomUpDown; AValue: Double); rootoverride;
+    imptype procedure SetMaxPosition(const AUpDown: TCustomUpDown; AValue: Double); rootoverride;
+    imptype procedure SetMinPosition(const AUpDown: TCustomUpDown; AValue: Double); rootoverride;
+    imptype procedure SetPosition(const AUpDown: TCustomUpDown; AValue: Double); rootoverride;
+    imptype procedure SetWrap(const AUpDown: TCustomUpDown; ADoWrap: Boolean); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure SetOrientation(const AUpDown: TCustomUpDown; AOrientation: TUDOrientation); rootoverride;
+    imptype procedure SetUseArrowKeys(const AUpDown: TCustomUpDown; AUseArrow: Boolean); rootoverride;
+    {$endif}
   end;
 
   { TCarbonWSUpDown }
@@ -250,15 +288,18 @@ type
 
   { TCocoaWSTrackBar }
 
-  TCocoaWSTrackBar = class(TWSTrackBar)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure ApplyChanges(const ATrackBar: TCustomTrackBar); override;
-    class function  GetPosition(const ATrackBar: TCustomTrackBar): integer; override;
-    class procedure SetPosition(const ATrackBar: TCustomTrackBar; const {%H-}NewPosition: integer); override;
-    class procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation); override;
-    class procedure SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer); override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
+  TCocoaWSTrackBar = class({$ifndef wsintf}TWSTrackBar{$else}TCocoaWSWinControl, IWSTrackBar{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure ApplyChanges(const ATrackBar: TCustomTrackBar); rootoverride;
+    imptype function  GetPosition(const ATrackBar: TCustomTrackBar): integer; rootoverride;
+    imptype procedure SetPosition(const ATrackBar: TCustomTrackBar; const {%H-}NewPosition: integer); rootoverride;
+    imptype procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation); rootoverride;
+    imptype procedure SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer); rootoverride;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
+    {$ifdef wsintf}
+    imptype procedure SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle); rootoverride;
+    {$endif}
   end;
 
   { TCocoaWSCustomTreeView }
@@ -317,7 +358,7 @@ end;
 
 { TCocoaWSCustomUpDown }
 
-class function TCocoaWSCustomUpDown.CreateHandle(
+imptype function TCocoaWSCustomUpDown.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   lResult: TCocoaStepper;
@@ -335,21 +376,21 @@ begin
   Result := TLCLIntfHandle(lResult);
 end;
 
-class procedure TCocoaWSCustomUpDown.SetMinPosition(
+imptype procedure TCocoaWSCustomUpDown.SetMinPosition(
   const AUpDown: TCustomUpDown; AValue: Double);
 begin
   if not Assigned(AUpDown) or not AUpDown.HandleAllocated then Exit;
   TCocoaStepper(AUpDown.Handle).setMinValue(AValue);
 end;
 
-class procedure TCocoaWSCustomUpDown.SetMaxPosition(
+imptype procedure TCocoaWSCustomUpDown.SetMaxPosition(
   const AUpDown: TCustomUpDown; AValue: Double);
 begin
   if not Assigned(AUpDown) or not AUpDown.HandleAllocated then Exit;
   TCocoaStepper(AUpDown.Handle).setMaxValue(AValue);
 end;
 
-class procedure TCocoaWSCustomUpDown.SetPosition(const AUpDown: TCustomUpDown;
+imptype procedure TCocoaWSCustomUpDown.SetPosition(const AUpDown: TCustomUpDown;
   AValue: Double);
 begin
   if not Assigned(AUpDown) or not AUpDown.HandleAllocated then Exit;
@@ -357,20 +398,28 @@ begin
   TCocoaStepper(AUpDown.Handle).setDoubleValue(AValue);
 end;
 
-class procedure TCocoaWSCustomUpDown.SetIncrement(const AUpDown: TCustomUpDown;
+imptype procedure TCocoaWSCustomUpDown.SetIncrement(const AUpDown: TCustomUpDown;
   AValue: Double);
 begin
   if not Assigned(AUpDown) or not AUpDown.HandleAllocated then Exit;
   TCocoaStepper(AUpDown.Handle).setIncrement(AValue);
 end;
 
-class procedure TCocoaWSCustomUpDown.SetWrap(const AUpDown: TCustomUpDown;
+imptype procedure TCocoaWSCustomUpDown.SetWrap(const AUpDown: TCustomUpDown;
   ADoWrap: Boolean);
 begin
   if not Assigned(AUpDown) or not AUpDown.HandleAllocated then Exit;
   TCocoaStepper(AUpDown.Handle).setValueWraps(ADoWrap);
 end;
+{$ifdef wsintf}
+imptype procedure TCocoaWSCustomUpDown.SetOrientation(const AUpDown: TCustomUpDown; AOrientation: TUDOrientation);
+begin
+end;
 
+imptype procedure TCocoaWSCustomUpDown.SetUseArrowKeys(const AUpDown: TCustomUpDown; AUseArrow: Boolean);
+begin
+end;
+{$endif}
 { TStatusBarCallback }
 
 function TStatusBarCallback.GetBarsCount: Integer;
@@ -479,7 +528,7 @@ end;
 
 { TCocoaWSStatusBar }
 
-class function TCocoaWSStatusBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSStatusBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   lResult: TCocoaStatusBar;
@@ -511,20 +560,20 @@ begin
   lResult.panelCell := cell;
 end;
 
-class procedure TCocoaWSStatusBar.PanelUpdate(const AStatusBar: TStatusBar;
+imptype procedure TCocoaWSStatusBar.PanelUpdate(const AStatusBar: TStatusBar;
   PanelIndex: integer);
 begin
   // todo: can make more effecient
   Update(AStatusBar);
 end;
 
-class procedure TCocoaWSStatusBar.SetPanelText(const AStatusBar: TStatusBar;
+imptype procedure TCocoaWSStatusBar.SetPanelText(const AStatusBar: TStatusBar;
   PanelIndex: integer);
 begin
   Update(AStatusBar);
 end;
 
-class procedure TCocoaWSStatusBar.Update(const AStatusBar: TStatusBar);
+imptype procedure TCocoaWSStatusBar.Update(const AStatusBar: TStatusBar);
 begin
   if not Assigned(AStatusBar) or not (AStatusBar.HandleAllocated) then Exit;
   {$ifdef BOOLFIX}
@@ -534,12 +583,19 @@ begin
   {$endif}
 end;
 
-class procedure TCocoaWSStatusBar.GetPreferredSize(const AWinControl: TWinControl;
+imptype procedure TCocoaWSStatusBar.GetPreferredSize(const AWinControl: TWinControl;
   var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean);
 begin
   PreferredWidth := 0;
   PreferredHeight := STATUSBAR_DEFAULT_HEIGHT;
 end;
+{$ifdef wsintf}
+imptype procedure TCocoaWSStatusBar.SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean);
+begin
+end;
+
+
+{$endif}
 
 { TCocoaWSCustomPage }
 
@@ -551,7 +607,7 @@ begin
   Result := lHandle.tabPage;
 end;
 
-class function TCocoaWSCustomPage.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TCocoaWSCustomPage.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   lControl: TCocoaTabPage;
   tv: TCocoaTabPageView;
@@ -588,7 +644,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomPage.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TCocoaWSCustomPage.DestroyHandle(const AWinControl: TWinControl);
 var
   tv: TCocoaTabPageView;
   ndx: NSInteger;
@@ -597,10 +653,14 @@ begin
   ndx := tv.tabView.exttabIndexOfTabViewItem(tv.tabPage);
   if (ndx >= 0) and (ndx < tv.tabView.fulltabs.count) then
     tv.tabview.exttabRemoveTabViewItem(tv.tabPage);
+  {$ifndef wsintf}
   TCocoaWSWinControl.DestroyHandle(AWinControl);
+  {$else}
+  inherited DestroyHandle(AWinControl);
+  {$endif}
 end;
 
-class procedure TCocoaWSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
+imptype procedure TCocoaWSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
 var
   lTabPage: TCocoaTabPage;
 begin
@@ -626,7 +686,7 @@ begin
   ACocoaControl.setToolTip(NSStringUTF8(lHintStr));
 end;
 
-class procedure TCocoaWSCustomPage.SetBounds(const AWinControl: TWinControl;
+imptype procedure TCocoaWSCustomPage.SetBounds(const AWinControl: TWinControl;
   const ALeft, ATop, AWidth, AHeight: Integer);
 begin
   // Pages should be fixed into their PageControl owner,
@@ -634,7 +694,7 @@ begin
   // was causing bug 28489
 end;
 
-class procedure TCocoaWSCustomPage.SetText(const AWinControl: TWinControl;
+imptype procedure TCocoaWSCustomPage.SetText(const AWinControl: TWinControl;
   const AText: String);
 var
   lTitle: String;
@@ -647,7 +707,7 @@ begin
   page.setLabel(ControlTitleToNSStr(AText));
 end;
 
-class function TCocoaWSCustomPage.GetText(const AWinControl: TWinControl;
+imptype function TCocoaWSCustomPage.GetText(const AWinControl: TWinControl;
   var AText: String): Boolean;
 var
   page  : TCocoaTabPage;
@@ -696,7 +756,7 @@ begin
   Result := TCocoaTabControl(ATabControl.Handle);
 end;
 
-class function TCocoaWSCustomTabControl.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TCocoaWSCustomTabControl.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   lControl: TCocoaTabControl;
   lTabControl: TCustomTabControl = nil;
@@ -715,7 +775,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomTabControl.AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer);
+imptype procedure TCocoaWSCustomTabControl.AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer);
 var
   lTabControl: TCocoaTabControl;
   lTabPage: TCocoaTabPage;
@@ -736,7 +796,7 @@ begin
   {$ENDIF}
 end;
 
-class procedure TCocoaWSCustomTabControl.MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer);
+imptype procedure TCocoaWSCustomTabControl.MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer);
 var
   lTabControl: TCocoaTabControl;
   lTabPage: TCocoaTabPage;
@@ -751,7 +811,7 @@ begin
   lTabControl.exttabinsertTabViewItem_atIndex(lTabPage, NewIndex);
 end;
 
-class procedure TCocoaWSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer);
+imptype procedure TCocoaWSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl; const AIndex: integer);
 var
   lTabControl: TCocoaTabControl;
   lTabPage: NSTabViewItem;
@@ -763,7 +823,7 @@ begin
   lTabControl.exttabremoveTabViewItem(lTabPage);
 end;
 
-class function TCocoaWSCustomTabControl.GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer;
+imptype function TCocoaWSCustomTabControl.GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer;
 var
   lTabControl: TCocoaTabControl;
   lTabPage: NSTabViewItem;
@@ -791,7 +851,7 @@ begin
   Result := lTabControl.exttabIndexOfTabViewItem(lTabPage);
 end;
 
-class function TCocoaWSCustomTabControl.GetTabRect(
+imptype function TCocoaWSCustomTabControl.GetTabRect(
   const ATabControl: TCustomTabControl; const AIndex: Integer): TRect;
 var
   lTabControl: TCocoaTabControl;
@@ -806,7 +866,11 @@ var
   x   : Double;
   vt  : NSTabViewType;
 begin
+  {$ifndef wsintf}
   Result:=inherited GetTabRect(ATabControl, AIndex);
+  {$else}
+  Result := Rect(-1,-1,-1,-1);
+  {$endif}
   if not Assigned(ATabControl) or not ATabControl.HandleAllocated then Exit;
   lTabControl := TCocoaTabControl(ATabControl.Handle);
   // unable to determine the rectangle view
@@ -870,7 +934,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomTabControl.SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer);
+imptype procedure TCocoaWSCustomTabControl.SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer);
 var
   i  : NSInteger;
   tb : TCocoaTabPageView;
@@ -891,7 +955,7 @@ begin
   TCocoaTabControl(ATabControl.Handle).ignoreChange := False;
 end;
 
-class procedure TCocoaWSCustomTabControl.SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition);
+imptype procedure TCocoaWSCustomTabControl.SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition);
 var
   lTabControl: TCocoaTabControl = nil;
   lOldTabStyle, lTabStyle: NSTabViewType;
@@ -904,7 +968,7 @@ begin
   lTabControl.setTabViewType(lTabStyle);
 end;
 
-class procedure TCocoaWSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean);
+imptype procedure TCocoaWSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean);
 var
   lTabControl: TCocoaTabControl = nil;
   lOldTabStyle, lTabStyle: NSTabViewType;
@@ -939,7 +1003,37 @@ begin
     if Assigned(cb) then cb.frameDidChange(lTabControl);
   end;
 end;
+{$ifdef wsintf}
+imptype function TCocoaWSCustomTabControl.GetNotebookMinTabHeight(const AWinControl: TWinControl): integer;
+begin
+  Result := 30;
+end;
 
+imptype function TCocoaWSCustomTabControl.GetNotebookMinTabWidth(const AWinControl: TWinControl): integer;
+begin
+  Result := 60;
+end;
+
+imptype function TCocoaWSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
+begin
+end;
+
+imptype procedure TCocoaWSCustomTabControl.SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomTabControl.SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution);
+begin
+end;
+
+imptype procedure TCocoaWSCustomTabControl.SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string);
+begin
+end;
+
+imptype procedure TCocoaWSCustomTabControl.UpdateProperties(const ATabControl: TCustomTabControl);
+begin
+end;
+{$endif}
 { TCocoaWSCustomListView }
 
 class function TCocoaWSCustomListView.CheckParams(
@@ -990,7 +1084,7 @@ begin
   end;
 end;
 
-class function TCocoaWSCustomListView.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TCocoaWSCustomListView.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   lCocoaLV: TCocoaListView;
   lTableLV: TCocoaTableListView;
@@ -1044,7 +1138,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomListView.SetBorderStyle(
+imptype procedure TCocoaWSCustomListView.SetBorderStyle(
   const AWinControl: TWinControl; const ABorderStyle: TBorderStyle);
 begin
   if not Assigned(AWinControl) or not AWinControl.HandleAllocated then Exit;
@@ -1052,7 +1146,7 @@ begin
   UpdateFocusRing(NSView(NSScrollView(AWinControl.Handle).documentView), ABorderStyle);
 end;
 
-class procedure TCocoaWSCustomListView.ColumnDelete(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ColumnDelete(const ALV: TCustomListView;
   const AIndex: Integer);
 var
   lTableLV: TCocoaTableListView;
@@ -1068,7 +1162,7 @@ begin
   lNSColumn.release;
 end;
 
-class function TCocoaWSCustomListView.ColumnGetWidth(
+imptype function TCocoaWSCustomListView.ColumnGetWidth(
   const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn
   ): Integer;
 var
@@ -1089,7 +1183,7 @@ begin
   Result := Round(lColumn.width());
 end;
 
-class procedure TCocoaWSCustomListView.ColumnInsert(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ColumnInsert(const ALV: TCustomListView;
   const AIndex: Integer; const AColumn: TListColumn);
 var
   lTableLV: TCocoaTableListView;
@@ -1116,7 +1210,7 @@ begin
   lTitle.release;
 end;
 
-class procedure TCocoaWSCustomListView.ColumnMove(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ColumnMove(const ALV: TCustomListView;
   const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn);
 var
   lTableLV: TCocoaTableListView;
@@ -1126,7 +1220,7 @@ begin
   lTableLV.moveColumn_toColumn(AOldIndex, ANewIndex);
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetAlignment(
+imptype procedure TCocoaWSCustomListView.ColumnSetAlignment(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const AAlignment: TAlignment);
 var
@@ -1143,7 +1237,7 @@ begin
   lTableLV.headerView.setNeedsDisplayInRect( lTableLV.headerView.headerRectOfColumn(AIndex) );
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetAutoSize(
+imptype procedure TCocoaWSCustomListView.ColumnSetAutoSize(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const AAutoSize: Boolean);
 var
@@ -1158,7 +1252,7 @@ begin
   lNSColumn.setResizingMask(lResizeMask);
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetCaption(
+imptype procedure TCocoaWSCustomListView.ColumnSetCaption(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const ACaption: String);
 var
@@ -1182,14 +1276,17 @@ begin
   lNSCaption.release;
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetImage(
+imptype procedure TCocoaWSCustomListView.ColumnSetImage(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const AImageIndex: Integer);
 begin
+  {$ifndef wsintf}
   inherited ColumnSetImage(ALV, AIndex, AColumn, AImageIndex);
+  {$else}
+  {$endif}
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetMaxWidth(
+imptype procedure TCocoaWSCustomListView.ColumnSetMaxWidth(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const AMaxWidth: Integer);
 var
@@ -1205,7 +1302,7 @@ begin
   else lNSColumn.setMaxWidth(AMaxWidth);
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetMinWidth(
+imptype procedure TCocoaWSCustomListView.ColumnSetMinWidth(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const AMinWidth: integer);
 var
@@ -1220,7 +1317,7 @@ begin
   lNSColumn.setMinWidth(AMinWidth);
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetWidth(
+imptype procedure TCocoaWSCustomListView.ColumnSetWidth(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const AWidth: Integer);
 var
@@ -1235,7 +1332,7 @@ begin
   lNSColumn.setWidth(AWidth);
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetVisible(
+imptype procedure TCocoaWSCustomListView.ColumnSetVisible(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const AVisible: Boolean);
 var
@@ -1250,7 +1347,7 @@ begin
   {$endif}
 end;
 
-class procedure TCocoaWSCustomListView.ColumnSetSortIndicator(
+imptype procedure TCocoaWSCustomListView.ColumnSetSortIndicator(
   const ALV: TCustomListView; const AIndex: Integer;
   const AColumn: TListColumn; const ASortIndicator: TSortIndicator);
 var
@@ -1273,7 +1370,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomListView.ItemDelete(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ItemDelete(const ALV: TCustomListView;
   const AIndex: Integer);
 var
   lCocoaLV: TCocoaListView;
@@ -1293,7 +1390,7 @@ begin
   lclcb.tempItemsCountDelta := 0;
 end;
 
-class function TCocoaWSCustomListView.ItemDisplayRect(
+imptype function TCocoaWSCustomListView.ItemDisplayRect(
   const ALV: TCustomListView; const AIndex, ASubItem: Integer;
   ACode: TDisplayCode): TRect;
 var
@@ -1309,7 +1406,7 @@ begin
   end;
 end;
 
-class function TCocoaWSCustomListView.ItemGetChecked(
+imptype function TCocoaWSCustomListView.ItemGetChecked(
   const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem
   ): Boolean;
 var
@@ -1324,7 +1421,7 @@ begin
   Result := lclcb.checkedIdx.containsIndex(AIndex);
 end;
 
-class function TCocoaWSCustomListView.ItemGetPosition(
+imptype function TCocoaWSCustomListView.ItemGetPosition(
   const ALV: TCustomListView; const AIndex: Integer): TPoint;
 var
   lCocoaLV: TCocoaListView;
@@ -1341,7 +1438,7 @@ begin
   Result.Y := Round(lCocoaLV.frame.size.height - lNSRect.origin.Y);
 end;
 
-class function TCocoaWSCustomListView.ItemGetState(const ALV: TCustomListView;
+imptype function TCocoaWSCustomListView.ItemGetState(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const AState: TListItemState;
   out AIsSet: Boolean): Boolean;
 var
@@ -1357,11 +1454,16 @@ begin
       AIsSet := lTableLV.isRowSelected(AIndex);
     end;
   else
+    {$ifdef wsintf}
+    Result := False;
+    AIsSet:=false;
+    {$else}
     Result := inherited ItemGetState(ALV, AIndex, AItem, AState, AIsSet);
+    {$endif}
   end;
 end;
 
-class procedure TCocoaWSCustomListView.ItemInsert(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ItemInsert(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem);
 var
   lCocoaLV: TCocoaListView;
@@ -1380,7 +1482,7 @@ begin
   lTableLV.sizeToFit();
 end;
 
-class procedure TCocoaWSCustomListView.ItemSetChecked(
+imptype procedure TCocoaWSCustomListView.ItemSetChecked(
   const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem;
   const AChecked: Boolean);
 var
@@ -1404,7 +1506,7 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomListView.ItemSetImage(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ItemSetImage(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const ASubIndex,
   AImageIndex: Integer);
 var
@@ -1415,7 +1517,7 @@ begin
   lTableLV.reloadDataForRow_column(AIndex, ASubIndex);
 end;
 
-class procedure TCocoaWSCustomListView.ItemSetState(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ItemSetState(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const AState: TListItemState;
   const AIsSet: Boolean);
 var
@@ -1439,11 +1541,13 @@ begin
         lTableLV.deselectRow(row);
     end;
   else
+    {$ifndef wsintf}
     inherited ItemSetState(ALV, AIndex, AItem, AState, AIsSet);
+    {$endif}
   end;
 end;
 
-class procedure TCocoaWSCustomListView.ItemSetText(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ItemSetText(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const ASubIndex: Integer;
   const AText: String);
 var
@@ -1454,13 +1558,15 @@ begin
   lTableLV.reloadDataForRow_column(AIndex, ASubIndex);
 end;
 
-class procedure TCocoaWSCustomListView.ItemShow(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.ItemShow(const ALV: TCustomListView;
   const AIndex: Integer; const AItem: TListItem; const PartialOK: Boolean);
 begin
+  {$ifndef wsintf}
   inherited ItemShow(ALV, AIndex, AItem, PartialOK);
+  {$endif}
 end;
 
-class function TCocoaWSCustomListView.GetFocused(const ALV: TCustomListView): Integer;
+imptype function TCocoaWSCustomListView.GetFocused(const ALV: TCustomListView): Integer;
 var
   lCocoaLV: TCocoaListView;
   lTableLV: TCocoaTableListView;
@@ -1476,7 +1582,7 @@ begin
   {$ENDIF}
 end;
 
-class function TCocoaWSCustomListView.GetItemAt(const ALV: TCustomListView; x,
+imptype function TCocoaWSCustomListView.GetItemAt(const ALV: TCustomListView; x,
   y: integer): Integer;
 var
   lCocoaLV: TCocoaListView;
@@ -1490,7 +1596,7 @@ begin
   Result := LCLCoordToRow(lTableLV, x,y);
 end;
 
-class function TCocoaWSCustomListView.GetSelCount(const ALV: TCustomListView): Integer;
+imptype function TCocoaWSCustomListView.GetSelCount(const ALV: TCustomListView): Integer;
 var
   lCocoaLV: TCocoaListView;
   lTableLV: TCocoaTableListView;
@@ -1503,7 +1609,7 @@ begin
   Result := lTableLV.selectedRowIndexes().count();
 end;
 
-class function TCocoaWSCustomListView.GetSelection(const ALV: TCustomListView): Integer;
+imptype function TCocoaWSCustomListView.GetSelection(const ALV: TCustomListView): Integer;
 var
   lCocoaLV: TCocoaListView;
   lTableLV: TCocoaTableListView;
@@ -1519,7 +1625,7 @@ begin
   {$ENDIF}
 end;
 
-class function TCocoaWSCustomListView.GetTopItem(const ALV: TCustomListView): Integer;
+imptype function TCocoaWSCustomListView.GetTopItem(const ALV: TCustomListView): Integer;
 var
   lCocoaLV: TCocoaListView;
   lTableLV: TCocoaTableListView;
@@ -1532,7 +1638,7 @@ begin
   Result := LCLGetTopRow(lTableLV);
 end;
 
-class function TCocoaWSCustomListView.GetVisibleRowCount(
+imptype function TCocoaWSCustomListView.GetVisibleRowCount(
   const ALV: TCustomListView): Integer;
 var
   lCocoaLV: TCocoaListView;
@@ -1548,7 +1654,7 @@ begin
   Result := lVisibleRows.length;
 end;
 
-class procedure TCocoaWSCustomListView.SelectAll(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.SelectAll(const ALV: TCustomListView;
   const AIsSet: Boolean);
 var
   lCocoaLV: TCocoaListView;
@@ -1561,7 +1667,7 @@ begin
     lTableLV.deselectAll(lTableLV);
 end;
 
-class procedure TCocoaWSCustomListView.SetDefaultItemHeight(
+imptype procedure TCocoaWSCustomListView.SetDefaultItemHeight(
   const ALV: TCustomListView; const AValue: Integer);
 var
   lCocoaLV: TCocoaListView;
@@ -1573,7 +1679,7 @@ begin
   // setRowSizeStyle could be used here but is available only in 10.7+
 end;
 
-class procedure TCocoaWSCustomListView.SetImageList(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.SetImageList(const ALV: TCustomListView;
   const AList: TListViewImageList; const AValue: TCustomImageListResolution);
 var
   lCocoaLV: TCocoaListView;
@@ -1583,7 +1689,7 @@ begin
   lTableLV.lclSetImagesInCell(Assigned(AValue));
 end;
 
-class procedure TCocoaWSCustomListView.SetItemsCount(
+imptype procedure TCocoaWSCustomListView.SetItemsCount(
   const ALV: TCustomListView; const Avalue: Integer);
 var
   lCocoaLV: TCocoaListView;
@@ -1593,7 +1699,7 @@ begin
   lTableLV.noteNumberOfRowsChanged();
 end;
 
-class procedure TCocoaWSCustomListView.SetOwnerData(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.SetOwnerData(const ALV: TCustomListView;
   const AValue: Boolean);
 var
   lCocoaLV : TCocoaListView;
@@ -1605,7 +1711,7 @@ begin
   if cb.ownerData then cb.checkedIdx.removeAllIndexes; // releasing memory
 end;
 
-class procedure TCocoaWSCustomListView.SetProperty(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.SetProperty(const ALV: TCustomListView;
   const AProp: TListViewProperty; const AIsSet: Boolean);
 var
   lCocoaLV: TCocoaListView;
@@ -1642,13 +1748,28 @@ begin
   end;
 end;
 
-class procedure TCocoaWSCustomListView.SetProperties(
+imptype procedure TCocoaWSCustomListView.SetProperties(
   const ALV: TCustomListView; const AProps: TListViewProperties);
 begin
-  inherited SetProperties(ALV, AProps);
+  SetProperty(ALV, lvpAutoArrange, lvpAutoArrange in AProps);
+  SetProperty(ALV, lvpCheckboxes, lvpCheckboxes in AProps);
+  SetProperty(ALV, lvpColumnClick, lvpColumnClick in AProps);
+  SetProperty(ALV, lvpFlatScrollBars, lvpFlatScrollBars in AProps);
+  SetProperty(ALV, lvpFullDrag, lvpFullDrag in AProps);
+  SetProperty(ALV, lvpGridLines, lvpGridLines in AProps);
+  SetProperty(ALV, lvpHideSelection, lvpHideSelection in AProps);
+  SetProperty(ALV, lvpHotTrack, lvpHotTrack in AProps);
+  SetProperty(ALV, lvpMultiSelect, lvpMultiSelect in AProps);
+  SetProperty(ALV, lvpOwnerDraw, lvpOwnerDraw in AProps);
+  SetProperty(ALV, lvpReadOnly, lvpReadOnly in AProps);
+  SetProperty(ALV, lvpRowSelect, lvpRowSelect in AProps);
+  SetProperty(ALV, lvpShowColumnHeaders, lvpShowColumnHeaders in AProps);
+  SetProperty(ALV, lvpShowWorkAreas, lvpShowWorkAreas in AProps);
+  SetProperty(ALV, lvpWrapText, lvpWrapText in AProps);
+  SetProperty(ALV, lvpToolTips, lvpToolTips in AProps);
 end;
 
-class procedure TCocoaWSCustomListView.SetScrollBars(
+imptype procedure TCocoaWSCustomListView.SetScrollBars(
   const ALV: TCustomListView; const AValue: TScrollStyle);
 var
   lTableLV: TCocoaTableListView;
@@ -1671,7 +1792,7 @@ begin
   {$endif}
 end;
 
-class procedure TCocoaWSCustomListView.SetSort(const ALV: TCustomListView;
+imptype procedure TCocoaWSCustomListView.SetSort(const ALV: TCustomListView;
   const AType: TSortType; const AColumn: Integer;
   const ASortDirection: TSortDirection);
 var
@@ -1695,15 +1816,139 @@ begin
   );}
 end;
 
-class function TCocoaWSCustomListView.RestoreItemCheckedAfterSort(
+imptype function TCocoaWSCustomListView.RestoreItemCheckedAfterSort(
   const ALV: TCustomListView): Boolean;
 begin
   Result:=true;
 end;
+{$ifdef wsintf}
+imptype procedure TCocoaWSCustomListView.ItemExchange(const ALV: TCustomListView; AItem: TListItem; const AIndex1, AIndex2: Integer);
+begin
+end;
 
+imptype procedure TCocoaWSCustomListView.ItemMove(const ALV: TCustomListView; AItem: TListItem; const AFromIndex, AToIndex: Integer);
+begin
+end;
+
+imptype function TCocoaWSCustomListView.ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TCocoaWSCustomListView.ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean;
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.ItemUpdate(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.BeginUpdate(const ALV: TCustomListView);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.EndUpdate(const ALV: TCustomListView);
+begin
+end;
+
+imptype function TCocoaWSCustomListView.GetBoundingRect(const ALV: TCustomListView): TRect;
+begin
+  Result := Rect(0,0,0,0);
+end;
+
+imptype function TCocoaWSCustomListView.GetDropTarget(const ALV: TCustomListView): Integer;
+begin
+  Result := -1;
+end;
+
+imptype function TCocoaWSCustomListView.GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests;
+begin
+  Result := [];
+end;
+
+imptype function TCocoaWSCustomListView.GetHoverTime(const ALV: TCustomListView): Integer;
+begin
+  Result := -1;
+end;
+
+imptype function TCocoaWSCustomListView.GetViewOrigin(const ALV: TCustomListView): TPoint;
+begin
+  Result := Point(0, 0);
+end;
+
+imptype function TCocoaWSCustomListView.GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem;
+var
+  ACount: Integer;
+  StartIndex, AIndex: Integer;
+begin
+  Result := nil;
+  if StartItem = nil then
+    Exit;
+  StartIndex := StartItem.Index;
+  AIndex := StartIndex;
+  ACount := ALV.Items.Count;
+  case Direction of
+    sdAbove:
+      while AIndex>0 do
+      begin
+        dec(AIndex);
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+    sdBelow:
+      while AIndex < ACount-1 do
+      begin
+        inc(AIndex);
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+    sdAll:
+      while True do
+      begin
+        inc(AIndex);
+        Assert(AIndex <> StartIndex, 'TWSCustomListView.GetNextItem: AIndex=StartIndex');
+        if AIndex >= ACount then
+          Exit;
+{       begin           Do not wrap around. Will never return Nil. Issue #38565.
+          AIndex := -1;  continue;
+        end;  }
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+  end;
+end;
+
+imptype procedure TCocoaWSCustomListView.SetAllocBy(const ALV: TCustomListView; const AValue: Integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.SetHoverTime(const ALV: TCustomListView; const AValue: Integer);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint);
+begin
+end;
+
+imptype procedure TCocoaWSCustomListView.SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle);
+begin
+end;
+{$endif}
 { TCocoaWSProgressBar }
 
-class function TCocoaWSProgressBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSProgressBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   lResult: TCocoaProgressIndicator;
@@ -1719,7 +1964,7 @@ begin
   Result := TLCLIntfHandle(lResult);
 end;
 
-class procedure TCocoaWSProgressBar.ApplyChanges(
+imptype procedure TCocoaWSProgressBar.ApplyChanges(
   const AProgressBar: TCustomProgressBar);
 var
   ind : NSProgressIndicator;
@@ -1732,14 +1977,14 @@ begin
   SetStyle(AProgressBar, AProgressBar.Style);
 end;
 
-class procedure TCocoaWSProgressBar.SetPosition(
+imptype procedure TCocoaWSProgressBar.SetPosition(
   const AProgressBar: TCustomProgressBar; const NewPosition: integer);
 begin
   if AProgressBar.HandleAllocated then
     NSProgressIndicator(AProgressBar.Handle).setDoubleValue(NewPosition);
 end;
 
-class procedure TCocoaWSProgressBar.SetStyle(
+imptype procedure TCocoaWSProgressBar.SetStyle(
   const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle);
 begin
   if AProgressBar.HandleAllocated then
@@ -2044,7 +2289,7 @@ end;
 
   Creates new track bar with the specified parameters
  ------------------------------------------------------------------------------}
-class function TCocoaWSTrackBar.CreateHandle(const AWinControl: TWinControl;
+imptype function TCocoaWSTrackBar.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   lResult: TCocoaSlider;
@@ -2065,7 +2310,7 @@ end;
 
   Sets the parameters (Min, Max, Position, Ticks) of slider
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSTrackBar.ApplyChanges(const ATrackBar: TCustomTrackBar);
+imptype procedure TCocoaWSTrackBar.ApplyChanges(const ATrackBar: TCustomTrackBar);
 var
   lSlider: TCocoaSlider;
   lTickCount, lTrackBarLength: Integer;
@@ -2125,7 +2370,7 @@ end;
   Params:  ATrackBar - LCL custom track bar
   Returns: Position of slider
  ------------------------------------------------------------------------------}
-class function TCocoaWSTrackBar.GetPosition(const ATrackBar: TCustomTrackBar
+imptype function TCocoaWSTrackBar.GetPosition(const ATrackBar: TCustomTrackBar
   ): integer;
 var
   lSlider: TCocoaSlider;
@@ -2146,7 +2391,7 @@ end;
 
   Sets the position of slider
  ------------------------------------------------------------------------------}
-class procedure TCocoaWSTrackBar.SetPosition(const ATrackBar: TCustomTrackBar;
+imptype procedure TCocoaWSTrackBar.SetPosition(const ATrackBar: TCustomTrackBar;
   const NewPosition: integer);
 var
   lSlider: TCocoaSlider;
@@ -2158,7 +2403,7 @@ end;
 
 // Cocoa auto-detects the orientation based on width/height and there seams
 // to be no way to force it
-class procedure TCocoaWSTrackBar.SetOrientation(const ATrackBar: TCustomTrackBar;
+imptype procedure TCocoaWSTrackBar.SetOrientation(const ATrackBar: TCustomTrackBar;
   const AOrientation: TTrackBarOrientation);
 begin
   if not Assigned(ATrackBar) or not ATrackBar.HandleAllocated then Exit;
@@ -2168,7 +2413,7 @@ begin
     ATrackBar.Height := ATrackBar.Width + 1;
 end;
 
-class procedure TCocoaWSTrackBar.SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer);
+imptype procedure TCocoaWSTrackBar.SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer);
 var
   lSlider: TCocoaSlider;
 begin
@@ -2177,7 +2422,7 @@ begin
   lSlider.lclAddManTick(ATick);
 end;
 
-class procedure TCocoaWSTrackBar.GetPreferredSize(
+imptype procedure TCocoaWSTrackBar.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 var
@@ -2194,8 +2439,11 @@ begin
       lSlider.setFrame(NSMakeRect(0,0,5,10))
     else
       lSlider.setFrame(NSMakeRect(0,0,10,5));
-
+    {$ifndef wsintf}
     TCocoaWSWinControl.GetPreferredSize(AWinControl,PreferredWidth, PreferredHeight, WithThemeSpace);
+    {$else}
+    inherited GetPreferredSize(AWinControl,PreferredWidth, PreferredHeight, WithThemeSpace);
+    {$endif}
     if trk.Orientation = trVertical then
       PreferredHeight := 0
     else
@@ -2205,4 +2453,9 @@ begin
   end;
 end;
 
+{$ifdef wsintf}
+imptype procedure TCocoaWSTrackBar.SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle);
+begin
+end;
+{$endif}
 end.

@@ -1,13 +1,14 @@
 unit CocoaWSFactory;
 
 {$mode objfpc}{$H+}
+{$include cocoadefines.inc}
 
 interface
 
 uses
   Classes, Controls, ComCtrls, StdCtrls, Spin, PairSplitter,
   Dialogs, ExtCtrls, Buttons, CheckLst, Forms, Menus, Calendar,
-  WSLCLClasses,
+  {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif},
   CocoaWSCommon,
   CocoaWSButtons,
   CocoaWSExtCtrls,
@@ -137,13 +138,13 @@ end;
 
 function RegisterControl: Boolean; alias : 'WSRegisterControl';
 begin
-  RegisterWSComponent(TControl, TCocoaWSControl);
+  RegisterWSComponent(TControl, TCocoaWSControl{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterWinControl: Boolean; alias : 'WSRegisterWinControl';
 begin
-  RegisterWSComponent(TWinControl, TCocoaWSWinControl);
+  RegisterWSComponent(TWinControl, TCocoaWSWinControl{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -154,14 +155,14 @@ end;
 
 function RegisterCustomControl: Boolean; alias : 'WSRegisterCustomControl';
 begin
-  RegisterWSComponent(TCustomControl, TCocoaWSCustomControl);
+  RegisterWSComponent(TCustomControl, TCocoaWSCustomControl{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 // comctrls
 function RegisterStatusBar: Boolean; alias : 'WSRegisterStatusBar';
 begin
-  RegisterWSComponent(TStatusBar, TCocoaWSStatusBar);
+  RegisterWSComponent(TStatusBar, TCocoaWSStatusBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -177,19 +178,19 @@ end;
 
 function RegisterCustomListView: Boolean; alias : 'WSRegisterCustomListView';
 begin
-  RegisterWSComponent(TCustomListView, TCocoaWSCustomListView);
+  RegisterWSComponent(TCustomListView, TCocoaWSCustomListView{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomProgressBar: Boolean; alias : 'WSRegisterCustomProgressBar';
 begin
-  RegisterWSComponent(TCustomProgressBar, TCocoaWSProgressBar);
+  RegisterWSComponent(TCustomProgressBar, TCocoaWSProgressBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomUpDown: Boolean; alias : 'WSRegisterCustomUpDown';
 begin
-  RegisterWSComponent(TCustomUpDown, TCocoaWSCustomUpDown);
+  RegisterWSComponent(TCustomUpDown, TCocoaWSCustomUpDown{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -205,7 +206,7 @@ end;
 
 function RegisterCustomTrackBar: Boolean; alias : 'WSRegisterCustomTrackBar';
 begin
-  RegisterWSComponent(TCustomTrackBar, TCocoaWSTrackBar);
+  RegisterWSComponent(TCustomTrackBar, TCocoaWSTrackBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -217,7 +218,7 @@ end;
 // calendar
 function RegisterCustomCalendar: Boolean; alias : 'WSRegisterCustomCalendar';
 begin
-  RegisterWSComponent(TCustomCalendar, TCocoaWSCustomCalendar);
+  RegisterWSComponent(TCustomCalendar, TCocoaWSCustomCalendar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -229,7 +230,7 @@ end;
 
 function RegisterFileDialog: Boolean; alias : 'WSRegisterFileDialog';
 begin
-  RegisterWSComponent(TFileDialog, TCocoaWSFileDialog);
+  RegisterWSComponent(TFileDialog, TCocoaWSFileDialog{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -250,7 +251,7 @@ end;
 
 function RegisterColorDialog: Boolean; alias : 'WSRegisterColorDialog';
 begin
-  RegisterWSComponent(TColorDialog, TCocoaWSColorDialog);
+  RegisterWSComponent(TColorDialog, TCocoaWSColorDialog{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -261,44 +262,44 @@ end;
 
 function RegisterFontDialog: Boolean; alias : 'WSRegisterFontDialog';
 begin
-  RegisterWSComponent(TFontDialog, TCocoaWSFontDialog);
+  RegisterWSComponent(TFontDialog, TCocoaWSFontDialog{$ifdef wsintf}.Create{$endif});
   Result := False;
 end;
 
 // StdCtrls
 function RegisterCustomScrollBar: Boolean; alias : 'WSRegisterCustomScrollBar';
 begin
-  RegisterWSComponent(TCustomScrollBar, TCocoaWSScrollBar);
+  RegisterWSComponent(TCustomScrollBar, TCocoaWSScrollBar{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomGroupBox: Boolean; alias : 'WSRegisterCustomGroupBox';
 begin
-  RegisterWSComponent(TCustomGroupBox, TCocoaWSCustomGroupBox);
+  RegisterWSComponent(TCustomGroupBox, TCocoaWSCustomGroupBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomComboBox: Boolean; alias : 'WSRegisterCustomComboBox';
 begin
-  RegisterWSComponent(TCustomComboBox, TCocoaWSCustomComboBox);
+  RegisterWSComponent(TCustomComboBox, TCocoaWSCustomComboBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomListBox: Boolean; alias : 'WSRegisterCustomListBox';
 begin
-  RegisterWSComponent(TCustomListBox, TCocoaWSCustomListBox);
+  RegisterWSComponent(TCustomListBox, TCocoaWSCustomListBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomEdit: Boolean; alias : 'WSRegisterCustomEdit';
 begin
-  RegisterWSComponent(TCustomEdit, TCocoaWSCustomEdit);
+  RegisterWSComponent(TCustomEdit, TCocoaWSCustomEdit{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomMemo: Boolean; alias : 'WSRegisterCustomMemo';
 begin
-  RegisterWSComponent(TCustomMemo, TCocoaWSCustomMemo);
+  RegisterWSComponent(TCustomMemo, TCocoaWSCustomMemo{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -309,31 +310,31 @@ end;
 
 function RegisterCustomButton: Boolean; alias : 'WSRegisterCustomButton';
 begin
-  RegisterWSComponent(TCustomButton, TCocoaWSButton);
+  RegisterWSComponent(TCustomButton, TCocoaWSButton{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomCheckBox: Boolean; alias : 'WSRegisterCustomCheckBox';
 begin
-  RegisterWSComponent(TCustomCheckBox, TCocoaWSCustomCheckBox);
+  RegisterWSComponent(TCustomCheckBox, TCocoaWSCustomCheckBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterToggleBox: Boolean; alias : 'WSRegisterToggleBox';
 begin
-  RegisterWSComponent(TToggleBox, TCocoaWSToggleBox);
+  RegisterWSComponent(TToggleBox, TCocoaWSToggleBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterRadioButton: Boolean; alias : 'WSRegisterRadioButton';
 begin
-  RegisterWSComponent(TRadioButton, TCocoaWSRadioButton);
+  RegisterWSComponent(TRadioButton, TCocoaWSRadioButton{$ifdef wsintf}.Create{$endif});
   Result := False;
 end;
 
 function RegisterCustomStaticText: Boolean; alias : 'WSRegisterCustomStaticText';
 begin
-  RegisterWSComponent(TCustomStaticText, TCocoaWSCustomStaticText);
+  RegisterWSComponent(TCustomStaticText, TCocoaWSCustomStaticText{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -345,13 +346,13 @@ end;
 // extctrls
 function RegisterCustomPage: Boolean; alias : 'WSRegisterCustomPage';
 begin
-  RegisterWSComponent(TCustomPage, TCocoaWSCustomPage);
+  RegisterWSComponent(TCustomPage, TCocoaWSCustomPage{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterCustomNotebook: Boolean; alias : 'WSRegisterCustomNotebook';
 begin
-  RegisterWSComponent(TCustomTabControl, TCocoaWSCustomTabControl);
+  RegisterWSComponent(TCustomTabControl, TCocoaWSCustomTabControl{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -362,7 +363,7 @@ end;
 
 function RegisterCustomSplitter: Boolean; alias : 'WSRegisterCustomSplitter';
 begin
-  RegisterWSComponent(TCustomSplitter, TCocoaWSCustomSplitter);
+  RegisterWSComponent(TCustomSplitter, TCocoaWSCustomSplitter{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -403,7 +404,7 @@ end;
 
 function RegisterCustomTrayIcon: Boolean; alias : 'WSRegisterCustomTrayIcon';
 begin
-  RegisterWSComponent(TCustomTrayIcon, TCocoaWSCustomTrayIcon);
+  RegisterWSComponent(TCustomTrayIcon, TCocoaWSCustomTrayIcon{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -452,7 +453,7 @@ end;
 // Buttons
 function RegisterCustomBitBtn: Boolean; alias : 'WSRegisterCustomBitBtn';
 begin
-  RegisterWSComponent(TCustomBitBtn, TCocoaWSBitBtn);
+  RegisterWSComponent(TCustomBitBtn, TCocoaWSBitBtn{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -464,14 +465,14 @@ end;
 // CheckLst
 function RegisterCustomCheckListBox: Boolean; alias : 'WSRegisterCustomCheckListBox';
 begin
-  RegisterWSComponent(TCustomCheckListBox, TCocoaWSCustomCheckListBox);
+  RegisterWSComponent(TCustomCheckListBox, TCocoaWSCustomCheckListBox{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 // Forms
 function RegisterScrollingWinControl: Boolean; alias : 'WSRegisterScrollingWinControl';
 begin
-  RegisterWSComponent(TScrollingWinControl, TCocoaWSScrollingWinControl);
+  RegisterWSComponent(TScrollingWinControl, TCocoaWSScrollingWinControl{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -487,13 +488,13 @@ end;
 
 function RegisterCustomForm: Boolean; alias : 'WSRegisterCustomForm';
 begin
-  RegisterWSComponent(TCustomForm, TCocoaWSCustomForm);
+  RegisterWSComponent(TCustomForm, TCocoaWSCustomForm{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterHintWindow: Boolean; alias : 'WSRegisterHintWindow';
 begin
-   RegisterWSComponent(THintWindow, TCocoaWSHintWindow);
+   RegisterWSComponent(THintWindow, TCocoaWSHintWindow{$ifdef wsintf}.Create{$endif});
    Result := True;
 end;
 
@@ -506,25 +507,25 @@ end;
 // Menus
 function RegisterMenuItem: Boolean; alias : 'WSRegisterMenuItem';
 begin
-  RegisterWSComponent(TMenuItem, TCocoaWSMenuItem);
+  RegisterWSComponent(TMenuItem, TCocoaWSMenuItem{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterMenu: Boolean; alias : 'WSRegisterMenu';
 begin
-  RegisterWSComponent(TMenu, TCocoaWSMenu);
+  RegisterWSComponent(TMenu, TCocoaWSMenu{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterMainMenu: Boolean; alias : 'WSRegisterMainMenu';
 begin
-  RegisterWSComponent(TMainMenu, TCocoaWSMainMenu);
+  RegisterWSComponent(TMainMenu, TCocoaWSMainMenu{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
 function RegisterPopupMenu: Boolean; alias : 'WSRegisterPopupMenu';
 begin
-  RegisterWSComponent(TPopupMenu, TCocoaWSPopupMenu);
+  RegisterWSComponent(TPopupMenu, TCocoaWSPopupMenu{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 
@@ -541,7 +542,7 @@ end;
 // Spin
 function RegisterCustomFloatSpinEdit: Boolean; alias : 'WSRegisterCustomFloatSpinEdit';
 begin
-  RegisterWSComponent(TCustomFloatSpinEdit, TCocoaWSCustomFloatSpinEdit);
+  RegisterWSComponent(TCustomFloatSpinEdit, TCocoaWSCustomFloatSpinEdit{$ifdef wsintf}.Create{$endif});
   Result := True;
 end;
 

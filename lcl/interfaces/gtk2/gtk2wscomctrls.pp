@@ -248,7 +248,7 @@ type
   end;
 
   { TGtk2WSCustomUpDown }
-
+  {$ifndef wsintf}
   TGtk2WSCustomUpDown = class(TWSCustomUpDown)
   published
   end;
@@ -264,6 +264,7 @@ type
   TGtk2WSToolButton = class(TWSToolButton)
   published
   end;
+  {$endif}
 
   { TGtk2WSToolBar }
 
@@ -295,7 +296,7 @@ type
   end;
 
   { TGtk2WSCustomTreeView }
-
+  {$ifndef wsintf}
   TGtk2WSCustomTreeView = class(TWSCustomTreeView)
   published
   end;
@@ -305,7 +306,7 @@ type
   TGtk2WSTreeView = class(TWSTreeView)
   published
   end;
-
+  {$endif}
 
 implementation
 

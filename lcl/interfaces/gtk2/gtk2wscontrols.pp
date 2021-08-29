@@ -127,7 +127,7 @@ type
 
   { TGtk2WSImageList }
 
-  TGtk2WSImageList = class(TWSImageList)
+  TGtk2WSImageList = class({$ifndef wsintf}TWSImageList{$else}TGtk2WSDragImageListResolution{$endif})
   published
   end;
 

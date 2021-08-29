@@ -37,7 +37,7 @@ uses
   Gtk2WSControls, Gtk2Proc, Gtk2Globals;
 
 type
-
+  {$ifndef wsintf}
   { TGtk2WSPage }
 
   TGtk2WSPage = class(TWSPage)
@@ -135,6 +135,7 @@ type
   TGtk2WSLabeledEdit = class(TWSLabeledEdit)
   published
   end;
+  {$endif}
 
   { TGtk2WSCustomPanel }
 
@@ -149,11 +150,11 @@ type
   end;
 
   { TGtk2WSPanel }
-
+  {$ifndef wsintf}
   TGtk2WSPanel = class(TWSPanel)
   published
   end;
-
+  {$endif}
   { TGtk2WSCustomTrayIcon }
 
   TGtk2WSCustomTrayIcon = class({$ifndef wsintf}TWSCustomTrayIcon{$else}TWSLCLComponent, IWSCustomTrayIcon{$endif})

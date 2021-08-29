@@ -286,13 +286,13 @@ type
 
   { TGtk2WSEdit }
 
-  TGtk2WSEdit = class(TWSEdit)
+  TGtk2WSEdit = class({$ifndef wsintf}TWSEdit{$else}TGtk2WSCustomEdit{$endif})
   published
   end;
 
   { TGtk2WSMemo }
 
-  TGtk2WSMemo = class(TWSMemo)
+  TGtk2WSMemo = class({$ifndef wsintf}TWSEdit{$else}TGtk2WSCustomMemo{$endif})
   published
   end;
 
@@ -368,34 +368,34 @@ type
 
   { TGtk2WSCheckBox }
 
-  TGtk2WSCheckBox = class(TWSCheckBox)
+  TGtk2WSCheckBox = class({$ifndef wsintf}TWSCheckBox{$else}TGtk2WSCustomCheckBox{$endif})
   published
   end;
 
   { TGtk2WSToggleBox }
 
-  TGtk2WSToggleBox = class(TWSToggleBox)
+  TGtk2WSToggleBox = class({$ifndef wsintf}TWSToggleBox{$else}TGtk2WSCustomCheckBox{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TGtk2WSRadioButton }
 
-  TGtk2WSRadioButton = class(TWSRadioButton)
+  TGtk2WSRadioButton = class({$ifndef wsintf}TWSRadioButton{$else}TGtk2WSCustomCheckBox{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TGtk2WSCustomStaticText }
 
-  TGtk2WSCustomStaticText = class(TWSCustomStaticText)
+  TGtk2WSCustomStaticText = class({$ifndef wsintf}TWSCustomStaticText{$else}TGtk2WSWinControl, IWSCustomStaticText{$endif})
   protected
     class function GetLabelWidget(AFrame: PGtkFrame): PGtkLabel;
     class function GetBoxWidget(AFrame: PGtkFrame): PGtkEventBox;
   impsection
     imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
     imptype procedure SetAlignment(const ACustomStaticText: TCustomStaticText;
-                                 const NewAlignment: TAlignment); override;
+                                 const NewAlignment: TAlignment); rootoverride;
     imptype procedure GetPreferredSize(const AWinControl: TWinControl;
                         var PreferredWidth, PreferredHeight: integer;
                         WithThemeSpace: Boolean); override;
@@ -403,13 +403,13 @@ type
     class procedure SetCallbacks(const AGtkWidget: PGtkWidget; const AWidgetInfo: PWidgetInfo);
     imptype procedure SetColor(const AWinControl: TWinControl); override;
     imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    imptype procedure SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle); override;
+    imptype procedure SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle); rootoverride;
     imptype procedure SetText(const AWinControl: TWinControl; const AText: String); override;
   end;
 
   { TGtk2WSStaticText }
 
-  TGtk2WSStaticText = class(TWSStaticText)
+  TGtk2WSStaticText = class({$ifndef wsintf}TWSStaticText{$else}TGtk2WSCustomStaticText{$endif})
   published
   end;
 

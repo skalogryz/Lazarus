@@ -551,11 +551,7 @@ const
 begin
   if Done then exit;
   if not WSRegisterControl then
-    {$ifndef wsintf}
     RegisterWSComponent(TControl, TWSControl{$ifdef wsintf}.Create{$endif});
-    {$else}
-    ;
-    {$endif}
   Done := True;
 end;
 
@@ -566,7 +562,7 @@ begin
   if Done then exit;
   if not WSRegisterWinControl then
     {$ifndef wsintf}
-    RegisterWSComponent(TWinControl, TWSWinControl{$ifdef wsintf}.Create{$endif});
+    RegisterWSComponent(TWinControl, TWSWinControl);
     {$else}
     ;
     {$endif}

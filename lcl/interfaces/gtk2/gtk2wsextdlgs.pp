@@ -31,13 +31,13 @@ uses
 ////////////////////////////////////////////////////
 //  ExtDlgs,
 ////////////////////////////////////////////////////
-  WSExtDlgs, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
+  WSExtDlgs, {$ifndef wsintf}WSLCLClasses{$else}Gtk2WSControls, WSLCLClasses_Intf{$endif};
 
 type
 
   { TGtk2WSPreviewFileControl }
 
-  TGtk2WSPreviewFileControl = class(TWSPreviewFileControl)
+  TGtk2WSPreviewFileControl = class({$ifndef wsintf}TWSPreviewFileControl{$else}TGtk2WSWinControl{$endif})
   private
   protected
   public

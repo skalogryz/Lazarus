@@ -28,7 +28,7 @@ uses
   // LCL
   Controls, Forms, Graphics, LCLType, Messages, LMessages, LCLProc,
   // Widgetset
-  WSControls, WSForms, WSLCLClasses, WSProc, LCLMessageGlue,
+  WSControls, WSForms, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif}, WSProc, LCLMessageGlue,
   // LCL Cocoa
   CocoaPrivate, CocoaUtils, CocoaWSCommon, CocoaWSStdCtrls, CocoaWSMenus,
   CocoaGDIObjects,

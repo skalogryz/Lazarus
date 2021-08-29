@@ -27,7 +27,7 @@ uses
   // LCL
   Classes, Controls, Buttons, LCLType, LCLProc, Graphics, GraphType, ImgList,
   // widgetset
-  WSButtons, WSLCLClasses, WSProc,
+  WSButtons, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif}, WSProc,
   // LCL Cocoa
   CocoaWSCommon, CocoaWSStdCtrls, CocoaGDIObjects, CocoaPrivate, CocoaUtils,
   cocoa_extra, CocoaButtons;

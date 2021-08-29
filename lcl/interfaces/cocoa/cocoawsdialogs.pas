@@ -31,7 +31,7 @@ uses
   Controls, StrUtils, SysUtils, Forms, Dialogs, Graphics, Masks,
   LCLType, LCLProc, LCLStrConsts,
   // Widgetset
-  WSForms, WSLCLClasses, WSDialogs,
+  WSForms, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif}, WSDialogs,
   // LCL Cocoa
   CocoaUtils, CocoaGDIObjects
   ,Cocoa_Extra, CocoaWSMenus;

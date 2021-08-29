@@ -49,7 +49,7 @@ type
 
   { TCocoaWSCustomGroupBox }
 
-  TCocoaWSCustomGroupBox = class(TWSCustomGroupBox)
+  TCocoaWSCustomGroupBox = class({$ifndef wsintf}TWSCustomGroupBox{$else}TCocoaWSWinControl{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
     imptype function  GetText(const AWinControl: TWinControl; var AText: String): Boolean; override;

@@ -1,12 +1,13 @@
 unit QtWSFactory;
 
 {$mode objfpc}{$H+}
+{$i qtdefines.inc}
 
 interface
 uses
   Classes, Controls, ComCtrls, Calendar, StdCtrls, Spin, Grids,
   Dialogs, ExtCtrls, Buttons, CheckLst, Forms, Menus, RubberBand, PairSplitter,
-  WSLCLClasses;
+  {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 // imglist
 function RegisterCustomImageListResolution: Boolean;

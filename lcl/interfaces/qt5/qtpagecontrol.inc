@@ -27,7 +27,7 @@ const
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSCustomPage.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomPage.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtPage: TQtPage;
@@ -47,7 +47,7 @@ begin
   {$endif}
 end;
 
-class procedure TQtWSCustomPage.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TQtWSCustomPage.DestroyHandle(const AWinControl: TWinControl);
 var
   B: Boolean;
 begin
@@ -83,7 +83,7 @@ begin
     SetTabFontColor(APage.PageIndex, AColor);
 end;
 
-class procedure TQtWSCustomPage.SetFont(const AWinControl: TWinControl;
+imptype procedure TQtWSCustomPage.SetFont(const AWinControl: TWinControl;
   const AFont: TFont);
 begin
   if not WSCheckHandleAllocated(AWinControl, 'SetFont') then
@@ -92,7 +92,7 @@ begin
   UpdateTabFontColor(TCustomPage(AWinControl), AFont);
 end;
 
-class procedure TQtWSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
+imptype procedure TQtWSCustomPage.UpdateProperties(const ACustomPage: TCustomPage);
 var
   ImageList: TCustomImageList;
   ImageIndex: Integer;
@@ -157,7 +157,7 @@ end;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSCustomTabControl.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TQtWSCustomTabControl.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtTabWidget: TQtTabWidget;
   QtTTabCtl: TQtWidget;
@@ -184,7 +184,7 @@ begin
   end;
 end;
 
-class function TQtWSCustomTabControl.GetDefaultClientRect(
+imptype function TQtWSCustomTabControl.GetDefaultClientRect(
   const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer;
   var aClientRect: TRect): boolean;
 var
@@ -285,7 +285,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomTabControl.AddPage(const ATabControl: TCustomTabControl;
+imptype procedure TQtWSCustomTabControl.AddPage(const ATabControl: TCustomTabControl;
   const AChild: TCustomPage; const AIndex: integer);
 var
   QtTabWidget: TQtTabWidget;
@@ -307,7 +307,7 @@ begin
   TQtWsCustomPage.UpdateProperties(AChild);
 end;
 
-class procedure TQtWSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;
+imptype procedure TQtWSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;
   const AChild: TCustomPage; const NewIndex: integer);
 var
   TabWidget: TQtTabWidget;
@@ -327,7 +327,7 @@ begin
   TabWidget.EndUpdate;
 end;
 
-class procedure TQtWSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl;
+imptype procedure TQtWSCustomTabControl.RemovePage(const ATabControl: TCustomTabControl;
   const AIndex: integer);
 var
   TabWidget: TQtTabWidget;
@@ -346,7 +346,7 @@ begin
   end;
 end;
 
-class function TQtWSCustomTabControl.GetNotebookMinTabHeight(
+imptype function TQtWSCustomTabControl.GetNotebookMinTabHeight(
   const AWinControl: TWinControl): integer;
 var
   dy: integer;
@@ -365,7 +365,7 @@ begin
   Result:=inherited GetNotebookMinTabHeight(AWinControl);
 end;
 
-class function TQtWSCustomTabControl.GetNotebookMinTabWidth(
+imptype function TQtWSCustomTabControl.GetNotebookMinTabWidth(
   const AWinControl: TWinControl): integer;
 var
   dy: integer;
@@ -384,12 +384,12 @@ begin
   Result:=inherited GetNotebookMinTabWidth(AWinControl);
 end;
 
-class function TQtWSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
+imptype function TQtWSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
 begin
   Result := [nbcShowCloseButtons, nbcTabsSizeable];
 end;
 
-class function TQtWSCustomTabControl.GetDesignInteractive(
+imptype function TQtWSCustomTabControl.GetDesignInteractive(
   const AWinControl: TWinControl; AClientPos: TPoint): Boolean;
 var
   TabWidget: TQtTabWidget;
@@ -409,7 +409,7 @@ begin
   Result := (TabIndex >= 0) and (TabWidget.getCurrentIndex <> TabIndex);
 end;
 
-class function TQtWSCustomTabControl.GetTabIndexAtPos(
+imptype function TQtWSCustomTabControl.GetTabIndexAtPos(
   const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer;
 var
   TabWidget: TQtTabWidget;
@@ -438,7 +438,7 @@ begin
   Result := TabWidget.tabAt(NewPos);
 end;
 
-class function TQtWSCustomTabControl.GetTabRect(const ATabControl: TCustomTabControl;
+imptype function TQtWSCustomTabControl.GetTabRect(const ATabControl: TCustomTabControl;
   const AIndex: Integer): TRect;
 var
   TabWidget: TQtTabWidget;
@@ -458,7 +458,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomTabControl.SetPageIndex(
+imptype procedure TQtWSCustomTabControl.SetPageIndex(
   const ATabControl: TCustomTabControl; const AIndex: integer);
 var
   TabWidget: TQtTabWidget;
@@ -479,7 +479,7 @@ begin
   TabWidget.EndUpdate;
 end;
 
-class procedure TQtWSCustomTabControl.SetTabCaption(
+imptype procedure TQtWSCustomTabControl.SetTabCaption(
   const ATabControl: TCustomTabControl; const AChild: TCustomPage;
   const AText: string);
 var
@@ -491,13 +491,13 @@ begin
   TQtTabWidget(ATabControl.Handle).setTabText(Index, GetUtf8String(AText));
 end;
 
-class procedure TQtWSCustomTabControl.SetTabPosition(
+imptype procedure TQtWSCustomTabControl.SetTabPosition(
   const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition);
 begin
   TQtTabWidget(ATabControl.Handle).SetTabPosition(QTabWidgetTabPositionMap[ATabPosition]);
 end;
 
-class procedure TQtWSCustomTabControl.SetTabSize(
+imptype procedure TQtWSCustomTabControl.SetTabSize(
   const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer);
 var
   ASize, ANewSize: TSize;
@@ -524,7 +524,7 @@ begin
   QWidget_setStyleSheet(TQtTabWidget(ATabControl.Handle).Widget, @WS);
 end;
 
-class procedure TQtWSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl;
+imptype procedure TQtWSCustomTabControl.ShowTabs(const ATabControl: TCustomTabControl;
   AShowTabs: boolean);
 var
   TabWidget: TQtTabWidget;
@@ -539,7 +539,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomTabControl.UpdateProperties(const ATabControl: TCustomTabControl);
+imptype procedure TQtWSCustomTabControl.UpdateProperties(const ATabControl: TCustomTabControl);
 begin
   if not WSCheckHandleAllocated(ATabControl, 'UpdateProperties') then
     Exit;

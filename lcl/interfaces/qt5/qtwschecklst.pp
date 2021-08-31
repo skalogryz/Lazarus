@@ -28,7 +28,7 @@ uses
   // LCL
   SysUtils, Classes, StdCtrls, Controls, Graphics, CheckLst,  LCLType,
   // Widgetset
-  WSCheckLst, WSLCLClasses;
+  WSCheckLst, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
 
@@ -37,17 +37,17 @@ type
   { TQtWSCustomCheckListBox }
 
   TQtWSCustomCheckListBox = class(TWSCustomCheckListBox)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
      const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer): Boolean; override;
-    class function GetState(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer): TCheckBoxState; override;
-    class procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer; const AEnabled: Boolean); override;
-    class procedure SetState(const ACheckListBox: TCustomCheckListBox;
-      const AIndex: integer; const AState: TCheckBoxState); override;
+    imptype function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean; rootoverride;
+    imptype function GetState(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): TCheckBoxState; rootoverride;
+    imptype procedure SetItemEnabled(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AEnabled: Boolean); rootoverride;
+    imptype procedure SetState(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AState: TCheckBoxState); rootoverride;
   end;
 
 
@@ -69,7 +69,7 @@ const
 {QtChecked         } cbChecked
   );
 
-class function TQtWSCustomCheckListBox.CreateHandle(
+imptype function TQtWSCustomCheckListBox.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams
   ): TLCLIntfHandle;
 var
@@ -101,7 +101,7 @@ begin
   Result := TLCLIntfHandle(QtListWidget);
 end;
 
-class function TQtWSCustomCheckListBox.GetItemEnabled(
+imptype function TQtWSCustomCheckListBox.GetItemEnabled(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer): Boolean;
 var
   QtListWidget: TQtCheckListBox;
@@ -112,7 +112,7 @@ begin
   Result := QtListWidget.Enabled[AIndex];
 end;
 
-class function TQtWSCustomCheckListBox.GetState(
+imptype function TQtWSCustomCheckListBox.GetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer): TCheckBoxState;
 var
   QtListWidget: TQtCheckListBox;
@@ -124,7 +124,7 @@ begin
   Result := QtCheckStateToLCLCheckStateMap[QtListWidget.ItemCheckState[AIndex]];
 end;
 
-class procedure TQtWSCustomCheckListBox.SetItemEnabled(
+imptype procedure TQtWSCustomCheckListBox.SetItemEnabled(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AEnabled: Boolean);
 var
@@ -138,7 +138,7 @@ begin
   QtListWidget.EndUpdate;
 end;
 
-class procedure TQtWSCustomCheckListBox.SetState(
+imptype procedure TQtWSCustomCheckListBox.SetState(
   const ACheckListBox: TCustomCheckListBox; const AIndex: integer;
   const AState: TCheckBoxState);
 var

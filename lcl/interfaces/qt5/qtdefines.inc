@@ -23,3 +23,16 @@
   {.$DEFINE QT_NO_SESSIONMANAGER}
   {.$DEFINE QTDIALOGSUSEHTMLTEXT} {we use plain text for dialogs - if enabled then dialogs can contain html formatted text}
 {$ENDIF}
+
+{$define WSINTF}
+
+{$macro on}
+{$ifdef wsintf}
+{$define imptype:=}
+{$define impsection:=public}
+{$define rootoverride:=virtual}
+{$else}
+{$define imptype:=class}
+{$define impsection:=published}
+{$define rootoverride:=override}
+{$endif}

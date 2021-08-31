@@ -32,19 +32,19 @@ uses
   // LazUtils
   GraphType,
   // Widgetset
-  WSProc, WSButtons, WSLCLClasses;
+  WSProc, WSButtons, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSBitBtn }
 
   TQtWSBitBtn = class(TWSBitBtn)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); override;
-    class procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); override;
-    class procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); override;
-    class procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); rootoverride;
+    imptype procedure SetLayout(const ABitBtn: TCustomBitBtn; const AValue: TButtonLayout); rootoverride;
+    imptype procedure SetMargin(const ABitBtn: TCustomBitBtn; const AValue: Integer); rootoverride;
+    imptype procedure SetSpacing(const ABitBtn: TCustomBitBtn; const AValue: Integer); rootoverride;
   end;
 
   { TQtWSSpeedButton }
@@ -59,7 +59,7 @@ implementation
 
 { TQtWSBitBtn }
 
-class function TQtWSBitBtn.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSBitBtn.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtBitBtn: TQtBitBtn;
@@ -74,7 +74,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph);
+imptype procedure TQtWSBitBtn.SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph);
 const
   IconModeToButtonState: array[QIconMode] of TButtonState =
   (
@@ -125,7 +125,7 @@ begin
   QIcon_destroy(AIcon);
 end;
 
-class procedure TQtWSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
+imptype procedure TQtWSBitBtn.SetLayout(const ABitBtn: TCustomBitBtn;
   const AValue: TButtonLayout);
 begin
   if not WSCheckHandleAllocated(ABitBtn, 'SetLayout') then
@@ -135,7 +135,7 @@ begin
     TQtBitBtn(ABitBtn.Handle).Update(nil);
 end;
 
-class procedure TQtWSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn;
+imptype procedure TQtWSBitBtn.SetMargin(const ABitBtn: TCustomBitBtn;
   const AValue: Integer);
 begin
   if not WSCheckHandleAllocated(ABitBtn, 'SetMargin') then
@@ -144,7 +144,7 @@ begin
     TQtBitBtn(ABitBtn.Handle).Update(nil);
 end;
 
-class procedure TQtWSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn;
+imptype procedure TQtWSBitBtn.SetSpacing(const ABitBtn: TCustomBitBtn;
   const AValue: Integer);
 begin
   if not WSCheckHandleAllocated(ABitBtn, 'SetSpacing') then

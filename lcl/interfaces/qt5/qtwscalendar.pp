@@ -28,20 +28,20 @@ uses
   // LCL
   SysUtils, Types, DateUtils, Controls, Calendar, LCLType, LCLIntf, LCLProc,
   // Widgetset
-  WSProc, WSCalendar, WSLCLClasses;
+  WSProc, WSCalendar, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSCustomCalendar }
 
   TQtWSCustomCalendar = class(TWSCustomCalendar)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; override;
-    class function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; override;
-    class procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); override;
-    class procedure SetDisplaySettings(const ACalendar: TCustomCalendar; const ADisplaySettings: TDisplaySettings); override;
-    class procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar; const ADayOfWeek: TCalDayOfWeek); override;
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; rootoverride;
+    imptype function HitTest(const ACalendar: TCustomCalendar; const APoint: TPoint): TCalendarPart; rootoverride;
+    imptype procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); rootoverride;
+    imptype procedure SetDisplaySettings(const ACalendar: TCustomCalendar; const ADisplaySettings: TDisplaySettings); rootoverride;
+    imptype procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar; const ADayOfWeek: TCalDayOfWeek); rootoverride;
   end;
 
 
@@ -49,7 +49,7 @@ implementation
 
 { TQtWSCustomCalendar }
 
-class function TQtWSCustomCalendar.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TQtWSCustomCalendar.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtCalendar: TQtCalendar;
 begin
@@ -60,7 +60,7 @@ begin
   Result := TLCLIntfHandle(QtCalendar);
 end;
 
-class function TQtWSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
+imptype function TQtWSCustomCalendar.GetDateTime(const ACalendar: TCustomCalendar): TDateTime;
 var
   QtCalendar: TQtCalendar;
 begin
@@ -68,7 +68,7 @@ begin
   Result := QtCalendar.DateTime;
 end;
 
-class function TQtWSCustomCalendar.HitTest(const ACalendar: TCustomCalendar;
+imptype function TQtWSCustomCalendar.HitTest(const ACalendar: TCustomCalendar;
   const APoint: TPoint): TCalendarPart;
 var
   QtCalendar: TQtCalendar;
@@ -80,7 +80,7 @@ begin
   Result := TCalendarPart(QtCalendar.HitTest(APoint))
 end;
 
-class procedure TQtWSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar;
+imptype procedure TQtWSCustomCalendar.SetDateTime(const ACalendar: TCustomCalendar;
   const ADateTime: TDateTime);
 var
   QtCalendar: TQtCalendar;
@@ -91,7 +91,7 @@ begin
   QtCalendar.EndUpdate;
 end;
 
-class procedure TQtWSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar;
+imptype procedure TQtWSCustomCalendar.SetDisplaySettings(const ACalendar: TCustomCalendar;
  const ADisplaySettings: TDisplaySettings);
 var
   QtCalendar: TQtCalendar;
@@ -119,7 +119,7 @@ begin
   QtCalendar.EndUpdate;
 end;
 
-class procedure TQtWSCustomCalendar.SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
+imptype procedure TQtWSCustomCalendar.SetFirstDayOfWeek(const ACalendar: TCustomCalendar;
   const ADayOfWeek: TCalDayOfWeek);
 var
   QtCalendar: TQtCalendar;

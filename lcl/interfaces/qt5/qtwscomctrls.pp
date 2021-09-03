@@ -108,9 +108,9 @@ type
 
   TQtWSCustomListView = class(TWSCustomListView)
   protected
-    class function IsIconView(const AList: TCustomListView): boolean;
-    class procedure InternalUpdateItems(const AList: TCustomListView);
-    class procedure GetCurrentImages(const ALV: TCustomListView;
+    imptype function IsIconView(const AList: TCustomListView): boolean;
+    imptype procedure InternalUpdateItems(const AList: TCustomListView);
+    imptype procedure GetCurrentImages(const ALV: TCustomListView;
       out AImgListRes: TScaledImageListResolution);
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
@@ -698,7 +698,7 @@ end;
 type
   TCustomListViewHack = class(TCustomListView);
 
-class function TQtWSCustomListView.IsIconView(const AList: TCustomListView): boolean;
+imptype function TQtWSCustomListView.IsIconView(const AList: TCustomListView): boolean;
 begin
   Result := TCustomListViewHack(AList).ViewStyle <> vsReport;
 end;
@@ -2042,7 +2042,7 @@ end;
   Returns: Nothing
   Sync TCustomListView with QTreeWidget items.
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomListView.InternalUpdateItems(
+imptype procedure TQtWSCustomListView.InternalUpdateItems(
   const AList: TCustomListView);
 var
   QtTreeWidget: TQtTreeWidget;
@@ -2105,7 +2105,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomListView.GetCurrentImages(
+imptype procedure TQtWSCustomListView.GetCurrentImages(
   const ALV: TCustomListView; out AImgListRes: TScaledImageListResolution);
 var
   LV: TCustomListViewHack;

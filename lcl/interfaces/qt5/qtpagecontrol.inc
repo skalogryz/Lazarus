@@ -304,7 +304,11 @@ begin
     QtTabWidget.setUpdatesEnabled(True);
   end;
   TQtPage(AChild.Handle).ChildOfComplexWidget := ccwTabWidget;
+  {$ifndef wsintf}
   TQtWsCustomPage.UpdateProperties(AChild);
+  {$else}
+  GetWsCustomPage(AChild.WidgetSetClass).UpdateProperties(AChild);
+  {$endif}
 end;
 
 imptype procedure TQtWSCustomTabControl.MovePage(const ATabControl: TCustomTabControl;

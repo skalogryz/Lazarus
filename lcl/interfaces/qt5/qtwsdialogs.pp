@@ -28,83 +28,86 @@ uses
   // RTL + LCL
   SysUtils, Classes, LCLType, LazUTF8, LazFileUtils, Dialogs, Controls, Forms, Graphics,
   // Widgetset
-  WSDialogs, WSLCLClasses;
+  WSDialogs, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSCommonDialog }
 
-  TQtWSCommonDialog = class(TWSCommonDialog)
+  TQtWSCommonDialog = class({$ifndef wsintf}TWSCommonDialog{$else}TWSLCLComponent{$ifdef wsintf},IWSCommonDialog{$endif}{$endif})
   private
   protected
     class function GetDialogParent(const ACommonDialog: TCommonDialog): QWidgetH;
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure DestroyHandle(const ACommonDialog: TCommonDialog); override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; rootoverride;
+    imptype procedure DestroyHandle(const ACommonDialog: TCommonDialog); rootoverride;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); rootoverride;
+    {$ifdef wsintf}
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; rootoverride;
+    {$endif}
   end;
 
   { TQtWSFileDialog }
 
-  TQtWSFileDialog = class(TWSFileDialog)
+  TQtWSFileDialog = class({$ifndef wsintf}TWSFileDialog{$else}TQtWSCommonDialog{$endif})
   private
   protected
     class function GetQtFilterString(const AFileDialog: TFileDialog;
       var ASelectedFilter: WideString): WideString;
     class procedure UpdateProperties(const AFileDialog: TFileDialog; QtFileDialog: TQtFileDialog);
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
   end;
 
   { TQtWSOpenDialog }
 
-  TQtWSOpenDialog = class(TWSOpenDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TQtWSOpenDialog = class({$ifndef wsintf}TWSOpenDialog{$else}TQtWSFileDialog{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TQtWSSaveDialog }
 
-  TQtWSSaveDialog = class(TWSSaveDialog)
-  published
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TQtWSSaveDialog = class({$ifndef wsintf}TWSSaveDialog{$else}TQtWSOpenDialog{$endif})
+  impsection
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TQtWSSelectDirectoryDialog }
 
-  TQtWSSelectDirectoryDialog = class(TWSSelectDirectoryDialog)
+  TQtWSSelectDirectoryDialog = class({$ifndef wsintf}TWSSelectDirectoryDialog{$else}TQtWSOpenDialog{$endif})
   protected
     class procedure UpdateProperties(const AFileDialog: TSelectDirectoryDialog; QtFileDialog: TQtFileDialog);
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TQtWSColorDialog }
 
-  TQtWSColorDialog = class(TWSColorDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TQtWSColorDialog = class({$ifndef wsintf}TWSColorDialog{$else}TQtWSCommonDialog{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
   { TQtWSColorButton }
 
-  TQtWSColorButton = class(TWSColorButton)
+  TQtWSColorButton = class({$ifndef wsintf}TWSColorButton{$else}TQtWSCommonDialog{$endif})
   published
   end;
 
   { TQtWSFontDialog }
 
-  TQtWSFontDialog = class(TWSFontDialog)
-  published
-    class function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
-    class procedure ShowModal(const ACommonDialog: TCommonDialog); override;
-    class function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
+  TQtWSFontDialog = class({$ifndef wsintf}TWSFontDialog{$else}TQtWSCommonDialog{$endif})
+  impsection
+    imptype function CreateHandle(const ACommonDialog: TCommonDialog): THandle; override;
+    imptype procedure ShowModal(const ACommonDialog: TCommonDialog); override;
+    imptype function QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities; override;
   end;
 
 
@@ -121,7 +124,7 @@ const
 
 { TQtWSSaveDialog }
 
-class function TQtWSSaveDialog.QueryWSEventCapabilities(
+imptype function TQtWSSaveDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSNoCanCloseSupport];
@@ -160,7 +163,7 @@ end;
 
   Dummy handle creator. On Qt we don´t need a Handle for common dialogs
  ------------------------------------------------------------------------------}
-class function TQtWSCommonDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TQtWSCommonDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 begin
   Result := THandle(TQtDialog.Create(ACommonDialog, GetDialogParent(ACommonDialog)));
   TQtDialog(Result).AttachEvents;
@@ -173,17 +176,22 @@ end;
 
   Dummy handle destructor. On Qt we don´t need a Handle for common dialogs
  ------------------------------------------------------------------------------}
-class procedure TQtWSCommonDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
+imptype procedure TQtWSCommonDialog.DestroyHandle(const ACommonDialog: TCommonDialog);
 begin
   if ACommonDialog.HandleAllocated then
     TQtDialog(ACommonDialog.Handle).Release;
 end;
 
-class procedure TQtWSCommonDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TQtWSCommonDialog.ShowModal(const ACommonDialog: TCommonDialog);
 begin
   TQtDialog(ACommonDialog.Handle).exec;
 end;
-
+{$ifdef wsintf}
+imptype function TQtWSCommonDialog.QueryWSEventCapabilities(const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
+begin
+  Result := [];
+end;
+{$endif}
 { TQtWSFileDialog }
 
 class function TQtWSFileDialog.GetQtFilterString(const AFileDialog: TFileDialog;
@@ -378,7 +386,7 @@ begin
   {$endif}
 end;
 
-class function TQtWSFileDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TQtWSFileDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   FileDialog: TQtFileDialog;
 begin
@@ -401,7 +409,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSFileDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TQtWSFileDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   ReturnText: WideString;
   FileDialog: TFileDialog;
@@ -649,7 +657,7 @@ end;
 
 { TQtWSOpenDialog }
 
-class function TQtWSOpenDialog.CreateHandle(const ACommonDialog: TCommonDialog
+imptype function TQtWSOpenDialog.CreateHandle(const ACommonDialog: TCommonDialog
   ): THandle;
 var
   FileDialog: TQtFilePreviewDialog;
@@ -670,10 +678,14 @@ begin
 
     Result := THandle(FileDialog);
   end else
+    {$ifdef wsintf}
+    Result := inherited CreateHandle(ACommonDialog);
+    {$else}
     Result := TQtWSFileDialog.CreateHandle(ACommonDialog);
+    {$endif}
 end;
 
-class function TQtWSOpenDialog.QueryWSEventCapabilities(
+imptype function TQtWSOpenDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSNoCanCloseSupport];
@@ -723,7 +735,7 @@ begin
   {$endif}
 end;
 
-class function TQtWSSelectDirectoryDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TQtWSSelectDirectoryDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 var
   FileDialog: TQtFileDialog;
 begin
@@ -750,7 +762,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSSelectDirectoryDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TQtWSSelectDirectoryDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   ReturnText: WideString;
   {$ifdef QT_NATIVE_DIALOGS}
@@ -837,7 +849,7 @@ begin
   {$endif}
 end;
 
-class function TQtWSSelectDirectoryDialog.QueryWSEventCapabilities(
+imptype function TQtWSSelectDirectoryDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSNoCanCloseSupport];
@@ -845,7 +857,7 @@ end;
 
 { TQtWSColorDialog }
 
-class function TQtWSColorDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
+imptype function TQtWSColorDialog.CreateHandle(const ACommonDialog: TCommonDialog): THandle;
 begin
   Result := 0;
 end;
@@ -855,7 +867,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSColorDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TQtWSColorDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   AColor: TColorRef;
   AQColor: TQColor;
@@ -923,7 +935,7 @@ begin
   ACommonDialog.DoClose;
 end;
 
-class function TQtWSColorDialog.QueryWSEventCapabilities(
+imptype function TQtWSColorDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoClose, cdecWSNoCanCloseSupport];
@@ -931,7 +943,7 @@ end;
 
 { TQtWSFontDialog }
 
-class function TQtWSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog
+imptype function TQtWSFontDialog.CreateHandle(const ACommonDialog: TCommonDialog
   ): THandle;
 begin
   Result := 0;
@@ -942,7 +954,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSFontDialog.ShowModal(const ACommonDialog: TCommonDialog);
+imptype procedure TQtWSFontDialog.ShowModal(const ACommonDialog: TCommonDialog);
 var
   ReturnFont, CurrentFont: QFontH;
   ReturnBool: Boolean;
@@ -1009,7 +1021,7 @@ begin
   ACommonDialog.DoClose;
 end;
 
-class function TQtWSFontDialog.QueryWSEventCapabilities(
+imptype function TQtWSFontDialog.QueryWSEventCapabilities(
   const ACommonDialog: TCommonDialog): TCDWSEventCapabilities;
 begin
   Result := [cdecWSPerformsDoClose, cdecWSNoCanCloseSupport];

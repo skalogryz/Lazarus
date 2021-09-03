@@ -28,7 +28,7 @@ uses
   // LCL
   SysUtils, Classes, Controls, Graphics, Forms, ExtCtrls, LCLType, LazUTF8,
   // Widgetset
-  WSExtCtrls, WSLCLClasses;
+  WSExtCtrls, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
   { TQtWSPage }

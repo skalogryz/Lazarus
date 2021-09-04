@@ -29,35 +29,41 @@ uses
   SysUtils, Classes, Types, LCLType, LCLProc, Graphics, Controls, Forms, Menus,
   ImgList,
   // Widgetset
-  WSMenus, WSLCLClasses;
+  WSMenus, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSMenuItem }
 
-  TQtWSMenuItem = class(TWSMenuItem)
+  TQtWSMenuItem = class({$ifndef wsintf}TWSMenuItem{$else}TWSLCLComponent, IWSMenuItem{$endif})
   protected
     class function CreateMenuFromMenuItem(const AMenuItem: TMenuItem): TQtMenu;
-  published
-    class procedure AttachMenu(const AMenuItem: TMenuItem); override;
-    class function CreateHandle(const AMenuItem: TMenuItem): HMENU; override;
-    class procedure DestroyHandle(const AMenuItem: TMenuItem); override;
-    class procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); override;
-    class procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); override;
-    class procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); override;
-    class function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; override;
-    class function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; override;
-    class function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean; override;
-    class function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; override;
-    class procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap); override;
+  impsection
+    imptype procedure AttachMenu(const AMenuItem: TMenuItem); rootoverride;
+    imptype function CreateHandle(const AMenuItem: TMenuItem): HMENU; rootoverride;
+    imptype procedure DestroyHandle(const AMenuItem: TMenuItem); rootoverride;
+    imptype procedure SetCaption(const AMenuItem: TMenuItem; const ACaption: string); rootoverride;
+    imptype procedure SetShortCut(const AMenuItem: TMenuItem; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+    imptype procedure SetVisible(const AMenuItem: TMenuItem; const Visible: boolean); rootoverride;
+    imptype function SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean; rootoverride;
+    imptype function SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean; rootoverride;
+    imptype function SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean; rootoverride;
+    imptype function SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean; rootoverride;
+    imptype procedure UpdateMenuIcon(const AMenuItem: TMenuItem; const HasIcon: Boolean; const AIcon: TBitmap); rootoverride;
+    {$ifdef wsintf}
+    imptype function  OpenCommand: LongInt; rootoverride;
+    imptype procedure CloseCommand(ACommand: LongInt); rootoverride;
+    {$endif}
   end;
 
   { TQtWSMenu }
 
-  TQtWSMenu = class(TWSMenu)
-  published
-    class function  CreateHandle(const AMenu: TMenu): HMENU; override;
-    class procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); override;
+  TQtWSMenu = class({$ifndef wsintf}TWSMenu{$else}TWSLCLComponent, IWSMenu{$endif})
+  public
+    class function CreateHandleClass(const AMenu: TMenu): HMENU; rootoverride;
+  impsection
+    imptype function  CreateHandle(const AMenu: TMenu): HMENU; rootoverride;
+    imptype procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); rootoverride;
   end;
 
   { TQtWSMainMenu }
@@ -68,9 +74,9 @@ type
 
   { TQtWSPopupMenu }
 
-  TQtWSPopupMenu = class(TWSPopupMenu)
-  published
-    class procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); override;
+  TQtWSPopupMenu = class({$ifndef wsintf}TWSPopupMenu{$else}TQtWSMenu, IWSPopupMenu{$endif})
+  impsection
+    imptype procedure Popup(const APopupMenu: TPopupMenu; const X, Y: integer); rootoverride;
   end;
 
 
@@ -83,7 +89,7 @@ implementation
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
+imptype procedure TQtWSMenuItem.AttachMenu(const AMenuItem: TMenuItem);
 var
   Widget: TQtWidget;
 begin
@@ -159,7 +165,7 @@ end;
 
   Creates a Menu Item
  ------------------------------------------------------------------------------}
-class function TQtWSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
+imptype function TQtWSMenuItem.CreateHandle(const AMenuItem: TMenuItem): HMENU;
 var
   Menu: TQtMenu;
 begin
@@ -183,7 +189,7 @@ begin
       Write(' Parent: Menu without parent');
     {$endif}
 
-    Result := TQtWSMenu.CreateHandle(AMenuItem.GetParentMenu);
+    Result := TQtWSMenu.CreateHandleClass(AMenuItem.GetParentMenu);
   end
   {------------------------------------------------------------------------------
     If the parent has no parent, then this item is directly owned by a TMenu
@@ -221,7 +227,7 @@ end;
 
   Dealocates a Menu Item
  ------------------------------------------------------------------------------}
-class procedure TQtWSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
+imptype procedure TQtWSMenuItem.DestroyHandle(const AMenuItem: TMenuItem);
 var
   Obj: TObject;
 begin
@@ -257,7 +263,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSMenuItem.SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
+imptype procedure TQtWSMenuItem.SetCaption(const AMenuItem: TMenuItem; const ACaption: string);
 var
   Widget: TQtWidget;
 begin
@@ -284,7 +290,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSMenuItem.SetShortCut(const AMenuItem: TMenuItem;
+imptype procedure TQtWSMenuItem.SetShortCut(const AMenuItem: TMenuItem;
     const ShortCutK1, ShortCutK2: TShortCut);
 var
   Widget: TQtWidget;
@@ -306,7 +312,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSMenuItem.SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);
+imptype procedure TQtWSMenuItem.SetVisible(const AMenuItem: TMenuItem; const Visible: boolean);
 begin
   {$ifdef VerboseQt}
     WriteLn('[TQtWSMenuItem.SetVisible] SetShortCut: ' + AMenuItem.Caption + ' Visible: ', Visible);
@@ -322,7 +328,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSMenuItem.SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
+imptype function TQtWSMenuItem.SetCheck(const AMenuItem: TMenuItem; const Checked: boolean): boolean;
 begin
   Result := False;
 
@@ -341,7 +347,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSMenuItem.SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
+imptype function TQtWSMenuItem.SetEnable(const AMenuItem: TMenuItem; const Enabled: boolean): boolean;
 begin
   Result := False;
 
@@ -358,7 +364,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSMenuItem.SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean;
+imptype function TQtWSMenuItem.SetRadioItem(const AMenuItem: TMenuItem; const RadioItem: boolean): boolean;
 begin
   Result := False;
 
@@ -384,7 +390,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSMenuItem.SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
+imptype function TQtWSMenuItem.SetRightJustify(const AMenuItem: TMenuItem; const Justified: boolean): boolean;
 begin
   if not WSCheckMenuItem(AMenuItem, 'SetRightJustify') then
     Exit(False);
@@ -394,7 +400,7 @@ begin
   Result := True;
 end;
 
-class procedure TQtWSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
+imptype procedure TQtWSMenuItem.UpdateMenuIcon(const AMenuItem: TMenuItem;
   const HasIcon: Boolean; const AIcon: TBitmap);
 begin
   if AMenuItem.HasParent then
@@ -405,6 +411,18 @@ begin
       TQtMenu(AMenuItem.Handle).setImage(nil);
   end;
 end;
+{$ifdef wsintf}
+imptype function TQtWSMenuItem.OpenCommand: LongInt;
+begin
+  Result := CreateMenuCommand;
+end;
+
+imptype procedure TQtWSMenuItem.CloseCommand(ACommand: LongInt);
+begin
+  ReleaseMenuCommand(ACommand)
+end;
+
+{$endif}
 
 { TQtWSMenu }
 
@@ -415,7 +433,7 @@ end;
 
   Creates a Menu
  ------------------------------------------------------------------------------}
-class function TQtWSMenu.CreateHandle(const AMenu: TMenu): HMENU;
+class function TQtWSMenu.CreateHandleClass(const AMenu: TMenu): HMENU;
 var
   MenuBar: TQtMenuBar;
   Menu: TQtMenu;
@@ -458,7 +476,12 @@ begin
   {$endif}
 end;
 
-class procedure TQtWSMenu.SetBiDiMode(const AMenu : TMenu; UseRightToLeftAlign,
+imptype function TQtWSMenu.CreateHandle(const AMenu: TMenu): HMENU;
+begin
+  Result := CreateHandleClass(AMenu);
+end;
+
+imptype procedure TQtWSMenu.SetBiDiMode(const AMenu : TMenu; UseRightToLeftAlign,
   UseRightToLeftReading : Boolean);
 begin
   TQtWidget(AMenu.Handle).setLayoutDirection(TLayoutDirectionMap[UseRightToLeftAlign]);
@@ -474,7 +497,7 @@ end;
 
   Creates a PopUp menu
  ------------------------------------------------------------------------------}
-class procedure TQtWSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
+imptype procedure TQtWSPopupMenu.Popup(const APopupMenu: TPopupMenu; const X, Y: integer);
 var
   Point: TQtPoint;
   Size: TSize;

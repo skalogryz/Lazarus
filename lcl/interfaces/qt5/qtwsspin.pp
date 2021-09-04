@@ -30,24 +30,25 @@ uses
   //RTL
   Math,
   // Widgetset
-  WsProc, WSSpin, WSLCLClasses;
+  WsProc, WSSpin,
+  {$ifndef wsintf}WSLCLClasses{$else}QtWSControls, QtWSStdCtrls, WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSCustomFloatSpinEdit }
 
-  TQtWSCustomFloatSpinEdit = class(TWSCustomFloatSpinEdit)
+  TQtWSCustomFloatSpinEdit = class({$ifndef wsintf}TWSCustomFloatSpinEdit{$else}TQtWSCustomEdit,IWSCustomFloatSpinEdit{$endif})
   private
   protected
     class procedure InternalUpdateControl(const ASpinWidget: TQtAbstractSpinBox;
       const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit); override;
+    imptype procedure UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit); rootoverride;
 
-    class function GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double; override;
-    class procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); override;
+    imptype function GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double; rootoverride;
+    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); override;
 
   (*TODO: seperation into properties instead of bulk update
     class procedure SetIncrement(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewIncrement: Double); virtual;
@@ -55,6 +56,9 @@ type
     class procedure SetMaxValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewValue: Double); virtual;
     class procedure SetValueEmpty(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; NewEmpty: boolean); virtual;
     *)
+    {$ifdef wsintf}
+    imptype procedure SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean); rootoverride;
+    {$endif}
 
   end;
 
@@ -100,7 +104,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomFloatSpinEdit.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomFloatSpinEdit.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtSpinBox: TQtAbstractSpinBox;
@@ -120,12 +124,12 @@ begin
   Result := TLCLIntfHandle(QtSpinBox);
 end;
 
-class function  TQtWSCustomFloatSpinEdit.GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double;
+imptype function  TQtWSCustomFloatSpinEdit.GetValue(const ACustomFloatSpinEdit: TCustomFloatSpinEdit): Double;
 begin
   Result := TQtAbstractSpinBox(ACustomFloatSpinEdit.Handle).getValue;
 end;
 
-class procedure TQtWSCustomFloatSpinEdit.SetAlignment(
+imptype procedure TQtWSCustomFloatSpinEdit.SetAlignment(
   const ACustomEdit: TCustomEdit; const AAlignment: TAlignment);
 begin
   if not WSCheckHandleAllocated(ACustomEdit, 'SetAlignment') then
@@ -133,7 +137,7 @@ begin
   TQtSpinBox(ACustomEdit.Handle).setAlignment(AlignmentMap[AAlignment]);
 end;
 
-class procedure TQtWSCustomFloatSpinEdit.UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
+imptype procedure TQtWSCustomFloatSpinEdit.UpdateControl(const ACustomFloatSpinEdit: TCustomFloatSpinEdit);
 var
   CurrentSpinWidget: TQtAbstractSpinBox;
 begin
@@ -147,5 +151,13 @@ begin
   else
     InternalUpdateControl(CurrentSpinWidget, ACustomFloatSpinEdit);
 end;
+
+{$ifdef wsintf}
+imptype procedure TQtWSCustomFloatSpinEdit.SetEditorEnabled(const ACustomFloatSpinEdit: TCustomFloatSpinEdit; AValue: Boolean);
+begin
+
+end;
+
+{$endif}
 
 end.

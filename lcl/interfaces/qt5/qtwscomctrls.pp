@@ -29,12 +29,12 @@ uses
   SysUtils, Classes, Types, ComCtrls, Controls, LCLType, Graphics, StdCtrls,
   LCLProc, LCLIntf, Forms, ImgList,
   // Widgetset
-  WSProc, WSComCtrls, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
+  WSProc, WSComCtrls, {$ifndef wsintf}WSLCLClasses{$else}QtWSControls, WSLCLClasses_Intf{$endif};
 
 type
   { TQtWSCustomPage }
 
-  TQtWSCustomPage = class(TWSCustomPage)
+  TQtWSCustomPage = class({$ifndef wsintf}TWSCustomPage{$else}TQtWSWinControl, IWSCustomPage{$endif})
   protected
     class procedure UpdateTabFontColor(APage: TCustomPage; AFont: TFont);
   impsection
@@ -42,12 +42,12 @@ type
           const AParams: TCreateParams): TLCLIntfHandle; override;
     imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
     imptype procedure SetFont(const AWinControl: TWinControl; const AFont: TFont); override;
-    imptype procedure UpdateProperties(const ACustomPage: TCustomPage); override;
+    imptype procedure UpdateProperties(const ACustomPage: TCustomPage); rootoverride;
   end;
 
   { TQtWSCustomTabControl }
 
-  TQtWSCustomTabControl = class(TWSCustomTabControl)
+  TQtWSCustomTabControl = class({$ifndef wsintf}TTWSCustomTabControl{$else}TQtWSWinControl, IWSTabControl{$endif})
   impsection
     imptype function  CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): TLCLIntfHandle; override;
@@ -55,41 +55,44 @@ type
              const {%H-}aLeft, {%H-}aTop, aWidth, aHeight: integer; var aClientRect: TRect
              ): boolean; override;
     imptype procedure AddPage(const ATabControl: TCustomTabControl;
-      const AChild: TCustomPage; const AIndex: integer); override;
+      const AChild: TCustomPage; const AIndex: integer); rootoverride;
     imptype procedure MovePage(const ATabControl: TCustomTabControl;
-      const AChild: TCustomPage; const NewIndex: integer); override;
+      const AChild: TCustomPage; const NewIndex: integer); rootoverride;
     imptype procedure RemovePage(const ATabControl: TCustomTabControl;
-      const AIndex: integer); override;
+      const AIndex: integer); rootoverride;
 
     imptype function GetNotebookMinTabHeight(const AWinControl: TWinControl
-      ): integer; override;
+      ): integer; rootoverride;
     imptype function GetNotebookMinTabWidth(const AWinControl: TWinControl
-      ): integer; override;
-    imptype function GetCapabilities: TCTabControlCapabilities; override;
+      ): integer; rootoverride;
+    imptype function GetCapabilities: TCTabControlCapabilities; rootoverride;
     imptype function GetDesignInteractive(const AWinControl: TWinControl; AClientPos: TPoint): Boolean; override;
-    imptype function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer; override;
-    imptype function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect; override;
-    imptype procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer); override;
-    imptype procedure SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string); override;
-    imptype procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition); override;
-    imptype procedure SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer); override;
-    imptype procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean); override;
-    imptype procedure UpdateProperties(const ATabControl: TCustomTabControl); override;
+    imptype function GetTabIndexAtPos(const ATabControl: TCustomTabControl; const AClientPos: TPoint): integer; rootoverride;
+    imptype function GetTabRect(const ATabControl: TCustomTabControl; const AIndex: Integer): TRect; rootoverride;
+    imptype procedure SetPageIndex(const ATabControl: TCustomTabControl; const AIndex: integer); rootoverride;
+    imptype procedure SetTabCaption(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AText: string); rootoverride;
+    imptype procedure SetTabPosition(const ATabControl: TCustomTabControl; const ATabPosition: TTabPosition); rootoverride;
+    imptype procedure SetTabSize(const ATabControl: TCustomTabControl; const ATabWidth, ATabHeight: integer); rootoverride;
+    imptype procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean); rootoverride;
+    imptype procedure UpdateProperties(const ATabControl: TCustomTabControl); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution); rootoverride;
+    {$endif}
   end;
 
   { TQtWSStatusBar }
 
-  TQtWSStatusBar = class(TWSStatusBar)
+  TQtWSStatusBar = class({$ifndef wsintf}TWSStatusBar{$else}TQtWSWinControl, IWSStatusBar{$endif})
   protected
     class procedure ClearPanels(const Widget: TQtStatusBar);
     class procedure RecreatePanels(const AStatusBar: TStatusBar; const Widget: TQtStatusBar);
   impsection
     imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
     imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
-    imptype procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); override;
-    imptype procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); override;
-    imptype procedure SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean); override;
-    imptype procedure Update(const AStatusBar: TStatusBar); override;
+    imptype procedure PanelUpdate(const AStatusBar: TStatusBar; PanelIndex: integer); rootoverride;
+    imptype procedure SetPanelText(const AStatusBar: TStatusBar; PanelIndex: integer); rootoverride;
+    imptype procedure SetSizeGrip(const AStatusBar: TStatusBar; SizeGrip: Boolean); rootoverride;
+    imptype procedure Update(const AStatusBar: TStatusBar); rootoverride;
   end;
 
   { TQtWSTabSheet }
@@ -106,7 +109,7 @@ type
 
   { TQtWSCustomListView }
 
-  TQtWSCustomListView = class(TWSCustomListView)
+  TQtWSCustomListView = class({$ifndef wsintf}TWSCustomListView{$else}TQtWSWinControl, IWSCustomListView{$endif})
   protected
     imptype function IsIconView(const AList: TCustomListView): boolean;
     imptype procedure InternalUpdateItems(const AList: TCustomListView);
@@ -115,93 +118,88 @@ type
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
      const AParams: TCreateParams): TLCLIntfHandle; override;
-    imptype procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); override;
-    imptype procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn); override;
-    imptype function  ColumnGetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn): Integer; override;
-    imptype procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AWidth: Integer); override;
-    imptype procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AVisible: Boolean); override;
-    imptype procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAlignment: TAlignment); override;
-    imptype procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAutoSize: Boolean); override;
-    imptype procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ACaption: String); override;
-    imptype procedure ColumnSetImage(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AImageIndex: Integer); override;
+    imptype procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer); rootoverride;
+    imptype procedure ColumnInsert(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn); rootoverride;
+    imptype function  ColumnGetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn): Integer; rootoverride;
+    imptype procedure ColumnSetWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AWidth: Integer); rootoverride;
+    imptype procedure ColumnSetVisible(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AVisible: Boolean); rootoverride;
+    imptype procedure ColumnSetAlignment(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAlignment: TAlignment); rootoverride;
+    imptype procedure ColumnSetAutoSize(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AAutoSize: Boolean); rootoverride;
+    imptype procedure ColumnSetCaption(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const ACaption: String); rootoverride;
+    imptype procedure ColumnSetImage(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AImageIndex: Integer); rootoverride;
 
-    imptype procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMinWidth: integer); override;
-    imptype procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn); override;
+    imptype procedure ColumnSetMinWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMinWidth: integer); rootoverride;
+    imptype procedure ColumnMove(const ALV: TCustomListView; const AOldIndex, ANewIndex: Integer; const AColumn: TListColumn); rootoverride;
 
     imptype procedure ColumnSetSortIndicator(const ALV: TCustomListView; const AIndex: Integer;
       const AColumn: TListColumn; const ASortIndicator: TSortIndicator);
-      override;
+      rootoverride;
 
     {items}
-    imptype procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem); override;
-    imptype procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer); override;
-    imptype procedure ItemExchange(const ALV: TCustomListView; AItem: TListItem; const AIndex1, AIndex2: Integer); override;
-    imptype procedure ItemMove(const ALV: TCustomListView; AItem: TListItem; const AFromIndex, AToIndex: Integer); override;
-    imptype function  ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem): Boolean; override;
-    imptype procedure ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AChecked: Boolean); override;
-    imptype function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint; override;
-    imptype function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; override; // returns True if supported
-    imptype procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AImageIndex: Integer); override;
-    imptype procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean); override;
-    imptype procedure ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer); override;
-    imptype procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex: Integer; const AText: String); override;
-    imptype procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const PartialOK: Boolean); override;
-    imptype function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect; override;
+    imptype procedure ItemInsert(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem); rootoverride;
+    imptype procedure ItemDelete(const ALV: TCustomListView; const AIndex: Integer); rootoverride;
+    imptype procedure ItemExchange(const ALV: TCustomListView; AItem: TListItem; const AIndex1, AIndex2: Integer); rootoverride;
+    imptype procedure ItemMove(const ALV: TCustomListView; AItem: TListItem; const AFromIndex, AToIndex: Integer); rootoverride;
+    imptype function  ItemGetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem): Boolean; rootoverride;
+    imptype procedure ItemSetChecked(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AChecked: Boolean); rootoverride;
+    imptype function  ItemGetPosition(const ALV: TCustomListView; const AIndex: Integer): TPoint; rootoverride;
+    imptype function  ItemGetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; out AIsSet: Boolean): Boolean; rootoverride; // returns True if supported
+    imptype procedure ItemSetImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AImageIndex: Integer); rootoverride;
+    imptype procedure ItemSetState(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const AState: TListItemState; const AIsSet: Boolean); rootoverride;
+    imptype procedure ItemSetStateImage(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex, AStateImageIndex: Integer); rootoverride;
+    imptype procedure ItemSetText(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const ASubIndex: Integer; const AText: String); rootoverride;
+    imptype procedure ItemShow(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem; const PartialOK: Boolean); rootoverride;
+    imptype function  ItemDisplayRect(const ALV: TCustomListView; const AIndex, ASubItem: Integer; ACode: TDisplayCode): TRect; rootoverride;
 
     {parent}
-    imptype procedure BeginUpdate(const ALV: TCustomListView); override;
-    imptype procedure EndUpdate(const ALV: TCustomListView); override;
+    imptype procedure BeginUpdate(const ALV: TCustomListView); rootoverride;
+    imptype procedure EndUpdate(const ALV: TCustomListView); rootoverride;
 
-    imptype function GetFocused(const ALV: TCustomListView): Integer; override;
-    imptype function GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests; override;
-    imptype function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer; override;
-    imptype function GetSelCount(const ALV: TCustomListView): Integer; override;
-    imptype function GetSelection(const ALV: TCustomListView): Integer; override;
-    imptype function GetTopItem(const ALV: TCustomListView): Integer; override;
+    imptype function GetFocused(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetHitTestInfoAt( const ALV: TCustomListView; X, Y: Integer ) : THitTests; rootoverride;
+    imptype function GetItemAt(const ALV: TCustomListView; x,y: integer): Integer; rootoverride;
+    imptype function GetSelCount(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetSelection(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetTopItem(const ALV: TCustomListView): Integer; rootoverride;
     imptype procedure SetSort(const ALV: TCustomListView; const AType: TSortType; const AColumn: Integer;
-      const ASortDirection: TSortDirection); override;
+      const ASortDirection: TSortDirection); rootoverride;
 
-    imptype function GetBoundingRect(const ALV: TCustomListView): TRect; override;
-    imptype function GetViewOrigin(const ALV: TCustomListView): TPoint; override;
-    imptype function GetVisibleRowCount(const ALV: TCustomListView): Integer; override;
+    imptype function GetBoundingRect(const ALV: TCustomListView): TRect; rootoverride;
+    imptype function GetViewOrigin(const ALV: TCustomListView): TPoint; rootoverride;
+    imptype function GetVisibleRowCount(const ALV: TCustomListView): Integer; rootoverride;
 
-    imptype procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean); override;
+    imptype procedure SelectAll(const ALV: TCustomListView; const AIsSet: Boolean); rootoverride;
 
-    imptype procedure SetAllocBy(const ALV: TCustomListView; const AValue: Integer); override;
-    imptype procedure SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement); override;
-    imptype procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageListResolution); override;
-    imptype procedure SetItemsCount(const ALV: TCustomListView; const Avalue: Integer); override;
-    imptype procedure SetOwnerData(const ALV: TCustomListView; const AValue: Boolean); override;
+    imptype procedure SetAllocBy(const ALV: TCustomListView; const AValue: Integer); rootoverride;
+    imptype procedure SetIconArrangement(const ALV: TCustomListView; const AValue: TIconArrangement); rootoverride;
+    imptype procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageListResolution); rootoverride;
+    imptype procedure SetItemsCount(const ALV: TCustomListView; const Avalue: Integer); rootoverride;
+    imptype procedure SetOwnerData(const ALV: TCustomListView; const AValue: Boolean); rootoverride;
 
-    imptype procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean); override;
-    imptype procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties); override;
+    imptype procedure SetProperty(const ALV: TCustomListView; const AProp: TListViewProperty; const AIsSet: Boolean); rootoverride;
+    imptype procedure SetProperties(const ALV: TCustomListView; const AProps: TListViewProperties); rootoverride;
 
-    imptype procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle); override;
-    imptype procedure SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle); override;
+    imptype procedure SetScrollBars(const ALV: TCustomListView; const AValue: TScrollStyle); rootoverride;
+    imptype procedure SetViewStyle(const ALV: TCustomListView; const Avalue: TViewStyle); rootoverride;
 
-    (*
+    {$ifdef wsintf}
     // Column
-
-    class procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMaxWidth: Integer); override;
-
-
+    imptype procedure ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMaxWidth: Integer); rootoverride;
     // Item
-    class function ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean; virtual;
-
+    imptype function ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean; rootoverride;
+    imptype function ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean; rootoverride;
+    imptype procedure ItemUpdate(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem); rootoverride;
+    imptype function GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem; rootoverride;
     // LV
-
-    class function GetDropTarget(const ALV: TCustomListView): Integer; virtual;
-
-    class function GetHoverTime(const ALV: TCustomListView): Integer; virtual;
-    class function GetViewOrigin(const ALV: TCustomListView): TPoint; virtual;
-
-    class procedure SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer); virtual;
-    class procedure SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles); virtual;
-    class procedure SetHoverTime(const ALV: TCustomListView; const AValue: Integer); virtual;
-    class procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageList); virtual;
-
-    class procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); virtual;
-    *)
+    imptype function GetDropTarget(const ALV: TCustomListView): Integer; rootoverride;
+    imptype function GetHoverTime(const ALV: TCustomListView): Integer; rootoverride;
+    imptype procedure SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer); rootoverride;
+    imptype procedure SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles); rootoverride;
+    imptype procedure SetHoverTime(const ALV: TCustomListView; const AValue: Integer); rootoverride;
+    imptype procedure SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageList); rootoverride;
+    imptype procedure SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint); rootoverride;
+    imptype function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean; rootoverride;
+    {$endif}
   end;
 
   { TQtWSListView }
@@ -212,15 +210,15 @@ type
 
   { TQtWSProgressBar }
 
-  TQtWSProgressBar = class(TWSProgressBar)
+  TQtWSProgressBar = class({$ifdef wsnintf}TWSProgressBar{$else}TQtWSWinControl, IWSProgressBar{$endif})
   protected
     class procedure SetRangeStyle(AProgressBar: TQtProgressBar;
       AStyle: TProgressBarStyle; AMin, AMax: Integer; const AIsDesign: Boolean);
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    imptype procedure ApplyChanges(const AProgressBar: TCustomProgressBar); override;
-    imptype procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); override;
-    imptype procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle); override;
+    imptype procedure ApplyChanges(const AProgressBar: TCustomProgressBar); rootoverride;
+    imptype procedure SetPosition(const AProgressBar: TCustomProgressBar; const NewPosition: integer); rootoverride;
+    imptype procedure SetStyle(const AProgressBar: TCustomProgressBar; const NewStyle: TProgressBarStyle); rootoverride;
   end;
 
   { TQtWSCustomUpDown }
@@ -243,20 +241,24 @@ type
 
   { TQtWSToolBar }
 
-  TQtWSToolBar = class(TWSToolBar)
+  TQtWSToolBar = class({$ifndef wsintf}TWSToolBar{$else}TQtWSWinControl{$endif})
   impsection
     imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TQtWSTrackBar }
 
-  TQtWSTrackBar = class(TWSTrackBar)
+  TQtWSTrackBar = class({$ifndef wsintf}TWSTrackBar{$else}TQtWSWinControl,IWSTrackBar{$endif})
   impsection
     imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    imptype procedure ApplyChanges(const ATrackBar: TCustomTrackBar); override;
-    imptype function  GetPosition(const ATrackBar: TCustomTrackBar): integer; override;
-    imptype procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer); override;
-    imptype procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation); override;
+    imptype procedure ApplyChanges(const ATrackBar: TCustomTrackBar); rootoverride;
+    imptype function  GetPosition(const ATrackBar: TCustomTrackBar): integer; rootoverride;
+    imptype procedure SetPosition(const ATrackBar: TCustomTrackBar; const NewPosition: integer); rootoverride;
+    imptype procedure SetOrientation(const ATrackBar: TCustomTrackBar; const AOrientation: TTrackBarOrientation); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer); rootoverride;
+    imptype procedure SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle); rootoverride;
+    {$endif}
   end;
 
   { TQtWSCustomTreeView }
@@ -446,6 +448,18 @@ begin
     QtTrackBar.EndUpdate;
   end;
 end;
+
+{$ifdef wsintf}
+imptype procedure TQtWSTrackBar.SetTick(const ATrackBar: TCustomTrackBar; const ATick: integer);
+begin
+end;
+
+imptype procedure TQtWSTrackBar.SetTickStyle(const ATrackBar: TCustomTrackBar; const ATickStyle: TTickStyle);
+begin
+  RecreateWnd(ATrackBar);
+end;
+
+{$endif}
 
 { TQtWSProgressBar }
 
@@ -2491,5 +2505,104 @@ begin
     QtTreeWidget.UniformRowHeights := True;
   end;
 end;
+
+{$ifdef wsintf}
+// Column
+imptype procedure TQtWSCustomListView.ColumnSetMaxWidth(const ALV: TCustomListView; const AIndex: Integer; const AColumn: TListColumn; const AMaxWidth: Integer);
+begin
+end;
+
+imptype function TQtWSCustomListView.ItemSetPosition(const ALV: TCustomListView; const AIndex: Integer; const ANewPosition: TPoint): Boolean;
+begin
+  Result := false;
+end;
+
+imptype function TQtWSCustomListView.ItemGetStates(const ALV: TCustomListView; const AIndex: Integer; out AStates: TListItemStates): Boolean;
+begin
+  // returns True if supported
+  Result := False;
+end;
+
+imptype procedure TQtWSCustomListView.ItemUpdate(const ALV: TCustomListView; const AIndex: Integer; const AItem: TListItem);
+begin
+end;
+
+imptype function TQtWSCustomListView.GetNextItem(const ALV: TCustomListView; const StartItem: TListItem; const Direction: TSearchDirection; const States: TListItemStates): TListItem;
+var
+  ACount: Integer;
+  StartIndex, AIndex: Integer;
+begin
+  Result := nil;
+  if StartItem = nil then
+    Exit;
+  StartIndex := StartItem.Index;
+  AIndex := StartIndex;
+  ACount := ALV.Items.Count;
+  case Direction of
+    sdAbove:
+      while AIndex>0 do
+      begin
+        dec(AIndex);
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+    sdBelow:
+      while AIndex < ACount-1 do
+      begin
+        inc(AIndex);
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+    sdAll:
+      while True do
+      begin
+        inc(AIndex);
+        Assert(AIndex <> StartIndex, 'TWSCustomListView.GetNextItem: AIndex=StartIndex');
+        if AIndex >= ACount then
+          Exit;
+{       begin           Do not wrap around. Will never return Nil. Issue #38565.
+          AIndex := -1;  continue;
+        end;  }
+        if States <= ALV.Items[AIndex].GetStates then
+          Exit(ALV.Items[AIndex]);
+      end;
+  end;
+end;
+
+imptype function TQtWSCustomListView.GetDropTarget(const ALV: TCustomListView): Integer;
+begin
+  Result := -1;
+end;
+
+imptype function TQtWSCustomListView.GetHoverTime(const ALV: TCustomListView): Integer;
+begin
+  Result := -1;
+end;
+
+imptype procedure TQtWSCustomListView.SetDefaultItemHeight(const ALV: TCustomListView; const AValue: Integer);
+begin
+end;
+
+imptype procedure TQtWSCustomListView.SetHotTrackStyles(const ALV: TCustomListView; const AValue: TListHotTrackStyles);
+begin
+end;
+
+imptype procedure TQtWSCustomListView.SetHoverTime(const ALV: TCustomListView; const AValue: Integer);
+begin
+end;
+
+imptype procedure TQtWSCustomListView.SetImageList(const ALV: TCustomListView; const AList: TListViewImageList; const AValue: TCustomImageList);
+begin
+end;
+
+imptype procedure TQtWSCustomListView.SetViewOrigin(const ALV: TCustomListView; const AValue: TPoint);
+begin
+end;
+
+imptype function TQtWSCustomListView.RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean;
+begin
+  Result := false;
+end;
+{$endif}
 
 end.

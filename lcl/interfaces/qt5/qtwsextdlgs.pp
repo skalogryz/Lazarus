@@ -19,6 +19,8 @@ unit QtWSExtDlgs;
 
 interface
 
+{$i qtdefines.inc}
+
 uses
 ////////////////////////////////////////////////////
 // I M P O R T A N T                                
@@ -28,7 +30,7 @@ uses
 ////////////////////////////////////////////////////
 //  ExtDlgs,
 ////////////////////////////////////////////////////
-  WSExtDlgs, WSLCLClasses;
+  WSExtDlgs, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
 

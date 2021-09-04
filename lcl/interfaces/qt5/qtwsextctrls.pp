@@ -28,110 +28,110 @@ uses
   // LCL
   SysUtils, Classes, Controls, Graphics, Forms, ExtCtrls, LCLType, LazUTF8,
   // Widgetset
-  WSExtCtrls, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
+  WSExtCtrls, {$ifndef wsintf}WSLCLClasses{$else}QtWSStdCtrls, WSLCLClasses_Intf{$endif};
 
 type
   { TQtWSPage }
 
-  TQtWSPage = class(TWSPage)
+  TQtWSPage = class({$ifndef wsintf}TWSPage{$else}TQtWSCustomControl{$endif})
   published
   end;
 
   { TQtWSNotebook }
 
-  TQtWSNotebook = class(TWSNotebook)
+  TQtWSNotebook = class({$ifndef wsintf}TWSNotebook{$else}TQtWSCustomControl{$endif})
   published
   end;
 
   { TQtWSShape }
 
-  TQtWSShape = class(TWSShape)
+  TQtWSShape = class({$ifndef wsintf}TWSShape{$else}TQtWSGraphicControl{$endif})
   published
   end;
 
   { TQtWSCustomSplitter }
 
-  TQtWSCustomSplitter = class(TWSCustomSplitter)
+  TQtWSCustomSplitter = class({$ifndef wsintf}TWSCustomSplitter{$else}TQtWSCustomControl{$endif})
   published
   end;
 
   { TQtWSSplitter }
 
-  TQtWSSplitter = class(TWSSplitter)
+  TQtWSSplitter = class({$ifndef wsintf}TWSSplitter{$else}TQtWSCustomSplitter{$endif})
   published
   end;
 
   { TQtWSPaintBox }
 
-  TQtWSPaintBox = class(TWSPaintBox)
+  TQtWSPaintBox = class({$ifndef wsintf}TWSPaintBox{$else}TQtWSGraphicControl{$endif})
   published
   end;
 
   { TQtWSCustomImage }
 
-  TQtWSCustomImage = class(TWSCustomImage)
+  TQtWSCustomImage = class({$ifndef wsintf}TWSCustomImage{$else}TQtWSGraphicControl{$endif})
   published
   end;
 
   { TQtWSImage }
 
-  TQtWSImage = class(TWSImage)
+  TQtWSImage = class({$ifndef wsintf}TWSImage{$else}TQtWSCustomImage{$endif})
   published
   end;
 
   { TQtWSBevel }
 
-  TQtWSBevel = class(TWSBevel)
+  TQtWSBevel = class({$ifndef wsintf}TWSBevel{$else}TQtWSGraphicControl{$endif})
   published
   end;
 
   { TQtWSCustomRadioGroup }
 
-  TQtWSCustomRadioGroup = class(TWSCustomRadioGroup)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomRadioGroup = class({$ifndef wsintf}TWSCustomRadioGroup{$else}TQtWSCustomGroupbox{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TQtWSRadioGroup }
 
-  TQtWSRadioGroup = class(TWSRadioGroup)
+  TQtWSRadioGroup = class({$ifndef wsintf}TWSRadioGroup{$else}TQtWSCustomRadioGroup{$endif})
   published
   end;
 
   { TQtWSCustomCheckGroup }
 
-  TQtWSCustomCheckGroup = class(TWSCustomCheckGroup)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomCheckGroup = class({$ifndef wsintf}TWSCustomCheckGroup{$else}TQtWSCustomGroupbox{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TQtWSCheckGroup }
 
-  TQtWSCheckGroup = class(TWSCheckGroup)
+  TQtWSCheckGroup = class({$ifndef wsintf}TTWSCheckGroup{$else}TQtWSCustomCheckGroup{$endif})
   published
   end;
 
   { TQtWSCustomLabeledEdit }
 
-  TQtWSCustomLabeledEdit = class(TWSCustomLabeledEdit)
+  TQtWSCustomLabeledEdit = class({$ifndef wsintf}TWSCustomLabeledEdit{$else}TQtWSCustomEdit{$endif})
   published
   end;
 
   { TQtWSLabeledEdit }
 
-  TQtWSLabeledEdit = class(TWSLabeledEdit)
+  TQtWSLabeledEdit = class({$ifndef wsintf}TWSLabeledEdit{$else}TQtWSCustomLabeledEdit{$endif})
   published
   end;
 
   { TQtWSCustomPanel }
 
-  TQtWSCustomPanel = class(TWSCustomPanel)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomPanel = class({$ifndef wsintf}TWSCustomPanel{$else}TQtWSWinControl{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
+    imptype function GetDefaultColor(const AControl: TControl; const ADefaultColorType: TDefaultColorType): TColor; override;
   end;
 
   { TQtWSPanel }
@@ -143,13 +143,13 @@ type
   { TQtWSCustomTrayIcon }
 
   TQtWSCustomTrayIcon = class(TWSCustomTrayIcon)
-  published
-    class function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class function Show(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); override;
-    class function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; override;
-    class function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; override;
-    class function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas; override;
+  impsection
+    imptype function Hide(const ATrayIcon: TCustomTrayIcon): Boolean; override;
+    imptype function Show(const ATrayIcon: TCustomTrayIcon): Boolean; override;
+    imptype procedure InternalUpdate(const ATrayIcon: TCustomTrayIcon); override;
+    imptype function ShowBalloonHint(const ATrayIcon: TCustomTrayIcon): Boolean; override;
+    imptype function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint; override;
+    imptype function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas; override;
   end;
 
 implementation
@@ -164,7 +164,7 @@ uses qtsystemtrayicon;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSCustomPanel.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomPanel.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtFrame: TQtFrame;
@@ -179,7 +179,7 @@ begin
   Result := TLCLIntfHandle(QtFrame);
 end;
 
-class function TQtWSCustomPanel.GetDefaultColor(const AControl: TControl;
+imptype function TQtWSCustomPanel.GetDefaultColor(const AControl: TControl;
   const ADefaultColorType: TDefaultColorType): TColor;
 const
   DefColors: array[TDefaultColorType] of TColor = (
@@ -200,7 +200,7 @@ end;
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
 
-class function TQtWSCustomRadioGroup.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomRadioGroup.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtGroupBox: TQtGroupBox;
@@ -226,7 +226,7 @@ end;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSCustomCheckGroup.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomCheckGroup.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtGroupBox: TQtGroupBox;
@@ -245,7 +245,7 @@ end;
 
 { TQtWSCustomTrayIcon }
 
-class function TQtWSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TQtWSCustomTrayIcon.Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   SystemTrayIcon: TQtSystemTrayIcon;
 begin
@@ -262,7 +262,7 @@ begin
   Result := True;
 end;
 
-class function TQtWSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
+imptype function TQtWSCustomTrayIcon.Show(const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   Text: WideString;
   SystemTrayIcon: TQtSystemTrayIcon;
@@ -298,7 +298,7 @@ end;
 *  DESCRIPTION:    Makes modifications to the Icon while running
 *                  i.e. without hiding it and showing again
 *******************************************************************}
-class procedure TQtWSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
+imptype procedure TQtWSCustomTrayIcon.InternalUpdate(const ATrayIcon: TCustomTrayIcon);
 var
   SystemTrayIcon: TQtSystemTrayIcon;
   AIcon: QIconH;
@@ -341,7 +341,7 @@ begin
   SystemTrayIcon.UpdateSystemTrayWidget;
 end;
 
-class function TQtWSCustomTrayIcon.ShowBalloonHint(
+imptype function TQtWSCustomTrayIcon.ShowBalloonHint(
   const ATrayIcon: TCustomTrayIcon): Boolean;
 var
   QtTrayIcon: TQtSystemTrayIcon;
@@ -357,7 +357,7 @@ begin
   Result := True;
 end;
 
-class function TQtWSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
+imptype function TQtWSCustomTrayIcon.GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
 begin
   Result := Point(0, 0);
   if (ATrayIcon.Handle = 0) then
@@ -365,7 +365,7 @@ begin
   Result := TQtSystemTrayIcon(ATrayIcon.Handle).GetPosition;
 end;
 
-class function TQtWSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon
+imptype function TQtWSCustomTrayIcon.GetCanvas(const ATrayIcon: TCustomTrayIcon
   ): TCanvas;
 begin
   Result := nil;

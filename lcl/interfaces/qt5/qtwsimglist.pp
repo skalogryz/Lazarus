@@ -19,6 +19,8 @@ unit QtWSImgList;
 
 interface
 
+{$i qtdefines.inc}
+
 uses
 ////////////////////////////////////////////////////
 // I M P O R T A N T                                
@@ -28,7 +30,7 @@ uses
 ////////////////////////////////////////////////////
 //  ImgList,
 ////////////////////////////////////////////////////
-  WSImgList, WSLCLClasses;
+  WSImgList, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
 
 type
 

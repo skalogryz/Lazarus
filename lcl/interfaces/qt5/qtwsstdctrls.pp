@@ -30,241 +30,262 @@ uses
   // LCL
   StdCtrls, Controls, Forms, LCLType,
   // Widgetset
-  WSProc, WSStdCtrls, WSLCLClasses;
+  WSProc, WSStdCtrls, {$ifndef wsintf}WSLCLClasses{$else}LazUTF8, WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSScrollBar }
 
-  TQtWSScrollBar = class(TWSScrollBar)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSScrollBar = class({$ifndef wsintf}TWSScrollBar{$else}TQtWSWinControl, IWSScrollBar{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetKind(const AScrollBar: TCustomScrollBar; const AIsHorizontal: Boolean); override;
-    class procedure SetParams(const AScrollBar: TCustomScrollBar); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+    imptype procedure SetKind(const AScrollBar: TCustomScrollBar; const AIsHorizontal: Boolean); rootoverride;
+    imptype procedure SetParams(const AScrollBar: TCustomScrollBar); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
   end;
 
   { TQtWSCustomGroupBox }
 
-  TQtWSCustomGroupBox = class(TWSCustomGroupBox)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomGroupBox = class({$ifndef wsintf}TWSCustomGroupBox{$else}TQtWSWinControl{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetDefaultClientRect(const AWinControl: TWinControl;
+    imptype function GetDefaultClientRect(const AWinControl: TWinControl;
              const aLeft, aTop, aWidth, aHeight: integer; var aClientRect: TRect
              ): boolean; override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
       var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
   end;
 
   { TQtWSGroupBox }
 
-  TQtWSGroupBox = class(TWSGroupBox)
-  published
+  TQtWSGroupBox = class({$ifndef wsintf}TWSGroupBox{$else}TQtWSCustomGroupBox{$endif})
+  impsection
   end;
 
   { TQtWSCustomComboBox }
 
-  TQtWSCustomComboBox = class(TWSCustomComboBox)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomComboBox = class({$ifndef wsintf}TWSCustomComboBox{$else}TQtWSWinControl, IWSCustomComboBox{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetDroppedDown(const ACustomComboBox: TCustomComboBox
-       ): Boolean; override;
-    class function GetItemIndex(const ACustomComboBox: TCustomComboBox): integer; override;
-    class function GetItems(const ACustomComboBox: TCustomComboBox): TStrings; override;
-    class function GetMaxLength(const ACustomComboBox: TCustomComboBox): integer; override;
-    class procedure GetPreferredSize(const AWinControl: TWinControl;
+    imptype function GetDroppedDown(const ACustomComboBox: TCustomComboBox
+       ): Boolean; rootoverride;
+    imptype function GetItemIndex(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype function GetItems(const ACustomComboBox: TCustomComboBox): TStrings; rootoverride;
+    imptype function GetMaxLength(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype procedure GetPreferredSize(const AWinControl: TWinControl;
       var PreferredWidth, PreferredHeight: integer; WithThemeSpace: Boolean); override;
-    class function GetSelStart(const ACustomComboBox: TCustomComboBox): integer; override;
-    class function GetSelLength(const ACustomComboBox: TCustomComboBox): integer; override;
-    class procedure SetSelStart(const ACustomComboBox: TCustomComboBox; NewStart: integer); override;
-    class procedure SetSelLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); override;
+    imptype function GetSelStart(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype function GetSelLength(const ACustomComboBox: TCustomComboBox): integer; rootoverride;
+    imptype procedure SetSelStart(const ACustomComboBox: TCustomComboBox; NewStart: integer); rootoverride;
+    imptype procedure SetSelLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); rootoverride;
 
-    class procedure SetArrowKeysTraverseList(const ACustomComboBox: TCustomComboBox;
-      NewTraverseList: boolean); override;
-    class procedure SetDropDownCount(const ACustomComboBox: TCustomComboBox; NewCount: Integer); override;
-    class procedure SetDroppedDown(const ACustomComboBox: TCustomComboBox;
-       ADroppedDown: Boolean); override;
-    class procedure SetItemIndex(const ACustomComboBox: TCustomComboBox; NewIndex: integer); override;
-    class procedure SetMaxLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); override;
-    class procedure SetStyle(const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle); override;
-    class procedure SetReadOnly(const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean); override;
-    class procedure SetTextHint(const ACustomComboBox: TCustomComboBox; const ATextHint: string); override;
+    imptype procedure SetArrowKeysTraverseList(const ACustomComboBox: TCustomComboBox;
+      NewTraverseList: boolean); rootoverride;
+    imptype procedure SetDropDownCount(const ACustomComboBox: TCustomComboBox; NewCount: Integer); rootoverride;
+    imptype procedure SetDroppedDown(const ACustomComboBox: TCustomComboBox;
+       ADroppedDown: Boolean); rootoverride;
+    imptype procedure SetItemIndex(const ACustomComboBox: TCustomComboBox; NewIndex: integer); rootoverride;
+    imptype procedure SetMaxLength(const ACustomComboBox: TCustomComboBox; NewLength: integer); rootoverride;
+    imptype procedure SetStyle(const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle); rootoverride;
+    imptype procedure SetReadOnly(const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean); rootoverride;
+    imptype procedure SetTextHint(const ACustomComboBox: TCustomComboBox; const ATextHint: string); rootoverride;
 
-    class procedure Sort(const ACustomComboBox: TCustomComboBox; AList: TStrings; IsSorted: boolean); override;
+    imptype procedure Sort(const ACustomComboBox: TCustomComboBox; AList: TStrings; IsSorted: boolean); rootoverride;
 
-    class function GetItemHeight(const ACustomComboBox: TCustomComboBox): Integer; override;
-    class procedure SetItemHeight(const ACustomComboBox: TCustomComboBox; const AItemHeight: Integer); override;
+    imptype function GetItemHeight(const ACustomComboBox: TCustomComboBox): Integer; rootoverride;
+    imptype procedure SetItemHeight(const ACustomComboBox: TCustomComboBox; const AItemHeight: Integer); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure FreeItems(var AItems: TStrings); rootoverride;
+    {$endif}
   end;
 
   { TQtWSComboBox }
 
-  TQtWSComboBox = class(TWSComboBox)
-  published
+  TQtWSComboBox = class({$ifndef wsintf}TWSComboBox{$else}TQtWSCustomComboBox{$endif})
+  impsection
   end;
 
   { TQtWSCustomListBox }
 
-  TQtWSCustomListBox = class(TWSCustomListBox)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomListBox = class({$ifndef wsintf}TWSCustomListBox{$else}TQtWSWinControl,IWSCustomListBox{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
      const AParams: TCreateParams): TLCLIntfHandle; override;
-    class function GetIndexAtXY(const ACustomListBox: TCustomListBox; X, Y: integer): integer; override;
-    class function GetItemIndex(const ACustomListBox: TCustomListBox): integer; override;
-    class function GetItemRect(const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect): boolean; override;
-    class function GetScrollWidth(const ACustomListBox: TCustomListBox): Integer; override;
-    class function GetSelCount(const ACustomListBox: TCustomListBox): integer; override;
-    class function GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean; override;
-    class function GetStrings(const ACustomListBox: TCustomListBox): TStrings; override;
-    class function GetTopIndex(const ACustomListBox: TCustomListBox): integer; override;
+    imptype function GetIndexAtXY(const ACustomListBox: TCustomListBox; X, Y: integer): integer; rootoverride;
+    imptype function GetItemIndex(const ACustomListBox: TCustomListBox): integer; rootoverride;
+    imptype function GetItemRect(const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect): boolean; rootoverride;
+    imptype function GetScrollWidth(const ACustomListBox: TCustomListBox): Integer; rootoverride;
+    imptype function GetSelCount(const ACustomListBox: TCustomListBox): integer; rootoverride;
+    imptype function GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean; rootoverride;
+    imptype function GetStrings(const ACustomListBox: TCustomListBox): TStrings; rootoverride;
+    imptype function GetTopIndex(const ACustomListBox: TCustomListBox): integer; rootoverride;
 
-    class procedure SelectItem(const ACustomListBox: TCustomListBox; AIndex: integer; ASelected: boolean); override;
-    class procedure SetBorder(const ACustomListBox: TCustomListBox); override;
-    class procedure SetColumnCount(const ACustomListBox: TCustomListBox; ACount: Integer); override;
-    class procedure SetItemIndex(const ACustomListBox: TCustomListBox; const AIndex: integer); override;
-    class procedure SetScrollWidth(const ACustomListBox: TCustomListBox; const AScrollWidth: Integer); override;
-    class procedure SetSelectionMode(const ACustomListBox: TCustomListBox; const AExtendedSelect, AMultiSelect: boolean); override;
-    class procedure SetSorted(const ACustomListBox: TCustomListBox; AList: TStrings; ASorted: boolean); override;
-    class procedure SetStyle(const ACustomListBox: TCustomListBox); override;
-    class procedure SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer); override;
+    imptype procedure SelectItem(const ACustomListBox: TCustomListBox; AIndex: integer; ASelected: boolean); rootoverride;
+    imptype procedure SetBorder(const ACustomListBox: TCustomListBox); rootoverride;
+    imptype procedure SetColumnCount(const ACustomListBox: TCustomListBox; ACount: Integer); rootoverride;
+    imptype procedure SetItemIndex(const ACustomListBox: TCustomListBox; const AIndex: integer); rootoverride;
+    imptype procedure SetScrollWidth(const ACustomListBox: TCustomListBox; const AScrollWidth: Integer); rootoverride;
+    imptype procedure SetSelectionMode(const ACustomListBox: TCustomListBox; const AExtendedSelect, AMultiSelect: boolean); rootoverride;
+    imptype procedure SetSorted(const ACustomListBox: TCustomListBox; AList: TStrings; ASorted: boolean); rootoverride;
+    imptype procedure SetStyle(const ACustomListBox: TCustomListBox); rootoverride;
+    imptype procedure SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure DragStart(const ACustomListBox: TCustomListBox); rootoverride;
+    imptype procedure FreeStrings(var AStrings: TStrings); rootoverride;
+    imptype procedure SelectRange(const ACustomListBox: TCustomListBox;
+        ALow, AHigh: integer; ASelected: boolean); rootoverride;
+    {$endif}
   end;
 
   { TQtWSListBox }
 
-  TQtWSListBox = class(TWSListBox)
-  published
+  TQtWSListBox = class({$ifndef wsintf}TWSListBox{$else}TQtWSCustomListBox{$endif})
+  impsection
   end;
 
   { TQtWSCustomEdit }
 
-  TQtWSCustomEdit = class(TWSCustomEdit)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomEdit = class({$ifndef wsintf}TWSCustomEdit{$else}TQtWSWinControl, IWSCustomEdit{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
-    class procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); override;
-    class function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; override;
-    class function GetCanUndo(const ACustomEdit: TCustomEdit): Boolean; override;
-    class procedure SetCaretPos(const ACustomEdit: TCustomEdit; const NewPos: TPoint); override;
-    class procedure SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode); override;
-    class procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetNumbersOnly(const ACustomEdit: TCustomEdit; NewNumbersOnly: Boolean); override;
-    class procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); override;
-    class function GetSelStart(const ACustomEdit: TCustomEdit): integer; override;
-    class function GetSelLength(const ACustomEdit: TCustomEdit): integer; override;
-    class procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
-    class procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
-    class procedure SetTextHint(const ACustomEdit: TCustomEdit; const ATextHint: string); override;
+    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); rootoverride;
+    imptype function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint; rootoverride;
+    imptype function GetCanUndo(const ACustomEdit: TCustomEdit): Boolean; rootoverride;
+    imptype procedure SetCaretPos(const ACustomEdit: TCustomEdit; const NewPos: TPoint); rootoverride;
+    imptype procedure SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode); rootoverride;
+    imptype procedure SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer); rootoverride;
+    imptype procedure SetNumbersOnly(const ACustomEdit: TCustomEdit; NewNumbersOnly: Boolean); rootoverride;
+    imptype procedure SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean); rootoverride;
+    imptype function GetSelStart(const ACustomEdit: TCustomEdit): integer; rootoverride;
+    imptype function GetSelLength(const ACustomEdit: TCustomEdit): integer; rootoverride;
+    imptype procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); rootoverride;
+    imptype procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); rootoverride;
+    imptype procedure SetTextHint(const ACustomEdit: TCustomEdit; const ATextHint: string); rootoverride;
 
-    //class procedure SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char); override;
-    class procedure Cut(const ACustomEdit: TCustomEdit); override;
-    class procedure Copy(const ACustomEdit: TCustomEdit); override;
-    class procedure Paste(const ACustomEdit: TCustomEdit); override;
-    class procedure Undo(const ACustomEdit: TCustomEdit); override;
+    //imptype procedure SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char); override;
+    imptype procedure Cut(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Copy(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Paste(const ACustomEdit: TCustomEdit); rootoverride;
+    imptype procedure Undo(const ACustomEdit: TCustomEdit); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure SetCharCase(const ACustomEdit: TCustomEdit; NewCase: TEditCharCase); rootoverride;
+    imptype procedure SetHideSelection(const ACustomEdit: TCustomEdit; NewHideSelection: Boolean); rootoverride;
+    imptype procedure SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char); rootoverride;
+    imptype procedure SetSelText(const ACustomEdit: TCustomEdit; const NewSelText: string); rootoverride;
+    {$endif}
   end;
 
   { TQtWSCustomMemo }
 
-  TQtWSCustomMemo = class(TWSCustomMemo)
-  published
-    class function CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomMemo = class({$ifndef wsintf}TWSCustomMemo{$else}TQtWSCustomEdit, IWSCustomMemo{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): HWND; override;
-    class procedure AppendText(const ACustomMemo: TCustomMemo; const AText: string); override;
-    class function GetStrings(const ACustomMemo: TCustomMemo): TStrings; override;
-    class procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); override;
-    class procedure SetScrollbars(const ACustomMemo: TCustomMemo; const NewScrollbars: TScrollStyle); override;
-    class procedure SetWantReturns(const ACustomMemo: TCustomMemo; const NewWantReturns: boolean); override;
-    class procedure SetWantTabs(const ACustomMemo: TCustomMemo; const NewWantTabs: boolean); override;
-    class procedure SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean); override;
+    imptype procedure AppendText(const ACustomMemo: TCustomMemo; const AText: string); rootoverride;
+    imptype function GetStrings(const ACustomMemo: TCustomMemo): TStrings; rootoverride;
+    imptype procedure SetAlignment(const ACustomEdit: TCustomEdit; const AAlignment: TAlignment); override;
+    imptype procedure SetScrollbars(const ACustomMemo: TCustomMemo; const NewScrollbars: TScrollStyle); rootoverride;
+    imptype procedure SetWantReturns(const ACustomMemo: TCustomMemo; const NewWantReturns: boolean); rootoverride;
+    imptype procedure SetWantTabs(const ACustomMemo: TCustomMemo; const NewWantTabs: boolean); rootoverride;
+    imptype procedure SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean); rootoverride;
+    {$ifdef wsintf}
+    imptype procedure FreeStrings(var AStrings: TStrings); rootoverride;
+    {$endif}
   end;
 
   { TQtWSEdit }
 
-  TQtWSEdit = class(TWSEdit)
-  published
+  TQtWSEdit = class({$ifndef wsintf}TWSEdit{$else}TQtWSCustomEdit{$endif})
+  impsection
   end;
 
   { TQtWSMemo }
 
-  TQtWSMemo = class(TWSMemo)
-  published
+  TQtWSMemo = class({$ifndef wsintf}TTWSMemo{$else}TQtWSCustomMemo{$endif})
+  impsection
   end;
 
   { TQtWSButtonControl }
 
-  TQtWSButtonControl = class(TWSButtonControl)
-  published
+  TQtWSButtonControl = class({$ifndef wsintf}TWSButtonControl{$else}TQtWSWinControl{$endif})
+  impsection
   end;
 
   { TQtWSButton }
 
-  TQtWSButton = class(TWSButton)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetDefault(const AButton: TCustomButton; ADefault: Boolean); override;
-    class procedure SetShortcut(const AButton: TCustomButton; const ShortCutK1, ShortCutK2: TShortcut); override;
+  TQtWSButton = class({$ifndef wsintf}TWSButton{$else}TQtWSButtonControl,IWSButton{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetDefault(const AButton: TCustomButton; ADefault: Boolean); rootoverride;
+    imptype procedure SetShortcut(const AButton: TCustomButton; const ShortCutK1, ShortCutK2: TShortcut); rootoverride;
   end;
 
   { TQtWSCustomCheckBox }
 
-  TQtWSCustomCheckBox = class(TWSCustomCheckBox)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSCustomCheckBox = class({$ifndef wsintf}TWSCustomCheckBox{$else}TQtWSButtonControl, IWSCustomCheckBox{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
 
-    class procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut); override;
-    class procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); override;
+    imptype procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut); rootoverride;
+    imptype procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); rootoverride;
 
-    class function RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; override;
+    imptype function RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; rootoverride;
+    {$ifdef wsintf}
+    imptype procedure SetAlignment(const ACustomCheckBox: TCustomCheckBox; const NewAlignment: TLeftRight); rootoverride;
+    {$endif}
   end;
 
   { TQtWSCheckBox }
 
-  TQtWSCheckBox = class(TWSCheckBox)
-  published
+  TQtWSCheckBox = class({$ifndef wsintf}TWSCheckBox{$else}TQtWSCustomCheckBox{$endif})
+  impsection
   end;
 
   { TQtWSToggleBox }
 
-  TQtWSToggleBox = class(TWSToggleBox)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSToggleBox = class({$ifndef wsintf}TWSToggleBox{$else}TQtWSCustomCheckBox{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
 
-    class procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut); override;
-    class procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); override;
+    imptype procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut); override;
+    imptype procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); override;
 
-    class function  RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; override;
+    imptype function  RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; override;
   end;
 
   { TQtWSRadioButton }
 
-  TQtWSRadioButton = class(TWSRadioButton)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSRadioButton = class({$ifndef wsintf}TWSRadioButton{$else}TQtWSCustomCheckBox{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
       const AParams: TCreateParams): TLCLIntfHandle; override;
 
-    class procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut); override;
-    class procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); override;
+    imptype procedure SetShortCut(const ACustomCheckBox: TCustomCheckBox; const ShortCutK1, ShortCutK2: TShortCut); override;
+    imptype procedure SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState); override;
 
-    class function RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; override;
+    imptype function RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState; override;
   end;
 
   { TQtWSCustomStaticText }
 
-  TQtWSCustomStaticText = class(TWSCustomStaticText)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+  TQtWSCustomStaticText = class({$ifndef wsintf}TWSCustomStaticText{$else}TQtWSWinControl, IWSCustomStaticText{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
 
-    class procedure SetAlignment(const ACustomStaticText: TCustomStaticText; const NewAlignment: TAlignment); override;
-    class procedure SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle); override;
+    imptype procedure SetAlignment(const ACustomStaticText: TCustomStaticText; const NewAlignment: TAlignment); rootoverride;
+    imptype procedure SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle); rootoverride;
   end;
 
   { TQtWSStaticText }
 
-  TQtWSStaticText = class(TWSStaticText)
-  published
+  TQtWSStaticText = class({$ifndef wsintf}TWSStaticText{$else}TQtWSCustomStaticText{$endif})
+  impsection
   end;
 
 
@@ -301,7 +322,7 @@ const
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSScrollBar.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TQtWSScrollBar.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtScrollBar: TQtScrollBar;
 begin
@@ -317,7 +338,7 @@ begin
   Result := TLCLIntfHandle(QtScrollbar);
 end;
 
-class procedure TQtWSScrollBar.SetKind(const AScrollBar: TCustomScrollBar;
+imptype procedure TQtWSScrollBar.SetKind(const AScrollBar: TCustomScrollBar;
   const AIsHorizontal: Boolean);
 var
   QtScrollBar: TQtScrollBar;
@@ -357,7 +378,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSScrollBar.SetParams(const AScrollBar: TCustomScrollBar);
+imptype procedure TQtWSScrollBar.SetParams(const AScrollBar: TCustomScrollBar);
 var
   QtScrollBar: TQtScrollBar;
 begin
@@ -408,7 +429,7 @@ begin
   end;
 end;
 
-class procedure TQtWSScrollBar.ShowHide(const AWinControl: TWinControl);
+imptype procedure TQtWSScrollBar.ShowHide(const AWinControl: TWinControl);
 var
   Widget: TQtWidget;
 begin
@@ -434,7 +455,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomListBox.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TQtWSCustomListBox.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtListWidget: TQtListWidget;
   SelMode: QAbstractItemViewSelectionMode;
@@ -467,7 +488,7 @@ begin
   Result := TLCLIntfHandle(QtListWidget);
 end;
 
-class function TQtWSCustomListBox.GetIndexAtXY(
+imptype function TQtWSCustomListBox.GetIndexAtXY(
   const ACustomListBox: TCustomListBox; X, Y: integer): integer;
 var
   APoint: TQtPoint;
@@ -483,7 +504,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomListBox.GetSelCount(const ACustomListBox: TCustomListBox): integer;
+imptype function TQtWSCustomListBox.GetSelCount(const ACustomListBox: TCustomListBox): integer;
 var
   QtListWidget: TQtListWidget;
 begin
@@ -498,7 +519,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomListBox.GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean;
+imptype function TQtWSCustomListBox.GetSelected(const ACustomListBox: TCustomListBox; const AIndex: integer): boolean;
 var
   QtListWidget: TQtListWidget;
   ListItem: QListWidgetItemH;
@@ -515,7 +536,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomListBox.GetStrings(const ACustomListBox: TCustomListBox): TStrings;
+imptype function TQtWSCustomListBox.GetStrings(const ACustomListBox: TCustomListBox): TStrings;
 var
   ListWidget: TQtListWidget;
 begin
@@ -534,14 +555,14 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomListBox.GetItemIndex(const ACustomListBox: TCustomListBox): integer;
+imptype function TQtWSCustomListBox.GetItemIndex(const ACustomListBox: TCustomListBox): integer;
 begin
   if not WSCheckHandleAllocated(ACustomListBox, 'GetItemIndex') then
     Exit(-1);
   Result := TQtListWidget(ACustomListBox.Handle).currentRow;
 end;
 
-class function TQtWSCustomListBox.GetItemRect(
+imptype function TQtWSCustomListBox.GetItemRect(
   const ACustomListBox: TCustomListBox; Index: integer; var ARect: TRect
   ): boolean;
 var
@@ -559,7 +580,7 @@ begin
     ARect := Rect(-1,-1,-1,-1);
 end;
 
-class function TQtWSCustomListBox.GetScrollWidth(
+imptype function TQtWSCustomListBox.GetScrollWidth(
   const ACustomListBox: TCustomListBox): Integer;
 var
   QtListWidget: TQtListWidget;
@@ -575,7 +596,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomListBox.GetTopIndex(const ACustomListBox: TCustomListBox): integer;
+imptype function TQtWSCustomListBox.GetTopIndex(const ACustomListBox: TCustomListBox): integer;
 begin
   Result := 0;
 end;
@@ -585,7 +606,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomListBox.SelectItem(const ACustomListBox: TCustomListBox;
+imptype procedure TQtWSCustomListBox.SelectItem(const ACustomListBox: TCustomListBox;
   AIndex: integer; ASelected: boolean);
 var
   QtListWidget: TQtListWidget;
@@ -601,14 +622,18 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomListBox.SetBorder(const ACustomListBox: TCustomListBox);
+imptype procedure TQtWSCustomListBox.SetBorder(const ACustomListBox: TCustomListBox);
 begin
   if not WSCheckHandleAllocated(ACustomListBox, 'SetBorder') then
     Exit;
+  {$ifdef wsintf}
+  inherited SetBorderStyle(ACustomListBox, ACustomListBox.BorderStyle);
+  {$else}
   TQtWSWinControl.SetBorderStyle(ACustomListBox, ACustomListBox.BorderStyle);
+  {$endif}
 end;
 
-class procedure TQtWSCustomListBox.SetColumnCount(const ACustomListBox: TCustomListBox;
+imptype procedure TQtWSCustomListBox.SetColumnCount(const ACustomListBox: TCustomListBox;
   ACount: Integer);
 {var
   QtListWidget: TQtListWidget;
@@ -628,7 +653,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomListBox.SetItemIndex(const ACustomListBox: TCustomListBox;
+imptype procedure TQtWSCustomListBox.SetItemIndex(const ACustomListBox: TCustomListBox;
   const AIndex: integer);
 begin
   if not WSCheckHandleAllocated(ACustomListBox, 'SetItemIndex') then
@@ -638,7 +663,7 @@ begin
   TQtListWidget(ACustomListBox.Handle).setCurrentRow(AIndex);
 end;
 
-class procedure TQtWSCustomListBox.SetScrollWidth(const ACustomListBox: TCustomListBox; const AScrollWidth: Integer);
+imptype procedure TQtWSCustomListBox.SetScrollWidth(const ACustomListBox: TCustomListBox; const AScrollWidth: Integer);
 const
   BoolToPolicy: array[Boolean] of QtScrollBarPolicy = (QtScrollBarAlwaysOff, QtScrollBarAlwaysOn);
 var
@@ -659,7 +684,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomListBox.SetSelectionMode(
+imptype procedure TQtWSCustomListBox.SetSelectionMode(
   const ACustomListBox: TCustomListBox; const AExtendedSelect, AMultiSelect: boolean);
 var
   QtListWidget: TQtListWidget;
@@ -685,13 +710,13 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomListBox.SetSorted(const ACustomListBox: TCustomListBox;
+imptype procedure TQtWSCustomListBox.SetSorted(const ACustomListBox: TCustomListBox;
   AList: TStrings; ASorted: boolean);
 begin
   TQtListStrings(AList).Sorted := ASorted;
 end;
 
-class procedure TQtWSCustomListBox.SetStyle(const ACustomListBox: TCustomListBox);
+imptype procedure TQtWSCustomListBox.SetStyle(const ACustomListBox: TCustomListBox);
 begin
   if not WSCheckHandleAllocated(ACustomListBox, 'SetStyle') then
     Exit;
@@ -704,7 +729,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomListBox.SetTopIndex(const ACustomListBox: TCustomListBox;
+imptype procedure TQtWSCustomListBox.SetTopIndex(const ACustomListBox: TCustomListBox;
   const NewTopIndex: integer);
 begin
   if not WSCheckHandleAllocated(ACustomListBox, 'SetTopIndex') then
@@ -712,6 +737,34 @@ begin
   TQtListWidget(ACustomListBox.Handle).scrollToItem(NewTopIndex,
     QAbstractItemViewPositionAtTop);
 end;
+{$ifdef wsintf}
+imptype procedure TQtWSCustomListBox.DragStart(const ACustomListBox: TCustomListBox);
+begin
+
+end;
+
+imptype procedure TQtWSCustomListBox.FreeStrings(var AStrings: TStrings);
+begin
+  AStrings.Free;
+  AStrings := nil;
+end;
+
+imptype procedure TQtWSCustomListBox.SelectRange(const ACustomListBox: TCustomListBox;
+    ALow, AHigh: integer; ASelected: boolean);
+var
+  OldTopIndex, i: Integer;
+begin  // A default implementation. A widgetset can override it with a better one.
+  OldTopIndex := ACustomListBox.TopIndex; //prevent scrolling to last Item selected on Windows, Issue #0036929
+  ACustomListBox.Items.BeginUpdate; //prevent visual update when selecting large ranges on Windows, Issue #0036929
+  try
+    for i := ALow to AHigh do
+      SelectItem(ACustomListBox, i, ASelected);
+    ACustomListBox.TopIndex := OldTopIndex;
+  finally
+    ACustomListBox.Items.EndUpdate;
+  end;
+end;
+{$endif}
 
 { TQtWSCustomMemo }
 
@@ -720,7 +773,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomMemo.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomMemo.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   QtTextEdit: TQtTextEdit;
@@ -746,7 +799,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomMemo.AppendText(const ACustomMemo: TCustomMemo; const AText: string);
+imptype procedure TQtWSCustomMemo.AppendText(const ACustomMemo: TCustomMemo; const AText: string);
 var
   AStr: WideString;
 begin
@@ -763,7 +816,7 @@ end;
   Params:  None
   Returns: Memo Contents as TStrings
  ------------------------------------------------------------------------------}
-class function TQtWSCustomMemo.GetStrings(const ACustomMemo: TCustomMemo): TStrings;
+imptype function TQtWSCustomMemo.GetStrings(const ACustomMemo: TCustomMemo): TStrings;
 begin
   if not WSCheckHandleAllocated(ACustomMemo, 'GetStrings') then
     Exit(Nil);
@@ -773,7 +826,7 @@ begin
   Result := TQtTextEdit(ACustomMemo.Handle).FList;
 end;
 
-class procedure TQtWSCustomMemo.SetAlignment(const ACustomEdit: TCustomEdit;
+imptype procedure TQtWSCustomMemo.SetAlignment(const ACustomEdit: TCustomEdit;
   const AAlignment: TAlignment);
 begin
   if not WSCheckHandleAllocated(ACustomEdit, 'SetAlignment') then
@@ -781,7 +834,7 @@ begin
   TQtTextEdit(ACustomEdit.Handle).setAlignment(AlignmentMap[AAlignment]);
 end;
 
-class procedure TQtWSCustomMemo.SetScrollbars(const ACustomMemo: TCustomMemo;
+imptype procedure TQtWSCustomMemo.SetScrollbars(const ACustomMemo: TCustomMemo;
   const NewScrollbars: TScrollStyle);
 begin
   if not WSCheckHandleAllocated(ACustomMemo, 'SetScrollBars') then
@@ -789,7 +842,7 @@ begin
   TQtTextEdit(ACustomMemo.Handle).setScrollStyle(NewScrollBars);
 end;
 
-class procedure TQtWSCustomMemo.SetWantReturns(const ACustomMemo: TCustomMemo;
+imptype procedure TQtWSCustomMemo.SetWantReturns(const ACustomMemo: TCustomMemo;
   const NewWantReturns: boolean);
 begin
   if not WSCheckHandleAllocated(ACustomMemo, 'SetWantReturns') then
@@ -803,7 +856,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomMemo.SetWantTabs(const ACustomMemo: TCustomMemo;
+imptype procedure TQtWSCustomMemo.SetWantTabs(const ACustomMemo: TCustomMemo;
   const NewWantTabs: boolean);
 begin
   if not WSCheckHandleAllocated(ACustomMemo, 'SetWantTabs') then
@@ -823,13 +876,21 @@ end;
   Params:  NewWordWrap boolean
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomMemo.SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean);
+imptype procedure TQtWSCustomMemo.SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean);
 begin
   if not WSCheckHandleAllocated(ACustomMemo, 'SetWordWrap') then
     Exit;
   TQtTextEdit(ACustomMemo.Handle).setLineWrapMode(WordWrapMap[NewWordWrap]);
 end;
 
+{$ifdef wsintf}
+imptype procedure TQtWSCustomMemo.FreeStrings(var AStrings: TStrings);
+begin
+  AStrings.Free;
+  AStrings := nil;
+end;
+
+{$endif}
 { TQtWSCustomEdit }
 
 {------------------------------------------------------------------------------
@@ -837,7 +898,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomEdit.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomEdit.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   QtLineEdit: TQtLineEdit;
@@ -851,7 +912,7 @@ begin
   Result := TLCLIntfHandle(QtLineEdit);
 end;
 
-class procedure TQtWSCustomEdit.SetAlignment(const ACustomEdit: TCustomEdit;
+imptype procedure TQtWSCustomEdit.SetAlignment(const ACustomEdit: TCustomEdit;
   const AAlignment: TAlignment);
 begin
   if not WSCheckHandleAllocated(ACustomEdit, 'SetAlignment') then
@@ -859,7 +920,7 @@ begin
   TQtLineEdit(ACustomEdit.Handle).setAlignment(AlignmentMap[AAlignment]);
 end;
 
-class function TQtWSCustomEdit.GetCaretPos(const ACustomEdit: TCustomEdit
+imptype function TQtWSCustomEdit.GetCaretPos(const ACustomEdit: TCustomEdit
   ): TPoint;
 var
   Widget: TQtWidget;
@@ -873,7 +934,7 @@ begin
     Result := QtEdit.getCursorPosition;
 end;
 
-class function TQtWSCustomEdit.GetCanUndo(const ACustomEdit: TCustomEdit): Boolean;
+imptype function TQtWSCustomEdit.GetCanUndo(const ACustomEdit: TCustomEdit): Boolean;
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -886,7 +947,7 @@ begin
     Result := QtEdit.isUndoAvailable;
 end;
 
-class procedure TQtWSCustomEdit.SetCaretPos(const ACustomEdit: TCustomEdit;
+imptype procedure TQtWSCustomEdit.SetCaretPos(const ACustomEdit: TCustomEdit;
   const NewPos: TPoint);
 var
   Widget: TQtWidget;
@@ -904,7 +965,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomEdit.SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode);
+imptype procedure TQtWSCustomEdit.SetEchoMode(const ACustomEdit: TCustomEdit; NewMode: TEchoMode);
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -922,7 +983,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomEdit.SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer);
+imptype procedure TQtWSCustomEdit.SetMaxLength(const ACustomEdit: TCustomEdit; NewLength: integer);
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -943,7 +1004,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomEdit.SetNumbersOnly(const ACustomEdit: TCustomEdit;
+imptype procedure TQtWSCustomEdit.SetNumbersOnly(const ACustomEdit: TCustomEdit;
   NewNumbersOnly: Boolean);
 begin
   if not WSCheckHandleAllocated(ACustomEdit, 'SetNumbersOnly') then
@@ -957,7 +1018,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomEdit.SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean);
+imptype procedure TQtWSCustomEdit.SetReadOnly(const ACustomEdit: TCustomEdit; NewReadOnly: boolean);
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -970,7 +1031,7 @@ begin
     QtEdit.setReadOnly(NewReadOnly);
 end;
 
-class function TQtWSCustomEdit.GetSelStart(const ACustomEdit: TCustomEdit): integer;
+imptype function TQtWSCustomEdit.GetSelStart(const ACustomEdit: TCustomEdit): integer;
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -984,7 +1045,7 @@ begin
     Result := QtEdit.getSelectionStart;
 end;
 
-class function TQtWSCustomEdit.GetSelLength(const ACustomEdit: TCustomEdit): integer;
+imptype function TQtWSCustomEdit.GetSelLength(const ACustomEdit: TCustomEdit): integer;
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -998,7 +1059,7 @@ begin
     Result := QtEdit.getSelectionLength;
 end;
 
-class procedure TQtWSCustomEdit.SetSelStart(const ACustomEdit: TCustomEdit;
+imptype procedure TQtWSCustomEdit.SetSelStart(const ACustomEdit: TCustomEdit;
   NewStart: integer);
 var
   Widget: TQtWidget;
@@ -1016,7 +1077,7 @@ begin
     QtEdit.setSelection(NewStart, 0);
 end;
 
-class procedure TQtWSCustomEdit.SetSelLength(const ACustomEdit: TCustomEdit;
+imptype procedure TQtWSCustomEdit.SetSelLength(const ACustomEdit: TCustomEdit;
   NewLength: integer);
 var
   Widget: TQtWidget;
@@ -1032,7 +1093,7 @@ begin
     QtEdit.setSelection(AStart, NewLength);
 end;
 
-class procedure TQtWSCustomEdit.SetTextHint(const ACustomEdit: TCustomEdit;
+imptype procedure TQtWSCustomEdit.SetTextHint(const ACustomEdit: TCustomEdit;
   const ATextHint: string);
 var
   Widget: TQtWidget;
@@ -1043,7 +1104,7 @@ begin
     QtEdit.setTextHint(ATextHint);
 end;
 
-class procedure TQtWSCustomEdit.Cut(const ACustomEdit: TCustomEdit);
+imptype procedure TQtWSCustomEdit.Cut(const ACustomEdit: TCustomEdit);
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -1053,7 +1114,7 @@ begin
     QtEdit.Cut;
 end;
 
-class procedure TQtWSCustomEdit.Copy(const ACustomEdit: TCustomEdit);
+imptype procedure TQtWSCustomEdit.Copy(const ACustomEdit: TCustomEdit);
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -1063,7 +1124,7 @@ begin
     QtEdit.Copy;
 end;
 
-class procedure TQtWSCustomEdit.Paste(const ACustomEdit: TCustomEdit);
+imptype procedure TQtWSCustomEdit.Paste(const ACustomEdit: TCustomEdit);
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -1073,7 +1134,7 @@ begin
     QtEdit.Paste;
 end;
 
-class procedure TQtWSCustomEdit.Undo(const ACustomEdit: TCustomEdit);
+imptype procedure TQtWSCustomEdit.Undo(const ACustomEdit: TCustomEdit);
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -1084,7 +1145,33 @@ begin
   if Supports(Widget, IQtEdit, QtEdit) then
     QtEdit.Undo;
 end;
+{$ifdef wsintf}
+imptype procedure TQtWSCustomEdit.SetCharCase(const ACustomEdit: TCustomEdit; NewCase: TEditCharCase);
+begin
+end;
 
+imptype procedure TQtWSCustomEdit.SetHideSelection(const ACustomEdit: TCustomEdit; NewHideSelection: Boolean);
+begin
+end;
+
+imptype procedure TQtWSCustomEdit.SetPasswordChar(const ACustomEdit: TCustomEdit; NewChar: char);
+begin
+end;
+
+imptype procedure TQtWSCustomEdit.SetSelText(const ACustomEdit: TCustomEdit; const NewSelText: string);
+var
+  OldText, NewText: string;
+  OldPos: Integer;
+begin
+  OldPos := ACustomEdit.SelStart;
+  OldText := ACustomEdit.Text;
+  NewText := UTF8Copy(OldText, 1, OldPos) +
+             NewSelText +
+             UTF8Copy(OldText, OldPos + ACustomEdit.SelLength + 1, MaxInt);
+  ACustomEdit.Text := NewText;
+  ACustomEdit.SelStart := OldPos + UTF8Length(NewSelText);
+end;
+{$endif}
 { TQtWSStaticText }
 
 {------------------------------------------------------------------------------
@@ -1092,7 +1179,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomStaticText.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomStaticText.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtStaticText: TQtStaticText;
@@ -1113,13 +1200,13 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomStaticText.SetAlignment(
+imptype procedure TQtWSCustomStaticText.SetAlignment(
   const ACustomStaticText: TCustomStaticText; const NewAlignment: TAlignment);
 begin
   TQtStaticText(ACustomStaticText.Handle).setAlignment(AlignmentMap[NewAlignment]);
 end;
 
-class procedure TQtWSCustomStaticText.SetStaticBorderStyle(
+imptype procedure TQtWSCustomStaticText.SetStaticBorderStyle(
   const ACustomStaticText: TCustomStaticText;
   const NewBorderStyle: TStaticBorderStyle);
 begin
@@ -1136,7 +1223,7 @@ end;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSButton.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSButton.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtPushButton: TQtPushButton;
@@ -1148,7 +1235,7 @@ begin
   Result := TLCLIntfHandle(QtPushButton);
 end;
 
-class procedure TQtWSButton.SetDefault(const AButton: TCustomButton;
+imptype procedure TQtWSButton.SetDefault(const AButton: TCustomButton;
   ADefault: Boolean);
 var
   QtPushButton: TQtPushButton;
@@ -1158,7 +1245,7 @@ begin
   QtPushButton.SetDefault(ADefault);
 end;
 
-class procedure TQtWSButton.SetShortcut(const AButton: TCustomButton;
+imptype procedure TQtWSButton.SetShortcut(const AButton: TCustomButton;
   const ShortCutK1, ShortCutK2: TShortcut);
 begin
   if not WSCheckHandleAllocated(AButton, 'SetShortcut') then Exit;
@@ -1173,7 +1260,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSCustomCheckBox.RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
+imptype function TQtWSCustomCheckBox.RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
 begin
   case TQtCheckBox(ACustomCheckBox.Handle).CheckState of
     QtPartiallyChecked: Result := cbGrayed;
@@ -1182,13 +1269,19 @@ begin
     Result := cbUnchecked;
   end;
 end;
+{$ifdef wsintf}
+imptype procedure TQtWSCustomCheckBox.SetAlignment(const ACustomCheckBox: TCustomCheckBox; const NewAlignment: TLeftRight);
+begin
+
+end;
+{$endif}
 
 {------------------------------------------------------------------------------
   Method: TQtWSCustomCheckBox.SetShortCut
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomCheckBox.SetShortCut(const ACustomCheckBox: TCustomCheckBox;
+imptype procedure TQtWSCustomCheckBox.SetShortCut(const ACustomCheckBox: TCustomCheckBox;
   const ShortCutK1, ShortCutK2: TShortCut);
 begin
   if not WSCheckHandleAllocated(ACustomCheckBox, 'SetShortcut') then Exit;
@@ -1201,7 +1294,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomCheckBox.SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
+imptype procedure TQtWSCustomCheckBox.SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
 var
   QtCheckBox: TQtCheckBox;
 begin
@@ -1225,7 +1318,7 @@ end;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSCustomCheckBox.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TQtWSCustomCheckBox.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtCheckBox: TQtCheckBox;
 begin
@@ -1243,7 +1336,7 @@ end;
   Params:  None
   Returns: The state of the control
  ------------------------------------------------------------------------------}
-class function TQtWSRadioButton.RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
+imptype function TQtWSRadioButton.RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
 begin
   if TQtRadioButton(ACustomCheckBox.Handle).isChecked then
     Result := cbChecked
@@ -1256,7 +1349,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSRadioButton.SetShortCut(const ACustomCheckBox: TCustomCheckBox;
+imptype procedure TQtWSRadioButton.SetShortCut(const ACustomCheckBox: TCustomCheckBox;
   const ShortCutK1, ShortCutK2: TShortCut);
 begin
   TQtRadioButton(ACustomCheckBox.Handle).setShortcut(ShortCutK1, ShortCutK2);
@@ -1269,7 +1362,7 @@ end;
 
   Sets the state of the control
  ------------------------------------------------------------------------------}
-class procedure TQtWSRadioButton.SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
+imptype procedure TQtWSRadioButton.SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
 var
   QtRadioButton: TQtRadioButton;
 begin
@@ -1287,7 +1380,7 @@ end;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSRadioButton.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSRadioButton.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtRadioButton: TQtRadioButton;
@@ -1307,7 +1400,7 @@ end;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSCustomGroupBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomGroupBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtGroupBox: TQtGroupBox;
@@ -1318,7 +1411,7 @@ begin
   Result := TLCLIntfHandle(QtGroupBox);
 end;
 
-class function TQtWSCustomGroupBox.GetDefaultClientRect(
+imptype function TQtWSCustomGroupBox.GetDefaultClientRect(
   const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer;
   var aClientRect: TRect): boolean;
 var
@@ -1341,7 +1434,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomGroupBox.GetPreferredSize(
+imptype procedure TQtWSCustomGroupBox.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 begin
@@ -1359,7 +1452,7 @@ end;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSCustomComboBox.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomComboBox.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtComboBox: TQtComboBox;
@@ -1390,7 +1483,7 @@ begin
   Result := TLCLIntfHandle(QtComboBox);
 end;
 
-class function TQtWSCustomComboBox.GetDroppedDown(
+imptype function TQtWSCustomComboBox.GetDroppedDown(
   const ACustomComboBox: TCustomComboBox): Boolean;
 var
   QtComboBox: TQtComboBox;
@@ -1407,7 +1500,7 @@ end;
   Params:  None
   Returns: The state of the control
  ------------------------------------------------------------------------------}
-class function TQtWSCustomComboBox.GetItemIndex(
+imptype function TQtWSCustomComboBox.GetItemIndex(
   const ACustomComboBox: TCustomComboBox): integer;
 var
   QtComboBox: TQtComboBox;
@@ -1428,7 +1521,7 @@ begin
     Result := QtComboBox.currentIndex;
 end;
 
-class function TQtWSCustomComboBox.GetMaxLength(
+imptype function TQtWSCustomComboBox.GetMaxLength(
   const ACustomComboBox: TCustomComboBox): integer;
 var
   LineEdit: TQtLineEdit;
@@ -1448,7 +1541,7 @@ end;
 {------------------------------------------------------------------------------
   Set's the size of a TComboBox when autosized
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomComboBox.GetPreferredSize(
+imptype procedure TQtWSCustomComboBox.GetPreferredSize(
   const AWinControl: TWinControl; var PreferredWidth, PreferredHeight: integer;
   WithThemeSpace: Boolean);
 begin
@@ -1461,7 +1554,7 @@ begin
   PreferredWidth := 0;
 end;
 
-class function TQtWSCustomComboBox.GetSelStart(const ACustomComboBox: TCustomComboBox): integer;
+imptype function TQtWSCustomComboBox.GetSelStart(const ACustomComboBox: TCustomComboBox): integer;
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -1475,7 +1568,7 @@ begin
     Result := QtEdit.getSelectionStart;
 end;
 
-class function TQtWSCustomComboBox.GetSelLength(const ACustomComboBox: TCustomComboBox): integer;
+imptype function TQtWSCustomComboBox.GetSelLength(const ACustomComboBox: TCustomComboBox): integer;
 var
   Widget: TQtWidget;
   QtEdit: IQtEdit;
@@ -1489,7 +1582,7 @@ begin
     Result := QtEdit.getSelectionLength;
 end;
 
-class procedure TQtWSCustomComboBox.SetSelStart(const ACustomComboBox: TCustomComboBox;
+imptype procedure TQtWSCustomComboBox.SetSelStart(const ACustomComboBox: TCustomComboBox;
    NewStart: integer);
 var
   Widget: TQtWidget;
@@ -1507,7 +1600,7 @@ begin
     QtEdit.setSelection(NewStart, 0);
 end;
 
-class procedure TQtWSCustomComboBox.SetSelLength(
+imptype procedure TQtWSCustomComboBox.SetSelLength(
   const ACustomComboBox: TCustomComboBox; NewLength: integer);
 var
   Widget: TQtWidget;
@@ -1523,13 +1616,13 @@ begin
     QtEdit.setSelection(AStart, NewLength);
 end;
 
-class procedure TQtWSCustomComboBox.SetArrowKeysTraverseList(
+imptype procedure TQtWSCustomComboBox.SetArrowKeysTraverseList(
   const ACustomComboBox: TCustomComboBox; NewTraverseList: boolean);
 begin
   {$note implement TQtWSCustomComboBox.SetArrowKeysTraverseList}
 end;
 
-class procedure TQtWSCustomComboBox.SetDropDownCount(
+imptype procedure TQtWSCustomComboBox.SetDropDownCount(
   const ACustomComboBox: TCustomComboBox; NewCount: Integer);
 begin
   if not WSCheckHandleAllocated(ACustomComboBox, 'SetDropDownCount') then
@@ -1537,7 +1630,7 @@ begin
   TQtComboBox(ACustomComboBox.Handle).setMaxVisibleItems(NewCount);
 end;
 
-class procedure TQtWSCustomComboBox.SetDroppedDown(
+imptype procedure TQtWSCustomComboBox.SetDroppedDown(
   const ACustomComboBox: TCustomComboBox; ADroppedDown: Boolean);
 var
   QtComboBox: TQtComboBox;
@@ -1553,14 +1646,14 @@ end;
   Params:  None
   Returns: The state of the control
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomComboBox.SetItemIndex(const ACustomComboBox: TCustomComboBox; NewIndex: integer);
+imptype procedure TQtWSCustomComboBox.SetItemIndex(const ACustomComboBox: TCustomComboBox; NewIndex: integer);
 begin
   if not WSCheckHandleAllocated(ACustomComboBox, 'SetItemIndex') then
     Exit;
   TQtComboBox(ACustomComboBox.Handle).setCurrentIndex(NewIndex);
 end;
 
-class procedure TQtWSCustomComboBox.SetMaxLength(
+imptype procedure TQtWSCustomComboBox.SetMaxLength(
   const ACustomComboBox: TCustomComboBox; NewLength: integer);
 var
   Widget: TQtWidget;
@@ -1582,16 +1675,18 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomComboBox.SetStyle(
+imptype procedure TQtWSCustomComboBox.SetStyle(
   const ACustomComboBox: TCustomComboBox; NewStyle: TComboBoxStyle);
 begin
   TQtComboBox(ACustomComboBox.Handle).setEditable(NewStyle.HasEditBox);
   TQtComboBox(ACustomComboBox.Handle).OwnerDrawn := NewStyle.IsOwnerDrawn;
   // TODO: implement styles: csSimple
+  {$ifndef wsintf}
   inherited SetStyle(ACustomComboBox, NewStyle);
+  {$endif}
 end;
 
-class procedure TQtWSCustomComboBox.SetReadOnly(const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean);
+imptype procedure TQtWSCustomComboBox.SetReadOnly(const ACustomComboBox: TCustomComboBox; NewReadOnly: boolean);
 var
   LineEdit : TQtLineEdit;
 begin
@@ -1602,7 +1697,7 @@ begin
     LineEdit.setReadOnly(NewReadOnly);
 end;
 
-class procedure TQtWSCustomComboBox.SetTextHint(
+imptype procedure TQtWSCustomComboBox.SetTextHint(
   const ACustomComboBox: TCustomComboBox; const ATextHint: string);
 var
   Widget: TQtWidget;
@@ -1618,7 +1713,7 @@ end;
   Params:  None
   Returns: ComboBox items
  ------------------------------------------------------------------------------}
-class function TQtWSCustomComboBox.GetItems(const ACustomComboBox: TCustomComboBox): TStrings;
+imptype function TQtWSCustomComboBox.GetItems(const ACustomComboBox: TCustomComboBox): TStrings;
 var
   ComboBox: TQtComboBox;
 begin
@@ -1634,13 +1729,13 @@ begin
   Result := ComboBox.FList;
 end;
 
-class procedure TQtWSCustomComboBox.Sort(
+imptype procedure TQtWSCustomComboBox.Sort(
   const ACustomComboBox: TCustomComboBox; AList: TStrings; IsSorted: boolean);
 begin
   TQtComboStrings(AList).Sorted := IsSorted;
 end;
 
-class function TQtWSCustomComboBox.GetItemHeight(
+imptype function TQtWSCustomComboBox.GetItemHeight(
   const ACustomComboBox: TCustomComboBox): Integer;
 var
   ComboBox: TQtComboBox;
@@ -1676,7 +1771,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomComboBox.SetItemHeight(
+imptype procedure TQtWSCustomComboBox.SetItemHeight(
   const ACustomComboBox: TCustomComboBox; const AItemHeight: Integer);
 var
   ComboBox: TQtComboBox;
@@ -1693,6 +1788,13 @@ begin
     RecreateWnd(ACustomComboBox);
 end;
 
+{$ifdef wsintf}
+imptype procedure TQtWSCustomComboBox.FreeItems(var AItems: TStrings);
+begin
+  AItems.Free;
+  AItems := nil;
+end;
+{$endif}
 
 { TQtWSToggleBox }
 
@@ -1701,7 +1803,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class function TQtWSToggleBox.RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
+imptype function TQtWSToggleBox.RetrieveState(const ACustomCheckBox: TCustomCheckBox): TCheckBoxState;
 begin
   Result := cbUnChecked;
   if not WSCheckHandleAllocated(ACustomCheckBox, 'RetrieveState') then
@@ -1715,7 +1817,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSToggleBox.SetShortCut(const ACustomCheckBox: TCustomCheckBox;
+imptype procedure TQtWSToggleBox.SetShortCut(const ACustomCheckBox: TCustomCheckBox;
   const ShortCutK1, ShortCutK2: TShortCut);
 begin
   if not WSCheckHandleAllocated(ACustomCheckBox, 'SetShortCut') then
@@ -1728,7 +1830,7 @@ end;
   Params:  None
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSToggleBox.SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
+imptype procedure TQtWSToggleBox.SetState(const ACustomCheckBox: TCustomCheckBox; const NewState: TCheckBoxState);
 begin
   if not WSCheckHandleAllocated(ACustomCheckBox, 'SetState') then
     Exit;
@@ -1744,7 +1846,7 @@ end;
 
   Allocates memory and resources for the control and shows it
  ------------------------------------------------------------------------------}
-class function TQtWSToggleBox.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TQtWSToggleBox.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtToggleBox: TQtToggleBox;
 begin

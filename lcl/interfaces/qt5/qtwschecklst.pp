@@ -28,7 +28,7 @@ uses
   // LCL
   SysUtils, Classes, StdCtrls, Controls, Graphics, CheckLst,  LCLType,
   // Widgetset
-  WSCheckLst, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
+  WSCheckLst, {$ifndef wsintf}WSLCLClasses{$else}QtWSStdCtrls, WSLCLClasses_Intf{$endif};
 
 type
 
@@ -36,7 +36,7 @@ type
 
   { TQtWSCustomCheckListBox }
 
-  TQtWSCustomCheckListBox = class(TWSCustomCheckListBox)
+  TQtWSCustomCheckListBox = class({$ifndef wsintf}TWSCustomCheckListBox{$else}TQtWSCustomListBox,IWSCustomCheckListBox{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl;
      const AParams: TCreateParams): TLCLIntfHandle; override;
@@ -48,6 +48,13 @@ type
       const AIndex: integer; const AEnabled: Boolean); rootoverride;
     imptype procedure SetState(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer; const AState: TCheckBoxState); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer; rootoverride;
+    imptype function GetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer): Boolean; rootoverride;
+    imptype procedure SetHeader(const ACheckListBox: TCustomCheckListBox;
+      const AIndex: integer; const AHeader: Boolean); rootoverride;
+    {$endif}
   end;
 
 
@@ -152,5 +159,22 @@ begin
   QtListWidget.ItemCheckState[AIndex] := LCLCheckStateToQtCheckStateMap[AState];
   QtListWidget.EndUpdate;
 end;
+{$ifdef wsintf}
+imptype function TQtWSCustomCheckListBox.GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer;
+begin
+  Result := 0;
+end;
 
+imptype function TQtWSCustomCheckListBox.GetHeader(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer): Boolean;
+begin
+  Result := False;
+end;
+
+imptype procedure TQtWSCustomCheckListBox.SetHeader(const ACheckListBox: TCustomCheckListBox;
+  const AIndex: integer; const AHeader: Boolean);
+begin
+end;
+
+{$endif}
 end.

@@ -28,13 +28,13 @@ uses
   // LCL
   SysUtils, Types, DateUtils, Controls, Calendar, LCLType, LCLIntf, LCLProc,
   // Widgetset
-  WSProc, WSCalendar, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
+  WSProc, WSCalendar, {$ifndef wsintf}WSLCLClasses{$else}QtWSControls, WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSCustomCalendar }
 
-  TQtWSCustomCalendar = class(TWSCustomCalendar)
+  TQtWSCustomCalendar = class({$ifndef wsintf}TWSCustomCalendar{$else}TQtWSWinControl, IWSCustomCalendar{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
     imptype function GetDateTime(const ACalendar: TCustomCalendar): TDateTime; rootoverride;
@@ -42,6 +42,9 @@ type
     imptype procedure SetDateTime(const ACalendar: TCustomCalendar; const ADateTime: TDateTime); rootoverride;
     imptype procedure SetDisplaySettings(const ACalendar: TCustomCalendar; const ADisplaySettings: TDisplaySettings); rootoverride;
     imptype procedure SetFirstDayOfWeek(const ACalendar: TCustomCalendar; const ADayOfWeek: TCalDayOfWeek); rootoverride;
+    {$ifdef wsintf}
+    imptype function GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView; rootoverride;
+    {$endif}
   end;
 
 
@@ -142,5 +145,12 @@ begin
   QtCalendar.SetFirstDayOfWeek(dow);
   QtCalendar.EndUpdate;
 end;
+
+{$ifdef wsintf}
+imptype function TQtWSCustomCalendar.GetCurrentView(const ACalendar: TCustomCalendar): TCalendarView;
+begin
+  Result := cvMonth;
+end;
+{$endif}
 
 end.

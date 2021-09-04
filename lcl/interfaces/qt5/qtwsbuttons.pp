@@ -32,13 +32,13 @@ uses
   // LazUtils
   GraphType,
   // Widgetset
-  WSProc, WSButtons, {$ifndef wsintf}WSLCLClasses{$else}WSLCLClasses_Intf{$endif};
+  WSProc, WSButtons, {$ifndef wsintf}WSLCLClasses{$else}QtWSStdCtrls, WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSBitBtn }
 
-  TQtWSBitBtn = class(TWSBitBtn)
+  TQtWSBitBtn = class({$ifndef wsintf}TWSBitBtn{$else}TQtWSButton, IWSBitBtn{$endif})
   impsection
     imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
     imptype procedure SetGlyph(const ABitBtn: TCustomBitBtn; const AValue: TButtonGlyph); rootoverride;

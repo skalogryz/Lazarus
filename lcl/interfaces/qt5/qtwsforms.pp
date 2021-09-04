@@ -28,92 +28,97 @@ uses
   // LCL
   SysUtils, Classes, types, Controls, LCLType, Forms,
   // Widgetset
-  WSForms, WSProc, WSLCLClasses;
+  WSForms, WSProc, {$ifndef wsintf}WSLCLClasses{$else}WSControls, QtWSControls, WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSScrollingWinControl }
 
-  TQtWSScrollingWinControl = class(TWSScrollingWinControl)
-  published
+  TQtWSScrollingWinControl = class({$ifndef wsintf}TWSScrollingWinControl{$else}TQtWSWinControl,IWSScrollingWinControl{$endif})
+  impsection
   end;
 
   { TQtWSScrollBox }
 
-  TQtWSScrollBox = class(TWSScrollBox)
-  published
+  TQtWSScrollBox = class({$ifndef wsintf}TWSScrollBox{$else}TQtWSScrollingWinControl{$endif})
+  impsection
   end;
 
   { TQtWSCustomFrame }
 
-  TQtWSCustomFrame = class(TWSCustomFrame)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); override;
+  TQtWSCustomFrame = class({$ifndef wsintf}TWSCustomFrame{$else}TQtWSScrollingWinControl{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); override;
   end;
 
   { TQtWSFrame }
 
-  TQtWSFrame = class(TWSFrame)
+  TQtWSFrame = class({$ifndef wsintf}TWSFrame{$else}TWSCustomFrame{$endif})
   published
   end;
 
   { TQtWSCustomForm }
 
-  TQtWSCustomForm = class(TWSCustomForm)
+  TQtWSCustomForm = class({$ifndef wsintf}TWSCustomForm{$else}TQtWSScrollingWinControl, IWSCustomForm{$endif})
   private
     class function GetQtBorderStyle(const AFormBorderStyle: TFormBorderStyle): QtWindowFlags;
     class function GetQtBorderIcons(const AFormBorderStyle: TFormBorderStyle; ABorderIcons: TBorderIcons): QtWindowFlags;
     class function GetQtFormStyle(const AFormStyle: TFormStyle): QtWindowFlags;
     class procedure UpdateWindowFlags(const AWidget: TQtMainWindow;
       ABorderStyle: TFormBorderStyle; ABorderIcons: TBorderIcons; AFormStyle: TFormStyle);
-  published
-    class function GetDefaultClientRect(const AWinControl: TWinControl;
+  impsection
+    imptype function GetDefaultClientRect(const AWinControl: TWinControl;
              const {%H-}aLeft, {%H-}aTop, aWidth, aHeight: integer; var aClientRect: TRect
              ): boolean; override;
-    class function  CanFocus(const AWinControl: TWinControl): Boolean; override;
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype function  CanFocus(const AWinControl: TWinControl): Boolean; override;
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
 
-    class procedure CloseModal(const ACustomForm: TCustomForm); override;
-    class procedure DestroyHandle(const AWinControl: TWinControl); override;
-    class procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); override;
-    class procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); override;
-    class procedure SetFormBorderStyle(const AForm: TCustomForm; const AFormBorderStyle: TFormBorderStyle); override;
-    class procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle); override;
-    class procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); override;
-    class procedure SetRealPopupParent(const ACustomForm: TCustomForm;
-       const APopupParent: TCustomForm); override;
-    class procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); override;
-    class procedure ShowHide(const AWinControl: TWinControl); override; //TODO: rename to SetVisible(control, visible)
-    class procedure ShowModal(const ACustomForm: TCustomForm); override;
-    class procedure SetBorderIcons(const AForm: TCustomForm; const ABorderIcons: TBorderIcons); override;
-    class procedure SetAlphaBlend(const ACustomForm: TCustomForm;
-       const AlphaBlend: Boolean; const Alpha: Byte); override;
+    imptype procedure CloseModal(const ACustomForm: TCustomForm); rootoverride;
+    imptype procedure DestroyHandle(const AWinControl: TWinControl); override;
+    imptype procedure ScrollBy(const AWinControl: TWinControl; DeltaX, DeltaY: integer); override;
+    imptype procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean); rootoverride;
+    imptype procedure SetFormBorderStyle(const AForm: TCustomForm; const AFormBorderStyle: TFormBorderStyle); rootoverride;
+    imptype procedure SetFormStyle(const AForm: TCustomform; const AFormStyle, AOldFormStyle: TFormStyle); rootoverride;
+    imptype procedure SetIcon(const AForm: TCustomForm; const Small, Big: HICON); rootoverride;
+    imptype procedure SetRealPopupParent(const ACustomForm: TCustomForm;
+       const APopupParent: TCustomForm); rootoverride;
+    imptype procedure SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar); rootoverride;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override; //TODO: rename to SetVisible(control, visible)
+    imptype procedure ShowModal(const ACustomForm: TCustomForm); rootoverride;
+    imptype procedure SetBorderIcons(const AForm: TCustomForm; const ABorderIcons: TBorderIcons); rootoverride;
+    imptype procedure SetAlphaBlend(const ACustomForm: TCustomForm;
+       const AlphaBlend: Boolean; const Alpha: Byte); rootoverride;
 
     { mdi support }
-    class function ActiveMDIChild(const AForm: TCustomForm): TCustomForm; override;
-    class function Cascade(const AForm: TCustomForm): Boolean; override;
-    class function GetClientHandle(const AForm: TCustomForm): HWND; override;
-    class function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm; override;
-    class function Next(const AForm: TCustomForm): Boolean; override;
-    class function Previous(const AForm: TCustomForm): Boolean; override;
-    class function Tile(const AForm: TCustomForm): Boolean; override;
-    class function MDIChildCount(const AForm: TCustomForm): Integer; override;
-
+    imptype function ActiveMDIChild(const AForm: TCustomForm): TCustomForm; rootoverride;
+    imptype function Cascade(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function GetClientHandle(const AForm: TCustomForm): HWND; rootoverride;
+    imptype function GetMDIChildren(const AForm: TCustomForm; AIndex: Integer): TCustomForm; rootoverride;
+    imptype function Next(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function Previous(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function Tile(const AForm: TCustomForm): Boolean; rootoverride;
+    imptype function MDIChildCount(const AForm: TCustomForm): Integer; rootoverride;
+    {$ifdef wsintf}
+    imptype procedure SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult); rootoverride;
+    imptype procedure SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition); rootoverride;
+    imptype function GetDefaultDoubleBuffered: Boolean; rootoverride;
+    imptype function ArrangeIcons(const AForm: TCustomForm): Boolean; rootoverride;
+    {$endif}
   end;
 
   { TQtWSForm }
 
-  TQtWSForm = class(TWSForm)
+  TQtWSForm = class({$ifndef wsintf}TWSForm{$else}TQtWSCustomForm{$endif})
   published
   end;
 
   { TQtWSHintWindow }
 
-  TQtWSHintWindow = class(TWSHintWindow)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure ShowHide(const AWinControl: TWinControl); override;
+  TQtWSHintWindow = class({$ifndef wsintf}TWSHintWindow{$else}TQtWSCustomForm{$endif})
+  impsection
+    imptype function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure ShowHide(const AWinControl: TWinControl); override;
   end;
 
   { TQtWSScreen }
@@ -137,7 +142,7 @@ uses qtint, LCLIntf
 
 { TQtWSCustomFrame }
 
-class function TQtWSCustomFrame.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomFrame.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtFrame: TQtMainWindow;
@@ -156,7 +161,7 @@ begin
   Result := TLCLIntfHandle(QtFrame);
 end;
 
-class procedure TQtWSCustomFrame.ScrollBy(const AWinControl: TWinControl;
+imptype procedure TQtWSCustomFrame.ScrollBy(const AWinControl: TWinControl;
   DeltaX, DeltaY: integer);
 {$IFDEF QTSCROLLABLEFORMS}
 var
@@ -179,7 +184,7 @@ end;
 
   Creates a Qt Form and initializes it according to it's properties
  ------------------------------------------------------------------------------}
-class function TQtWSCustomForm.CreateHandle(const AWinControl: TWinControl;
+imptype function TQtWSCustomForm.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtMainWindow: TQtMainWindow;
@@ -276,17 +281,19 @@ end;
   Params:
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomForm.CloseModal(const ACustomForm: TCustomForm);
+imptype procedure TQtWSCustomForm.CloseModal(const ACustomForm: TCustomForm);
 begin
   {issue #36773}
   {$IFDEF HASX11}
   Application.CancelHint;
   QtWidgetSet.RemoveAllHintsHandles;
   {$ENDIF}
+  {$ifndef wsintf}
   inherited CloseModal(ACustomForm);
+  {$endif}
 end;
 
-class procedure TQtWSCustomForm.DestroyHandle(const AWinControl: TWinControl);
+imptype procedure TQtWSCustomForm.DestroyHandle(const AWinControl: TWinControl);
 var
   w: TQtWidget;
 begin
@@ -302,7 +309,7 @@ begin
   w.Release;
 end;
 
-class procedure TQtWSCustomForm.ScrollBy(const AWinControl: TWinControl;
+imptype procedure TQtWSCustomForm.ScrollBy(const AWinControl: TWinControl;
   DeltaX, DeltaY: integer);
 {$IFDEF QTSCROLLABLEFORMS}
 var
@@ -323,7 +330,7 @@ end;
   Params:
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
+imptype procedure TQtWSCustomForm.SetAllowDropFiles(const AForm: TCustomForm;
   AValue: Boolean);
 begin
   if AForm.HandleAllocated then
@@ -335,7 +342,7 @@ end;
   Params:
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
+imptype procedure TQtWSCustomForm.SetFormBorderStyle(const AForm: TCustomForm;
   const AFormBorderStyle: TFormBorderStyle);
 var
   QtWin: TQtMainWindow;
@@ -351,7 +358,7 @@ begin
   end;
 end;
 
-class procedure TQtWSCustomForm.SetFormStyle(const AForm: TCustomform;
+imptype procedure TQtWSCustomForm.SetFormStyle(const AForm: TCustomform;
   const AFormStyle, AOldFormStyle: TFormStyle);
 var
   QtWin: TQtMainWindow;
@@ -371,7 +378,7 @@ end;
   Params:
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomForm.SetIcon(const AForm: TCustomForm; const Small, Big: HICON);
+imptype procedure TQtWSCustomForm.SetIcon(const AForm: TCustomForm; const Small, Big: HICON);
 var
   Icon: TQtIcon;
 begin
@@ -382,7 +389,7 @@ begin
     TQtWidget(AForm.Handle).setWindowIcon(nil);
 end;
 
-class procedure TQtWSCustomForm.SetRealPopupParent(
+imptype procedure TQtWSCustomForm.SetRealPopupParent(
   const ACustomForm: TCustomForm; const APopupParent: TCustomForm);
 var
   PopupParent: QWidgetH;
@@ -402,7 +409,7 @@ end;
   Params:
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomForm.SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar);
+imptype procedure TQtWSCustomForm.SetShowInTaskbar(const AForm: TCustomForm; const AValue: TShowInTaskbar);
 var
   Enable: Boolean;
 begin
@@ -424,7 +431,7 @@ begin
   TQtMainWindow(AForm.Handle).setShowInTaskBar(Enable);
 end;
 
-class procedure TQtWSCustomForm.ShowHide(const AWinControl: TWinControl);
+imptype procedure TQtWSCustomForm.ShowHide(const AWinControl: TWinControl);
 const
   LCLToQtWindowState: array[TWindowState] of QtWindowState = (
  { wsNormal    } QtWindowNoState,
@@ -675,7 +682,7 @@ end;
   Params:
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomForm.ShowModal(const ACustomForm: TCustomForm);
+imptype procedure TQtWSCustomForm.ShowModal(const ACustomForm: TCustomForm);
 begin
   {issue #36773}
   {$IFDEF HASX11}
@@ -696,13 +703,13 @@ end;
   Params:
   Returns: Nothing
  ------------------------------------------------------------------------------}
-class procedure TQtWSCustomForm.SetBorderIcons(const AForm: TCustomForm;
+imptype procedure TQtWSCustomForm.SetBorderIcons(const AForm: TCustomForm;
   const ABorderIcons: TBorderIcons);
 begin
   UpdateWindowFlags(TQtMainWindow(AForm.Handle), AForm.BorderStyle, ABorderIcons, AForm.FormStyle);
 end;
 
-class procedure TQtWSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm;
+imptype procedure TQtWSCustomForm.SetAlphaBlend(const ACustomForm: TCustomForm;
   const AlphaBlend: Boolean; const Alpha: Byte);
 begin
   if AlphaBlend then
@@ -711,7 +718,7 @@ begin
     TQtMainWindow(ACustomForm.Handle).setWindowOpacity(1);
 end;
 
-class function TQtWSCustomForm.ActiveMDIChild(const AForm: TCustomForm
+imptype function TQtWSCustomForm.ActiveMDIChild(const AForm: TCustomForm
   ): TCustomForm;
 var
   MDIWorkSpace: QMdiAreaH;
@@ -749,7 +756,7 @@ end;
   Returns: Nothing
   Cascade mdi children.
  ------------------------------------------------------------------------------}
-class function TQtWSCustomForm.Cascade(const AForm: TCustomForm): Boolean;
+imptype function TQtWSCustomForm.Cascade(const AForm: TCustomForm): Boolean;
 var
   MDIWorkspace: QMdiAreaH;
 begin
@@ -769,7 +776,7 @@ end;
   Returns handle of mdi area container (viewport).
   Currently not implemented.
  ------------------------------------------------------------------------------}
-class function TQtWSCustomForm.GetClientHandle(const AForm: TCustomForm): HWND;
+imptype function TQtWSCustomForm.GetClientHandle(const AForm: TCustomForm): HWND;
 begin
   {TODO: make TQtMainWindow(AForm.Handle).MDIAreaHandle TQtWidget and return that,
    but without attached events !}
@@ -785,7 +792,7 @@ end;
   Returns: Nothing
   Returns MDI child window at index AIndex.
  ------------------------------------------------------------------------------}
-class function TQtWSCustomForm.GetMDIChildren(const AForm: TCustomForm;
+imptype function TQtWSCustomForm.GetMDIChildren(const AForm: TCustomForm;
   AIndex: Integer): TCustomForm;
 var
   MDIWorkspace: QMdiAreaH;
@@ -829,7 +836,7 @@ end;
   Activates next MDI child window in chain, if next reaches last subwindow,
   it restarts from first window.
  ------------------------------------------------------------------------------}
-class function TQtWSCustomForm.Next(const AForm: TCustomForm): Boolean;
+imptype function TQtWSCustomForm.Next(const AForm: TCustomForm): Boolean;
 var
   MDIWorkspace: QMdiAreaH;
 begin
@@ -848,7 +855,7 @@ end;
   Returns: Nothing
   Activates previous MDI child window in chain.
  ------------------------------------------------------------------------------}
-class function TQtWSCustomForm.Previous(const AForm: TCustomForm): Boolean;
+imptype function TQtWSCustomForm.Previous(const AForm: TCustomForm): Boolean;
 var
   MDIWorkspace: QMdiAreaH;
 begin
@@ -867,7 +874,7 @@ end;
   Returns: Nothing
   Tiles mdi children.
  ------------------------------------------------------------------------------}
-class function TQtWSCustomForm.Tile(const AForm: TCustomForm): Boolean;
+imptype function TQtWSCustomForm.Tile(const AForm: TCustomForm): Boolean;
 var
   MDIWorkspace: QMdiAreaH;
 begin
@@ -886,7 +893,7 @@ end;
   Returns: Nothing
   Returns number of mdi child windows.
  ------------------------------------------------------------------------------}
-class function TQtWSCustomForm.MDIChildCount(const AForm: TCustomForm
+imptype function TQtWSCustomForm.MDIChildCount(const AForm: TCustomForm
   ): Integer;
 var
   MDIWorkspace: QMdiAreaH;
@@ -909,6 +916,26 @@ begin
     Result := length(IntAr);
   end;
 end;
+
+{$ifdef wsintf}
+imptype procedure TQtWSCustomForm.SetModalResult(const ACustomForm: TCustomForm; ANewValue: TModalResult);
+begin
+end;
+
+imptype procedure TQtWSCustomForm.SetZPosition(const AWinControl: TWinControl; const APosition: TWSZPosition);
+begin
+end;
+
+imptype function TQtWSCustomForm.GetDefaultDoubleBuffered: Boolean;
+begin
+  Result := False;
+end;
+
+imptype function TQtWSCustomForm.ArrangeIcons(const AForm: TCustomForm): Boolean;
+begin
+  Result := False;
+end;
+{$endif}
 
 {------------------------------------------------------------------------------
   Method: TQtWSCustomForm.GetQtWindowBorderStyle
@@ -1014,7 +1041,7 @@ begin
   AWidget.EndUpdate;
 end;
 
-class function TQtWSCustomForm.GetDefaultClientRect(
+imptype function TQtWSCustomForm.GetDefaultClientRect(
   const AWinControl: TWinControl; const aLeft, aTop, aWidth, aHeight: integer;
   var aClientRect: TRect): boolean;
 var
@@ -1049,7 +1076,7 @@ begin
   end;
 end;
 
-class function TQtWSCustomForm.CanFocus(const AWinControl: TWinControl): Boolean;
+imptype function TQtWSCustomForm.CanFocus(const AWinControl: TWinControl): Boolean;
 var
   Widget: TQtWidget;
 begin
@@ -1063,7 +1090,7 @@ end;
 
 { TQtWSHintWindow }
 
-class function TQtWSHintWindow.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
+imptype function TQtWSHintWindow.CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle;
 var
   QtMainWindow: TQtMainWindow;
 begin
@@ -1073,7 +1100,7 @@ begin
   Result := TLCLIntfHandle(QtMainWindow);
 end;
 
-class procedure TQtWSHintWindow.ShowHide(const AWinControl: TWinControl);
+imptype procedure TQtWSHintWindow.ShowHide(const AWinControl: TWinControl);
 var
   AWidget: TQtHintWindow;
 begin

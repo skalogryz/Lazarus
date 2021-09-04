@@ -42,17 +42,18 @@ uses
 // LCL
   Classes, Controls, RubberBand, LCLType,
 // Widgetset
-  WsLCLClasses, WsDesigner, WsProc;
+  {$ifndef wsintf}WSLCLClasses{$else}QtWSControls, QtWSStdCtrls, WSLCLClasses_Intf{$endif}
+  , WsDesigner, WsProc;
 
 type
   { TWsCustomRubberBand }
 
   { TQtWsCustomRubberBand }
 
-  TQtWsCustomRubberBand = class(TWsCustomRubberBand)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
-    class procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); override;
+  TQtWsCustomRubberBand = class({$ifndef wsintf}TWsCustomRubberBand{$else}TQtWSWinControl, IWSCustomRubberBand{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
+    imptype procedure SetShape(ARubberBand: TCustomRubberBand; AShape: TRubberBandShape); rootoverride;
   end;
 
 implementation
@@ -65,7 +66,7 @@ const
 
 { TQtWsCustomRubberBand }
 
-class function TQtWsCustomRubberBand.CreateHandle(
+imptype function TQtWsCustomRubberBand.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams
   ): TLCLIntfHandle;
 var
@@ -78,7 +79,7 @@ begin
   Result := TLCLIntfHandle(QtRubberBand);
 end;
 
-class procedure TQtWsCustomRubberBand.SetShape(ARubberBand: TCustomRubberBand;
+imptype procedure TQtWsCustomRubberBand.SetShape(ARubberBand: TCustomRubberBand;
   AShape: TRubberBandShape);
 begin
   if not WSCheckHandleAllocated(ARubberBand, 'SetShape') then

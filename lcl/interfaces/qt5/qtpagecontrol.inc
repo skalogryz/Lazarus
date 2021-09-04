@@ -366,7 +366,11 @@ begin
     if Result > 0 then
       exit;
   end;
+  {$ifndef wsintf}
   Result:=inherited GetNotebookMinTabHeight(AWinControl);
+  {$else}
+  Result:=30;
+  {$endif}
 end;
 
 imptype function TQtWSCustomTabControl.GetNotebookMinTabWidth(
@@ -385,7 +389,11 @@ begin
     if Result > 0 then
       exit;
   end;
+  {$ifdef wsintf}
+  Result:=60;
+  {$else}
   Result:=inherited GetNotebookMinTabWidth(AWinControl);
+  {$endif}
 end;
 
 imptype function TQtWSCustomTabControl.GetCapabilities: TCTabControlCapabilities;
@@ -553,4 +561,10 @@ begin
     TQtTabWidget(ATabControl.Handle).SwitchTabsByKeyboard := nboKeyboardTabSwitch in ATabControl.Options;
   end;
 end;
+
+{$ifdef wsintf}
+imptype procedure TQtWSCustomTabControl.SetImageList(const ATabControl: TCustomTabControl; const AImageList: TCustomImageListResolution);
+begin
+end;
+{$endif}
 

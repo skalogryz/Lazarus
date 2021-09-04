@@ -19,6 +19,8 @@ unit QtWSPairSplitter;
 
 interface
 
+{$I qtdefines.inc}
+
 uses
 ////////////////////////////////////////////////////
 // I M P O R T A N T                                
@@ -30,21 +32,21 @@ uses
 ////////////////////////////////////////////////////
   qt5, qtwidgets,
   Controls, LCLType, LCLProc,
-  WSPairSplitter, WSLCLClasses;
+  WSPairSplitter, {$ifndef wsintf}WSLCLClasses{$else}QtWSControls, WSLCLClasses_Intf{$endif};
 
 type
 
   { TQtWSPairSplitterSide }
 
-  TQtWSPairSplitterSide = class(TWSPairSplitterSide)
-  published
-    class function  CreateHandle(const AWinControl: TWinControl;
+  TQtWSPairSplitterSide = class({$ifndef wsintf}TWSPairSplitterSide{$else}TQtWSWinControl{$endif})
+  impsection
+    imptype function  CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): TLCLIntfHandle; override;
   end;
 
   { TQtWSCustomPairSplitter }
 
-  TQtWSCustomPairSplitter = class(TWSCustomPairSplitter)
+  TQtWSCustomPairSplitter = class({$ifndef wsintf}TWSCustomPairSplitter{$else}TQtWSWinControl{$endif})
   published
   end;
 
@@ -52,7 +54,7 @@ implementation
 
 { TQtWSPairSplitterSide }
 
-class function TQtWSPairSplitterSide.CreateHandle(
+imptype function TQtWSPairSplitterSide.CreateHandle(
   const AWinControl: TWinControl; const AParams: TCreateParams
   ): TLCLIntfHandle;
 var

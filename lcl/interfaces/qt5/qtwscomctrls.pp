@@ -47,7 +47,7 @@ type
 
   { TQtWSCustomTabControl }
 
-  TQtWSCustomTabControl = class({$ifndef wsintf}TTWSCustomTabControl{$else}TQtWSWinControl, IWSTabControl{$endif})
+  TQtWSCustomTabControl = class({$ifndef wsintf}TWSCustomTabControl{$else}TQtWSWinControl, IWSTabControl{$endif})
   impsection
     imptype function  CreateHandle(const AWinControl: TWinControl;
           const AParams: TCreateParams): TLCLIntfHandle; override;
@@ -210,7 +210,7 @@ type
 
   { TQtWSProgressBar }
 
-  TQtWSProgressBar = class({$ifdef wsnintf}TWSProgressBar{$else}TQtWSWinControl, IWSProgressBar{$endif})
+  TQtWSProgressBar = class({$ifndef wsnintf}TWSProgressBar{$else}TQtWSWinControl, IWSProgressBar{$endif})
   protected
     class procedure SetRangeStyle(AProgressBar: TQtProgressBar;
       AStyle: TProgressBarStyle; AMin, AMax: Integer; const AIsDesign: Boolean);

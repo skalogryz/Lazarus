@@ -60,7 +60,7 @@ type
 
   TQtWSMenu = class({$ifndef wsintf}TWSMenu{$else}TWSLCLComponent, IWSMenu{$endif})
   public
-    class function CreateHandleClass(const AMenu: TMenu): HMENU; rootoverride;
+    class function CreateHandleClass(const AMenu: TMenu): HMENU;
   impsection
     imptype function  CreateHandle(const AMenu: TMenu): HMENU; rootoverride;
     imptype procedure SetBiDiMode(const AMenu: TMenu; UseRightToLeftAlign, UseRightToLeftReading : Boolean); rootoverride;

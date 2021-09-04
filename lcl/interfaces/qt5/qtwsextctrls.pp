@@ -109,7 +109,7 @@ type
 
   { TQtWSCheckGroup }
 
-  TQtWSCheckGroup = class({$ifndef wsintf}TTWSCheckGroup{$else}TQtWSCustomCheckGroup{$endif})
+  TQtWSCheckGroup = class({$ifndef wsintf}TWSCheckGroup{$else}TQtWSCustomCheckGroup{$endif})
   published
   end;
 

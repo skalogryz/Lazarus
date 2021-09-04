@@ -205,7 +205,7 @@ type
 
   { TQtWSMemo }
 
-  TQtWSMemo = class({$ifndef wsintf}TTWSMemo{$else}TQtWSCustomMemo{$endif})
+  TQtWSMemo = class({$ifndef wsintf}TWSMemo{$else}TQtWSCustomMemo{$endif})
   impsection
   end;
 

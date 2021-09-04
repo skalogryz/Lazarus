@@ -45,7 +45,7 @@ uses
 type
   { TWSCustomCheckListBox }
   {$ifdef wsintf}
-  IWSCustomCheckListBox = interface(IWSCustomListBox)
+  IWSCheckListBox = interface(IWSCustomListBox)
     ['{064C5BE7-FAD5-488F-8FEE-558B01B158CB}']
     function GetCheckWidth(const ACheckListBox: TCustomCheckListBox): integer;
     function GetItemEnabled(const ACheckListBox: TCustomCheckListBox;
@@ -61,6 +61,7 @@ type
     procedure SetState(const ACheckListBox: TCustomCheckListBox;
       const AIndex: integer; const AState: TCheckBoxState);
   end;
+  IWSCustomCheckListBox = IWSCheckListBox;
   TWSCustomCheckListBoxClass = IWSCustomCheckListBox;
   {$endif}
 

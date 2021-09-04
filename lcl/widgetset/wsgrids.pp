@@ -46,17 +46,18 @@ uses
 type
   { TWSCustomGrid }
   {$ifdef wsintf}
-  IWSCustomGrid = interface(IWSWinControl)
+  IWSGrid = interface(IWSWinControl)
     ['{6DB8361C-C1A0-44E4-B0FB-12C965BA1082}']
     procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char);
     function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer;
     function GetEditorBoundsFromCellRect(ACanvas: TCanvas;
       const ACellRect: TRect; const AColumnLayout: TTextLayout): TRect;
   end;
+  IWSCustomGrid = IWSGrid;
   TWSCustomGridClass = IWSCustomGrid;
   {$endif}
 
-  TWSCustomGrid = class(TWSCustomControl{$ifdef wsintf},IWSCustomGrid{$endif})
+  TWSCustomGrid = class(TWSCustomControl{$ifdef wsintf},IWSGrid{$endif})
   impsection
     imptype procedure SendCharToEditor(AEditor:TWinControl; Ch: TUTF8Char); virtual;
     imptype function InvalidateStartY(const FixedHeight, RowOffset: Integer): integer; virtual;

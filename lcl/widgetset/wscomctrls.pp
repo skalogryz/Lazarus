@@ -48,10 +48,11 @@ type
   {$ifndef wsintf}
   TWSCustomPageClass = class of TWSCustomPage;
   {$else}
-  IWSCustomPage = interface(IWSWinControl)
+  IWSTabPage = interface(IWSWinControl)
     ['{87CDD0DC-B1C0-46DE-B8FD-B8CD1F22BE25}']
     procedure UpdateProperties(const ACustomPage: TCustomPage);
   end;
+  IWSCustomPage = IWSTabPage;
   TWSCustomPageClass = IWSCustomPage; // for LCL compatibility
   {$endif}
   TWSCustomPage = class(TWSWinControl{$ifdef wsintf},IWSCustomPage{$endif})
@@ -61,7 +62,7 @@ type
 
   { TWSCustomTabControl }
   {$ifdef wsintf}
-  IWSCustomTabControl = interface(IWSWinControl)
+  IWSTabControl = interface(IWSWinControl)
     ['{F3E7D950-FFA6-41EE-91FC-7E08E4F6A6C1}']
     procedure AddPage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const AIndex: integer);
     procedure MovePage(const ATabControl: TCustomTabControl; const AChild: TCustomPage; const NewIndex: integer);
@@ -80,6 +81,7 @@ type
     procedure ShowTabs(const ATabControl: TCustomTabControl; AShowTabs: boolean);
     procedure UpdateProperties(const ATabControl: TCustomTabControl);
   end;
+  IWSCustomTabControl = IWSTabControl;
   TWSCustomTabControlClass = IWSCustomTabControl; // for LCL compatibility
   {$endif}
 
@@ -144,7 +146,7 @@ type
   TWSListViewItemChange = (lvicText, lvicImage);
   TWSListViewItemChanges = set of TWSListViewItemChange;
   {$ifdef wsintf}
-  IWSCustomListView = interface(IWSWinControl)
+  IWSListView = interface(IWSWinControl)
     ['{04A747A8-F9C0-47E2-AC01-66276CC9AC6C}']
     // Column
     procedure ColumnDelete(const ALV: TCustomListView; const AIndex: Integer);
@@ -218,6 +220,7 @@ type
     // AND/OR that don't support native checkboxes should have this method return true
     function RestoreItemCheckedAfterSort(const ALV: TCustomListView): Boolean;
   end;
+  IWSCustomListView = IWSListView;
   TWSCustomListViewClass = IWSCustomListView; // for LCL compatibility
   {$endif}
   TWSCustomListView = class(TWSWinControl{$ifdef wsintf}, IWSCustomListView{$endif})

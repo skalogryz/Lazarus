@@ -81,7 +81,7 @@ type
   { TWSCustomForm }
 
   {$ifdef wsintf}
-  IWSCustomForm = interface(IWSScrollingWinControl)
+  IWSForm = interface(IWSScrollingWinControl)
     ['{E543CD56-7CF2-4967-B399-65F430B16063}']
     procedure CloseModal(const ACustomForm: TCustomForm);
     procedure SetAllowDropFiles(const AForm: TCustomForm; AValue: Boolean);
@@ -112,6 +112,7 @@ type
     function ArrangeIcons(const AForm: TCustomForm): Boolean;
     function MDIChildCount(const AForm: TCustomForm): Integer;
   end;
+  IWSCustomForm = IWSForm;
   TWSCustomFormClass = IWSCustomForm;
   {$endif}
 

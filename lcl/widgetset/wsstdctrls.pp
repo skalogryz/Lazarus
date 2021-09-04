@@ -77,7 +77,7 @@ type
 
   { TWSCustomComboBox }
   {$ifdef wsintf}
-  IWSCustomComboBox = interface(IWSWinControl)
+  IWSComboBox = interface(IWSWinControl)
     ['{6CC89532-DE82-4FAF-B0CA-5C03CD90F8B0}']
     function GetDroppedDown(const ACustomComboBox: TCustomComboBox): Boolean;
     function GetSelStart(const ACustomComboBox: TCustomComboBox): integer;
@@ -104,6 +104,7 @@ type
     function GetItemHeight(const ACustomComboBox: TCustomComboBox): Integer;
     procedure SetItemHeight(const ACustomComboBox: TCustomComboBox; const AItemHeight: Integer);
   end;
+  IWSCustomComboBox = IWSComboBox;
   TWSCustomComboBoxClass = IWSCustomComboBox;
   {$endif}
 
@@ -145,7 +146,7 @@ type
   { TWSCustomListBox }
 
   {$ifdef wsintf}
-  IWSCustomListBox = interface(IWSWinControl)
+  IWSListBox = interface(IWSWinControl)
     ['{6D30FAD4-3857-4A3D-8ADF-D8D0B4D8D0F3}']
     procedure DragStart(const ACustomListBox: TCustomListBox);
 
@@ -174,6 +175,7 @@ type
     procedure SetSorted(const ACustomListBox: TCustomListBox; AList: TStrings; ASorted: boolean);
     procedure SetTopIndex(const ACustomListBox: TCustomListBox; const NewTopIndex: integer);
   end;
+  IWSCustomListBox = IWSListBox;
   TWSCustomListBoxClass = IWSCustomListBox; // for LCL compatibility
   {$endif}
 
@@ -217,7 +219,7 @@ type
 
   { TWSCustomEdit }
   {$ifdef wsintf}
-  IWSCustomEdit = interface(IWSWinControl)
+  IWSEdit = interface(IWSWinControl)
     ['{EBA97C31-869D-43BE-8796-7D2C2E9AE3EA}']
     function GetCanUndo(const ACustomEdit: TCustomEdit): Boolean;
     function GetCaretPos(const ACustomEdit: TCustomEdit): TPoint;
@@ -243,6 +245,7 @@ type
     procedure Paste(const ACustomEdit: TCustomEdit);
     procedure Undo(const ACustomEdit: TCustomEdit);
   end;
+  IWSCustomEdit = IWSEdit;
   TWSCustomEditClass = IWSCustomEdit;
   {$endif}
 
@@ -276,7 +279,7 @@ type
 
   { TWSCustomMemo }
   {$ifdef wsintf}
-  IWSCustomMemo = interface(IWSCustomEdit)
+  IWSMemo = interface(IWSCustomEdit)
     ['{74F727E3-861E-4AC1-BBD0-837D60A2DCA7}']
     procedure AppendText(const ACustomMemo: TCustomMemo; const AText: string);
     function  GetStrings(const ACustomMemo: TCustomMemo): TStrings;
@@ -286,6 +289,7 @@ type
     procedure SetWantReturns(const ACustomMemo: TCustomMemo; const NewWantReturns: boolean);
     procedure SetWordWrap(const ACustomMemo: TCustomMemo; const NewWordWrap: boolean);
   end;
+  IWSCustomMemo = IWSMemo;
   TWSCustomMemoClass = IWSCustomMemo;
   {$endif}
 
@@ -319,11 +323,12 @@ type
   {$ifndef wsintf}
   TWSCustomStaticTextClass = class of TWSCustomStaticText;
   {$else}
-  IWSCustomStaticText = interface(IWSWinControl)
+  IWSStaticText = interface(IWSWinControl)
     ['{98A18AD6-44E0-4C43-9B7E-618E06DFA467}']
     procedure SetAlignment(const ACustomStaticText: TCustomStaticText; const NewAlignment: TAlignment);
     procedure SetStaticBorderStyle(const ACustomStaticText: TCustomStaticText; const NewBorderStyle: TStaticBorderStyle);
   end;
+  IWSCustomStaticText = IWSStaticText;
   TWSCustomStaticTextClass = IWSCustomStaticText; // for LCL compatibility
   {$endif}
 

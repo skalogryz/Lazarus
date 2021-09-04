@@ -149,7 +149,7 @@ type
 
   { TWSCustomTrayIcon }
   {$ifdef wsintf}
-  IWSCustomTrayIcon = interface(IWSLCLComponent)
+  IWSTrayIcon = interface(IWSLCLComponent)
     ['{EF8A887C-FEA5-414D-939E-22EBD939D5C7}']
     function Hide(const ATrayIcon: TCustomTrayIcon): Boolean;
     function Show(const ATrayIcon: TCustomTrayIcon): Boolean;
@@ -158,6 +158,7 @@ type
     function GetPosition(const ATrayIcon: TCustomTrayIcon): TPoint;
     function GetCanvas(const ATrayIcon: TCustomTrayIcon): TCanvas;
   end;
+  IWSCustomTrayIcon = IWSTrayIcon;
   TWSCustomTrayIconClass = IWSCustomTrayIcon;
   {$endif}
 

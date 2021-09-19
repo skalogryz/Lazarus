@@ -4432,6 +4432,7 @@ begin
     IncreaseBuildMacroChangeStamp;
     MainBuildBoss.SetBuildTargetProject1(false);
     MainIDE.UpdateCaption;
+    MainIDE.UpdateDefineTemplates;
   end;
 end;
 
@@ -6428,7 +6429,8 @@ var
 begin
   Result:=mrCancel;
 
-  debugln('TMainIDE.DoOpenProjectFile A "'+AFileName+'"');
+  if ConsoleVerbosity>=0 then
+    debugln('Hint: (lazarus) [TMainIDE.DoOpenProjectFile] "'+AFileName+'"');
   {$IFDEF IDE_MEM_CHECK}CheckHeapWrtMemCnt('TMainIDE.DoOpenProjectFile A');{$ENDIF}
   if ExtractFileNameOnly(AFileName)='' then exit;
   OriginalFilename:=AFileName;

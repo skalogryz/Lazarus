@@ -227,8 +227,9 @@ type
   protected
     { Methods specific to Lazarus }
     class procedure WSRegisterClass; override;
+    procedure AdjustColWidths;
     procedure PopulateWithRoot();
-    procedure Resize; override;
+    procedure DoOnResize; override;
     procedure SetAutoSizeColumns(const Value: Boolean); virtual;
     procedure DoAddItem(const ABasePath: String; const AFileInfo: TSearchRec; var CanAdd: Boolean);
     function GetBuiltinImageIndex(const AFileName: String; ALargeImage: Boolean): Integer;
@@ -717,10 +718,10 @@ begin
                    ;
     if UseMaskList then
     begin
-      // Disable ranges in the MaskList. [...] is interpreted as literal chars.
+      // Disable sets and ranges in the MaskList. [...] is interpreted as literal chars.
       // Otherwise this would be incompatible with the situation if no MaskList was used
       // and would break backwards compatibilty and could raise unexpected EConvertError.
-      // If you need ranges in the MaskList, use the OnAddItem event for that. (BB)
+      // If you need sets/ranges in the MaskList, use the OnAddItem event for that. (BB)
       {$ifdef NotLiteralFilenames}
       CaseSens := ACaseSensitivity = mcsCaseSensitive;
       {$else}
@@ -1497,7 +1498,7 @@ begin
   Self.Column[1].Caption := sShellCtrlsSize;
   Self.Column[2].Caption := sShellCtrlsType;
   // Initial sizes, necessary under Windows CE
-  Resize;
+  AdjustColWidths;
 end;
 
 destructor TCustomShellListView.Destroy;
@@ -1576,15 +1577,10 @@ begin
   end;
 end;
 
-procedure TCustomShellListView.Resize;
+procedure TCustomShellListView.AdjustColWidths;
 var
   iWidth: Integer;
 begin
-  inherited Resize;
-  {$ifdef DEBUG_SHELLCTRLS}
-    debugln(':>TCustomShellListView.HandleResize');
-  {$endif}
-
   // The correct check is with count,
   // if Column[0] <> nil then will raise an exception
   if Self.Columns.Count < 3 then Exit;
@@ -1610,12 +1606,12 @@ begin
   finally
     EndUpdate;
   end;
+end;
 
-  {$ifdef DEBUG_SHELLCTRLS}
-    debugln([':<TCustomShellListView.HandleResize C0.Width=',
-     Column[0].Width, ' C1.Width=', Column[1].Width,
-     ' C2.Width=', Column[2].Width]);
-  {$endif}
+procedure TCustomShellListView.DoOnResize;
+begin
+  inherited;
+  AdjustColWidths;
 end;
 
 procedure TCustomShellListView.SetAutoSizeColumns(const Value: Boolean);
@@ -1624,7 +1620,7 @@ begin
     Exit;
   FAutoSizeColumns := Value;
   if Value then
-    Resize();
+    AdjustColWidths;
 end;
 
 procedure TCustomShellListView.DoAddItem(const ABasePath: String;

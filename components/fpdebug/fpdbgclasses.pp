@@ -88,6 +88,7 @@ type
   { TDbgCallstackEntry }
   TDbgThread = class;
   TFPDThreadArray = array of TDbgThread;
+  TDbgInstance = class;
   TDbgLibrary = class;
   TOSDbgClasses = class;
   TDbgAsmInstruction = class;
@@ -127,8 +128,8 @@ type
   private
     FHasReadAllAvailableFrames: boolean;
   protected
-    procedure SetHasReadAllAvailableFrames;
   public
+    procedure SetHasReadAllAvailableFrames;
     procedure Clear;
     property HasReadAllAvailableFrames: boolean read FHasReadAllAvailableFrames;
   end;
@@ -287,16 +288,23 @@ type
     function GetEnumerator: TThreadMapEnumerator;
   end;
 
+  // Simple array to pass a list of multiple libraries in a parameter. Does
+  // not own or do anything other with the libraries.
+  TDbgLibraryArr = array of TDbgLibrary;
+
   { TLibraryMap }
 
   TLibraryMap = class(TMap)
   private
-    FLastLibraryAdded: TDbgLibrary;
+    FLibrariesAdded: TDbgLibraryArr;
+    FLibrariesRemoved: TDbgLibraryArr;
   public
     procedure Add(const AId, AData);
+    function Delete(const AId): Boolean;
     function GetLib(const AHandle: THandle; out ALib: TDbgLibrary): Boolean;
     function GetLib(const AName: String; out ALib: TDbgLibrary; IsFullName: Boolean = True): Boolean;
-    property LastLibraryAdded: TDbgLibrary read FLastLibraryAdded;
+    procedure ClearAddedAndRemovedLibraries;
+    property LibrariesAdded: TDbgLibraryArr read FLibrariesAdded;
   end;
 
   TFpInternalBreakpointArray = array of TFpInternalBreakpoint;
@@ -359,6 +367,8 @@ type
   public
     function Hit(const AThreadID: Integer; ABreakpointAddress: TDBGPtr): Boolean; virtual; abstract;
     function HasLocation(const ALocation: TDBGPtr): Boolean; virtual; abstract;
+    // A breakpoint could also be inside/part of a library.
+    function BelongsToInstance(const AnInstance: TDbgInstance): Boolean; virtual; abstract;
 
     procedure AddAddress(const ALocation: TDBGPtr); virtual; abstract;
     procedure RemoveAddress(const ALocation: TDBGPtr); virtual; abstract;
@@ -397,6 +407,7 @@ type
     destructor Destroy; override;
     function Hit(const AThreadID: Integer; ABreakpointAddress: TDBGPtr): Boolean; override;
     function HasLocation(const ALocation: TDBGPtr): Boolean; override;
+    function BelongsToInstance(const AnInstance: TDbgInstance): Boolean; override;
 
     procedure AddAddress(const ALocation: TDBGPtr); override;
     procedure RemoveAddress(const ALocation: TDBGPtr); override;
@@ -436,6 +447,10 @@ type
   end;
   TFpInternalWatchpointClass = class of TFpInternalWatchpoint;
 
+  // Container to hold target specific process info
+  TDbgProcessConfig = class(TPersistent)
+  end;
+
   { TDbgInstance }
 
   TDbgInstance = class(TObject)
@@ -453,17 +468,28 @@ type
     FDbgInfo: TDbgInfo;
     procedure InitializeLoaders; virtual;
     procedure SetFileName(const AValue: String);
-    property LoaderList: TDbgImageLoaderList read FLoaderList write FLoaderList;
     procedure SetMode(AMode: TFPDMode); experimental; // for testcase
   public
     constructor Create(const AProcess: TDbgProcess); virtual;
     destructor Destroy; override;
 
+    // Returns the addresses at the given source-filename and line-number.
+    // Searches the program and all libraries. This can lead to multiple hits,
+    // as the application and libraries can share sourcecode but have their own
+    // binary code.
+    function  GetLineAddresses(AFileName: String; ALine: Cardinal; var AResultList: TDBGPtrArray): Boolean; virtual;
+
     function AddBreak(const AFileName: String; ALine: Cardinal; AnEnabled: Boolean = True): TFpInternalBreakpoint; overload;
     function AddBreak(const AFuncName: String; AnEnabled: Boolean = True): TFpDbgBreakpoint; overload;
-    function AddrOffset: TDBGPtr; virtual;  // gives the offset between  the loaded addresses and the compiled addresses
     function FindProcSymbol(const AName: String): TFpSymbol; overload;
     function FindProcSymbol(AAdress: TDbgPtr): TFpSymbol; overload;
+    function  FindProcStartEndPC(AAdress: TDbgPtr; out AStartPC, AEndPC: TDBGPtr): boolean;
+
+    // Check if a certain (range of) address(es) belongs to a specific Instance
+    // (for example a library)
+    function EnclosesAddress(AnAddress: TDBGPtr): Boolean;
+    function EnclosesAddressRange(AStartAddress, AnEndAddress: TDBGPtr): Boolean;
+
     procedure LoadInfo; virtual;
 
     property Process: TDbgProcess read FProcess;
@@ -473,6 +499,7 @@ type
     property Mode: TFPDMode read FMode;
     property PointerSize: Integer read GetPointerSize;
     property MemManager: TFpDbgMemManager read FMemManager;
+    property LoaderList: TDbgImageLoaderList read FLoaderList;
   end;
 
   { TDbgLibrary }
@@ -480,12 +507,10 @@ type
   TDbgLibrary = class(TDbgInstance)
   private
     FModuleHandle: THandle;
-    FBaseAddr: TDBGPtr;
   public
-    constructor Create(const AProcess: TDbgProcess; const ADefaultName: String; const AModuleHandle: THandle; const ABaseAddr: TDbgPtr);
+    constructor Create(const AProcess: TDbgProcess; const ADefaultName: String; const AModuleHandle: THandle);
     property Name: String read FFileName;
     property ModuleHandle: THandle read FModuleHandle;
-    property BaseAddr: TDBGPtr read FBaseAddr;
   end;
 
   TStartInstanceFlag = (siRediretOutput, siForceNewConsole);
@@ -548,9 +573,10 @@ type
     FProcessID: Integer;
     FThreadID: Integer;
     FWatchPointData: TFpWatchPointData;
-
+    FProcessConfig: TDbgProcessConfig;
     function GetDisassembler: TDbgAsmDecoder;
-    function GetLastLibraryLoaded: TDbgLibrary;
+    function GetLastLibrariesLoaded: TDbgLibraryArr;
+    function GetLastLibrariesUnloaded: TDbgLibraryArr;
     function GetPauseRequested: boolean;
     procedure SetPauseRequested(AValue: boolean);
     procedure ThreadDestroyed(const AThread: TDbgThread);
@@ -582,7 +608,6 @@ type
 
     function InsertBreakInstructionCode(const ALocation: TDBGPtr; out OrigValue: Byte): Boolean; virtual;
     function RemoveBreakInstructionCode(const ALocation: TDBGPtr; const OrigValue: Byte): Boolean; virtual;
-    procedure RemoveAllBreakPoints;
     procedure BeforeChangingInstructionCode(const ALocation: TDBGPtr; ACount: Integer); virtual;
     procedure AfterChangingInstructionCode(const ALocation: TDBGPtr; ACount: Integer); virtual;
 
@@ -593,14 +618,18 @@ type
     function AnalyseDebugEvent(AThread: TDbgThread): TFPDEvent; virtual; abstract;
 
     function CreateWatchPointData: TFpWatchPointData; virtual;
-public
-    class function StartInstance(AFileName: string; AParams, AnEnvironment: TStrings;
-      AWorkingDirectory, AConsoleTty: string; AFlags: TStartInstanceFlags;
-      AnOsClasses: TOSDbgClasses; AMemManager: TFpDbgMemManager; out AnError: TFpError): TDbgProcess; virtual;
-    class function AttachToInstance(AFileName: string; APid: Integer; AnOsClasses: TOSDbgClasses; AMemManager: TFpDbgMemManager; out AnError: TFpError): TDbgProcess; virtual;
+    procedure Init(const AProcessID, AThreadID: Integer);
+    procedure InitializeLoaders; override;
+  public
     class function isSupported(ATargetInfo: TTargetDescriptor): boolean; virtual;
-    constructor Create(const AFileName: string; const AProcessID, AThreadID: Integer; AnOsClasses: TOSDbgClasses; AMemManager: TFpDbgMemManager); virtual;
+    constructor Create(const AFileName: string; AnOsClasses: TOSDbgClasses;
+                      AMemManager: TFpDbgMemManager; AProcessConfig: TDbgProcessConfig = nil); virtual;
     destructor Destroy; override;
+
+    function StartInstance(AParams, AnEnvironment: TStrings; AWorkingDirectory, AConsoleTty: string;
+                      AFlags: TStartInstanceFlags; out AnError: TFpError): boolean; virtual;
+    function AttachToInstance(APid: Integer; out AnError: TFpError): boolean; virtual;
+
     function  AddInternalBreak(const ALocation: TDBGPtr): TFpInternalBreakpoint; overload;
     function  AddInternalBreak(const ALocation: TDBGPtrArray): TFpInternalBreakpoint; overload;
     function  AddBreak(const ALocation: TDBGPtr; AnEnabled: Boolean = True): TFpInternalBreakpoint; overload;
@@ -617,10 +646,13 @@ public
     function  FindProcSymbol(const AName, ALibraryName: String; IsFullLibName: Boolean = True): TFpSymbol;  overload;
     function  FindProcSymbol(AAdress: TDbgPtr): TFpSymbol;  overload;
     function  FindSymbolScope(AThreadId, AStackFrame: Integer): TFpDbgSymbolScope;
+    function  FindProcStartEndPC(const AAdress: TDbgPtr; out AStartPC, AEndPC: TDBGPtr): boolean;
+
+    function  GetLineAddresses(AFileName: String; ALine: Cardinal; var AResultList: TDBGPtrArray): Boolean; override;
     function  ContextFromProc(AThreadId, AStackFrame: Integer; AProcSym: TFpSymbol): TFpDbgLocationContext; inline; deprecated 'use TFpDbgSimpleLocationContext.Create';
     function  GetLib(const AHandle: THandle; out ALib: TDbgLibrary): Boolean;
-    property  LastLibraryLoaded: TDbgLibrary read GetLastLibraryLoaded;
-    property  LastLibraryUnloaded: TDbgLibrary read FLastLibraryUnloaded write SetLastLibraryUnloadedNil;
+    property  LastLibrariesLoaded: TDbgLibraryArr read GetLastLibrariesLoaded;
+    property  LastLibrariesUnloaded: TDbgLibraryArr read GetLastLibrariesUnloaded;
     function  GetThread(const AID: Integer; out AThread: TDbgThread): Boolean;
     procedure RemoveBreak(const ABreakPoint: TFpDbgBreakpoint);
     procedure DoBeforeBreakLocationMapChange;
@@ -647,10 +679,16 @@ public
     function WaitForDebugEvent(out ProcessIdentifier, ThreadIdentifier: THandle): boolean; virtual; abstract;
     function ResolveDebugEvent(AThread: TDbgThread): TFPDEvent; virtual;
 
+    // Remove (and free if applicable) all breakpoints for this process. When a
+    // library is specified as OnlyForLibrary, only breakpoints that belong to this
+    // library are cleared.
+    procedure RemoveAllBreakPoints(const OnlyForLibrary: TDbgLibrary = nil);
+
     function CheckForConsoleOutput(ATimeOutMs: integer): integer; virtual;
     function GetConsoleOutput: string; virtual;
     procedure SendConsoleInput(AString: string); virtual;
 
+    procedure ClearAddedAndRemovedLibraries;
     function AddThread(AThreadIdentifier: THandle): TDbgThread;
     function GetThreadArray: TFPDThreadArray;
     procedure ThreadsBeforeContinue;
@@ -885,7 +923,16 @@ end;
 procedure TLibraryMap.Add(const AId, AData);
 begin
   inherited Add(AId, AData);
-  FLastLibraryAdded := TDbgLibrary(AData);
+  FLibrariesAdded := Concat(FLibrariesAdded, [TDbgLibrary(AData)]);
+end;
+
+function TLibraryMap.Delete(const AId): Boolean;
+var
+  ALib: TDbgLibrary;
+begin
+  if GetData(AId, ALib) then
+    FLibrariesRemoved := Concat(FLibrariesRemoved, [TDbgLibrary(ALib)]);
+  Result := inherited Delete(AId);
 end;
 
 function TLibraryMap.GetLib(const AHandle: THandle; out ALib: TDbgLibrary
@@ -935,6 +982,16 @@ begin
     Iterator.Next;
   end;
   Iterator.Free;
+end;
+
+procedure TLibraryMap.ClearAddedAndRemovedLibraries;
+var
+  lib: TDbgLibrary;
+begin
+  for lib in FLibrariesRemoved do
+    lib.Free;
+  FLibrariesAdded := [];
+  FLibrariesRemoved := [];
 end;
 
 { TBreakLocationEntry }
@@ -1161,6 +1218,11 @@ begin
       FSymbol := FThread.Process.FindProcSymbol(FAnAddress - 1) // -1 => inside the call instruction
     else
       FSymbol := FThread.Process.FindProcSymbol(FAnAddress);
+
+    if FSymbol is TFpSymbolDwarfDataProc then
+      FSymbol := TFpSymbolDwarfDataProc(FSymbol).ResolveInternalFinallySymbol(FThread.Process);
+
+
     FIsSymbolResolved := FSymbol <> nil
   end;
   result := FSymbol;
@@ -1554,17 +1616,10 @@ function TDbgInstance.AddBreak(const AFileName: String; ALine: Cardinal;
   AnEnabled: Boolean): TFpInternalBreakpoint;
 var
   addr: TDBGPtrArray;
-  o: Int64;
-  i: Integer;
 begin
   Result := nil;
-  if not FDbgInfo.HasInfo then Exit;
-  if FDbgInfo.GetLineAddresses(AFileName, ALine, addr) then begin
-    o := AddrOffset;
-    for i := 0 to High(addr) do
-      addr[i] := addr[i] - o;
+  if GetLineAddresses(AFileName, ALine, addr) then
     Result := FProcess.AddBreak(addr, AnEnabled);
-  end;
 end;
 
 function TDbgInstance.AddBreak(const AFuncName: String; AnEnabled: Boolean
@@ -1578,11 +1633,6 @@ begin
     Result := FProcess.AddBreak(AProc.Address.Address, AnEnabled);
     AProc.ReleaseReference;
   end;
-end;
-
-function TDbgInstance.AddrOffset: TDBGPtr;
-begin
-  Result := FLoaderList.ImageBase;
 end;
 
 function TDbgInstance.FindProcSymbol(const AName: String): TFpSymbol;
@@ -1612,14 +1662,41 @@ begin
   inherited;
 end;
 
+function TDbgInstance.GetLineAddresses(AFileName: String; ALine: Cardinal; var AResultList: TDBGPtrArray): Boolean;
+begin
+  if Assigned(DbgInfo) and DbgInfo.HasInfo then
+    Result := DbgInfo.GetLineAddresses(AFileName, ALine, AResultList)
+  else
+    Result := False;
+end;
+
 function TDbgInstance.FindProcSymbol(AAdress: TDbgPtr): TFpSymbol;
 begin
   {$PUSH}{$R-}{$Q-}
-  AAdress := AAdress + AddrOffset;
+  AAdress := AAdress;
   {$POP}
   Result := FDbgInfo.FindProcSymbol(AAdress);
   if not assigned(Result) then
     result := FSymbolTableInfo.FindProcSymbol(AAdress);
+end;
+
+function TDbgInstance.FindProcStartEndPC(AAdress: TDbgPtr; out AStartPC,
+  AEndPC: TDBGPtr): boolean;
+begin
+  {$PUSH}{$R-}{$Q-}
+  AAdress := AAdress;
+  {$POP}
+  Result := FDbgInfo.FindProcStartEndPC(AAdress, AStartPC, AEndPC);
+end;
+
+function TDbgInstance.EnclosesAddress(AnAddress: TDBGPtr): Boolean;
+begin
+  EnclosesAddressRange(AnAddress, AnAddress);
+end;
+
+function TDbgInstance.EnclosesAddressRange(AStartAddress, AnEndAddress: TDBGPtr): Boolean;
+begin
+  Result := FLoaderList.EnclosesAddressRange(AStartAddress, AnEndAddress);
 end;
 
 procedure TDbgInstance.LoadInfo;
@@ -1666,12 +1743,11 @@ end;
 
 { TDbgLibrary }
 
-constructor TDbgLibrary.Create(const AProcess: TDbgProcess; const ADefaultName: String; const AModuleHandle: THandle; const ABaseAddr: TDbgPtr);
+constructor TDbgLibrary.Create(const AProcess: TDbgProcess; const ADefaultName: String; const AModuleHandle: THandle);
 
 begin
   inherited Create(AProcess);
   FModuleHandle:=AModuleHandle;
-  FBaseAddr:=ABaseAddr;
 end;
 
 { TDbgProcess }
@@ -1721,9 +1797,8 @@ begin
   Result := lib.FindProcSymbol(AName);
 end;
 
-constructor TDbgProcess.Create(const AFileName: string; const AProcessID,
-  AThreadID: Integer; AnOsClasses: TOSDbgClasses; AMemManager: TFpDbgMemManager
-  );
+constructor TDbgProcess.Create(const AFileName: string; AnOsClasses: TOSDbgClasses;
+  AMemManager: TFpDbgMemManager; AProcessConfig: TDbgProcessConfig);
 const
   {.$IFDEF CPU64}
   MAP_ID_SIZE = itu8;
@@ -1732,9 +1807,10 @@ const
   {.$ENDIF}
 begin
   FMemManager := AMemManager;
-  FProcessID := AProcessID;
-  FThreadID := AThreadID;
+  FProcessID := 0;
+  FThreadID := 0;
   FOSDbgClasses := AnOsClasses;
+  FProcessConfig := AProcessConfig;
 
   FBreakpointList := TFpInternalBreakpointList.Create(False);
   FWatchPointList := TFpInternalBreakpointList.Create(False);
@@ -1795,6 +1871,7 @@ begin
   //FreeItemsInMap(FBreakMap);
   FreeItemsInMap(FThreadMap);
   FreeItemsInMap(FLibMap);
+  FLibMap.ClearAddedAndRemovedLibraries;
 
   FreeAndNil(FWatchPointData);
   FreeAndNil(FBreakMap);
@@ -1803,6 +1880,20 @@ begin
   FreeAndNil(FSymInstances);
   FreeAndNil(FDisassembler);
   inherited;
+end;
+
+function TDbgProcess.StartInstance(AParams, AnEnvironment: TStrings;
+  AWorkingDirectory, AConsoleTty: string; AFlags: TStartInstanceFlags; out
+  AnError: TFpError): boolean;
+begin
+  DebugLn(DBG_VERBOSE, 'Debug support is not available for this platform.');
+  result := false;
+end;
+
+function TDbgProcess.AttachToInstance(APid: Integer; out AnError: TFpError): boolean;
+begin
+  DebugLn(DBG_VERBOSE, 'Attach not supported');
+  Result := false;
 end;
 
 function TDbgProcess.AddInternalBreak(const ALocation: TDBGPtr): TFpInternalBreakpoint;
@@ -1855,7 +1946,7 @@ begin
 
         if Result = nil then begin
           Addr := Frame.AnAddress;
-          if Addr <> 0 then
+          if (Addr <> 0) or (FDbgInfo.TargetInfo.machineType = mtAVR8) then
             Result := FDbgInfo.FindSymbolScope(Ctx, Addr);
         end;
       end;
@@ -1868,6 +1959,38 @@ begin
     Result := TFpDbgSymbolScope.Create(Ctx);
 
   Ctx.ReleaseReference;
+end;
+
+function TDbgProcess.FindProcStartEndPC(const AAdress: TDbgPtr; out AStartPC,
+  AEndPC: TDBGPtr): boolean;
+var
+  n: Integer;
+  Inst: TDbgInstance;
+begin
+  for n := 0 to FSymInstances.Count - 1 do
+  begin
+    Inst := TDbgInstance(FSymInstances[n]);
+    Result := Inst.FindProcStartEndPC(AAdress, AStartPC, AEndPC);
+    if Result then Exit;
+  end;
+end;
+
+function TDbgProcess.GetLineAddresses(AFileName: String; ALine: Cardinal; var AResultList: TDBGPtrArray): Boolean;
+var
+  Iterator: TMapIterator;
+  Lib: TDbgLibrary;
+begin
+  Result := inherited;
+
+  Iterator := TMapIterator.Create(FLibMap);
+  while not Iterator.EOM do
+  begin
+    Iterator.GetData(Lib);
+    if Lib.GetLineAddresses(AFileName, ALine, AResultList) then
+      Result := True;
+    Iterator.Next;
+  end;
+  Iterator.Free;
 end;
 
 function TDbgProcess.ContextFromProc(AThreadId, AStackFrame: Integer;
@@ -2019,6 +2142,12 @@ begin
   // Do nothing
 end;
 
+procedure TDbgProcess.ClearAddedAndRemovedLibraries;
+begin
+  {$IFDEF FPDEBUG_THREAD_CHECK}AssertFpDebugThreadIdNotMain('TBreakLocationMap.AddLocotion');{$ENDIF}
+  FLibMap.ClearAddedAndRemovedLibraries;
+end;
+
 function TDbgProcess.AddThread(AThreadIdentifier: THandle): TDbgThread;
 var
   IsMainThread: boolean;
@@ -2156,23 +2285,6 @@ begin
   FExitCode:=AValue;
 end;
 
-class function TDbgProcess.StartInstance(AFileName: string; AParams,
-  AnEnvironment: TStrings; AWorkingDirectory, AConsoleTty: string;
-  AFlags: TStartInstanceFlags; AnOsClasses: TOSDbgClasses;
-  AMemManager: TFpDbgMemManager; out AnError: TFpError): TDbgProcess;
-begin
-  DebugLn(DBG_VERBOSE, 'Debug support is not available for this platform.');
-  result := nil;
-end;
-
-class function TDbgProcess.AttachToInstance(AFileName: string; APid: Integer;
-  AnOsClasses: TOSDbgClasses; AMemManager: TFpDbgMemManager; out
-  AnError: TFpError): TDbgProcess;
-begin
-  DebugLn(DBG_VERBOSE, 'Attach not supported');
-  Result := nil;
-end;
-
 class function TDbgProcess.isSupported(ATargetInfo: TTargetDescriptor): boolean;
 begin
   result := false;
@@ -2194,16 +2306,21 @@ begin
   Result := False;
 end;
 
-function TDbgProcess.GetLastLibraryLoaded: TDbgLibrary;
-begin
-  Result := FLibMap.LastLibraryAdded;
-end;
-
 function TDbgProcess.GetDisassembler: TDbgAsmDecoder;
 begin
   if FDisassembler = nil then
     FDisassembler := OSDbgClasses.DbgDisassemblerClass.Create(Self);
   Result := FDisassembler;
+end;
+
+function TDbgProcess.GetLastLibrariesLoaded: TDbgLibraryArr;
+begin
+  Result := FLibMap.FLibrariesAdded;
+end;
+
+function TDbgProcess.GetLastLibrariesUnloaded: TDbgLibraryArr;
+begin
+  Result := FLibMap.FLibrariesRemoved;
 end;
 
 function TDbgProcess.GetAndClearPauseRequested: Boolean;
@@ -2222,6 +2339,11 @@ begin
 
   if DbgInfo.HasInfo then
     FSymInstances.Add(Self);
+end;
+
+procedure TDbgProcess.InitializeLoaders;
+begin
+  inherited InitializeLoaders;
 end;
 
 function TDbgProcess.GetLastEventProcessIdentifier: THandle;
@@ -2311,7 +2433,7 @@ begin
     AfterChangingInstructionCode(ALocation, 1);
 end;
 
-procedure TDbgProcess.RemoveAllBreakPoints;
+procedure TDbgProcess.RemoveAllBreakPoints(const OnlyForLibrary: TDbgLibrary = nil);
 var
   i: LongInt;
   b: TFpInternalBreakBase;
@@ -2319,20 +2441,24 @@ begin
   i := FBreakpointList.Count - 1;
   while i >= 0 do begin
     b := FBreakpointList[i];
-    b.ResetBreak;
-    b.FProcess := nil;
-    FBreakpointList.Delete(i);
+    if not Assigned(OnlyForLibrary) or b.BelongsToInstance(OnlyForLibrary) then begin
+      b.ResetBreak;
+      b.FProcess := nil;
+      FBreakpointList.Delete(i);
+    end;
     dec(i);
   end;
   i := FWatchPointList.Count - 1;
   while i >= 0 do begin
     b := FWatchPointList[i];
-    b.ResetBreak;
-    b.FProcess := nil;
-    FWatchPointList.Delete(i);
+    if not Assigned(OnlyForLibrary) or b.BelongsToInstance(OnlyForLibrary) then begin
+      b.ResetBreak;
+      b.FProcess := nil;
+      FWatchPointList.Delete(i);
+    end;
     dec(i);
   end;
-  assert(FBreakMap.Count = 0, 'TDbgProcess.RemoveAllBreakPoints: FBreakMap.Count = 0');
+  assert(Assigned(OnlyForLibrary) or (FBreakMap.Count = 0), 'TDbgProcess.RemoveAllBreakPoints: FBreakMap.Count = 0');
 end;
 
 procedure TDbgProcess.BeforeChangingInstructionCode(const ALocation: TDBGPtr; ACount: Integer);
@@ -2418,6 +2544,12 @@ end;
 function TDbgProcess.CreateWatchPointData: TFpWatchPointData;
 begin
   Result := TFpWatchPointData.Create;
+end;
+
+procedure TDbgProcess.Init(const AProcessID, AThreadID: Integer);
+begin
+  FProcessID := AProcessID;
+  FThreadID := AThreadID;
 end;
 
 function TDbgProcess.WriteData(const AAdress: TDbgPtr; const ASize: Cardinal; const AData): Boolean;
@@ -3114,6 +3246,30 @@ begin
   Result := False;
 end;
 
+function TFpInternalBreakpoint.BelongsToInstance(const AnInstance: TDbgInstance): Boolean;
+var
+  i: Integer;
+  Hi: TDBGPtr;
+  Lo: TDBGPtr;
+begin
+  if Length(FLocation) = 0 then
+    Exit(False);
+
+  // Search for the lowest and higest locations
+  Lo := FLocation[0];
+  Hi := FLocation[0];
+  for i := 0 to High(FLocation) do
+    begin
+    if FLocation[i] > Hi then
+      Hi := FLocation[i]
+    else if FLocation[i] < Lo then
+      Lo := FLocation[i];
+    end;
+  // Check if the range between the lowest and highest location belongs to (fits into)
+  // the instance
+  Result := AnInstance.EnclosesAddressRange(Lo, Hi);
+end;
+
 procedure TFpInternalBreakpoint.AddAddress(const ALocation: TDBGPtr);
 var
   l: Integer;
@@ -3134,7 +3290,7 @@ begin
   if i < 0 then
     exit;
   FLocation[i] := FLocation[l];
-  SetLength(FLocation, l-1);
+  SetLength(FLocation, l);
   FProcess.FBreakMap.RemoveLocotion(ALocation, Self);
 end;
 

@@ -6471,7 +6471,11 @@ begin
   xtByteBool,
   xtWordBool,
   xtLongBool,
-  xtQWordBool: begin AddAssignment('False'); AddAssignment('True'); end;
+  xtQWordBool,
+  xtBoolean8,
+  xtBoolean16,
+  xtBoolean32,
+  xtBoolean64: begin AddAssignment('False'); AddAssignment('True'); end;
   xtString,
   xtAnsiString,
   xtShortString,
@@ -7732,8 +7736,12 @@ begin
         if CodeCompleteClassNode.Desc in AllClassObjects then
         begin
           ClassSectionNode:=CodeCompleteClassNode.FirstChild;
-          while (ClassSectionNode<>nil)
-          and (ClassSectionNode.Desc<>ClassSectionNodeType[Visibility]) do
+          while (ClassSectionNode<>nil) and (
+              (ClassSectionNode.Desc<>ClassSectionNodeType[Visibility])
+           // do not break one-liner double definitions like "private const" (const is a child node for the private section)
+           or ((ClassSectionNode.FirstChild<>nil)
+             and (ClassSectionNode.FirstChild.StartPos=ClassSectionNode.StartPos+Length(NodeDescriptionAsString(ClassSectionNode.Desc))+1))
+          ) do
             ClassSectionNode:=ClassSectionNode.NextBrother;
         end else begin
           ClassSectionNode:=CodeCompleteClassNode;
@@ -7999,8 +8007,12 @@ var
         SectionNode:=SectionNode.PriorBrother;
     end else
       SectionNode:=CodeCompleteClassNode.LastChild;
-    while (SectionNode<>nil)
-    and (SectionNode.Desc<>ClassSectionNodeType[Visibility]) do
+    while (SectionNode<>nil) and (
+      (SectionNode.Desc<>ClassSectionNodeType[Visibility])
+       // do not break one-liner double definitions like "private const" (const is a child node for the private section)
+       or ((SectionNode.FirstChild<>nil)
+         and (SectionNode.FirstChild.StartPos=SectionNode.StartPos+Length(NodeDescriptionAsString(SectionNode.Desc))+1))
+    ) do
       SectionNode:=SectionNode.PriorBrother;
     if (SectionNode<>nil) then begin
       //DebugLn(['AddClassSection section exists for ',NodeDescriptionAsString(ClassSectionNodeType[Visibility])]);

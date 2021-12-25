@@ -613,7 +613,6 @@ procedure JNI_OnUnload(vm:PJavaVM;reserved:pointer); cdecl;
 begin
 end;
 
-{$IFnDEF WithOldDebugln}
 procedure TCDWidgetSet.AndroidDebugLn(ASender: TObject; AStr: string; var AHandled: Boolean;
   Target: TLazLoggerWriteTarget; Data: Pointer);
 begin
@@ -622,13 +621,6 @@ begin
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', PChar(AccumulatedStr+AStr));
   AccumulatedStr := '';
 end;
-{$ELSE}
-procedure TCDWidgetSet.AndroidDebugLn(AStr: string);
-begin
-  __android_log_write(ANDROID_LOG_INFO, 'lclapp', PChar(AccumulatedStr+AStr));
-  AccumulatedStr := '';
-end;
-{$ENDIF}
 
 function TCDWidgetSet.AndroidKeyCodeToLCLKeyCode(AAndroidKeyCode: Integer): Word;
 var
@@ -708,8 +700,8 @@ begin
     KEYCODE_GRAVE: Result := VK_LCL_TILDE;
     KEYCODE_MINUS: Result := VK_LCL_MINUS;
     KEYCODE_EQUALS:Result := VK_LCL_EQUAL;
-    KEYCODE_LEFT_BRACKET:  Result := VK_LCL_OPEN_BRAKET;
-    KEYCODE_RIGHT_BRACKET: Result := VK_LCL_CLOSE_BRAKET;
+    KEYCODE_LEFT_BRACKET:  Result := VK_LCL_OPEN_BRACKET;
+    KEYCODE_RIGHT_BRACKET: Result := VK_LCL_CLOSE_BRACKET;
     KEYCODE_BACKSLASH:     Result := VK_LCL_BACKSLASH;
     KEYCODE_SEMICOLON:     Result := VK_LCL_SEMI_COMMA;
     KEYCODE_APOSTROPHE:    Result := VK_LCL_QUOTE;
@@ -1154,13 +1146,8 @@ end;
 procedure TCDWidgetSet.BackendCreate;
 begin
   // Setup DebugLn
-  {$IFnDEF WithOldDebugln}
   OnWidgetSetDebugLn := @AndroidDebugLn;
   OnWidgetSetDbgOut := @AccumulatingDebugOut;
-  {$ELSE}
-  DebugLnProc := @AndroidDebugLn;
-  DebugOutProc := @AccumulatingDebugOut;
-  {$ENDIF}
 
   {$ifdef CD_UseNativeText}
   // Create the dummy screen DC

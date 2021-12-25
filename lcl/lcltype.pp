@@ -39,6 +39,10 @@ interface
   {$ASSERTIONS ON}
 {$endif}
 
+{$if FPC_FULLVERSION >= 30203}
+{$define UseSystemUITypes}
+{$endif}
+
 uses
 {$IFDEF USE_UTF8BIDI_LCL}
   UTF8BIDI,
@@ -46,6 +50,9 @@ uses
 {$ifdef WINDOWS}
   windows,
 {$endif WINDOWS}
+{$ifdef UseSystemUITypes}
+  System.UITypes,
+{$endif}
   Classes, SysUtils;
 
 {$ifdef WinCE}
@@ -634,8 +641,12 @@ const
   VK_LCL_SLASH       = VK_OEM_2;     // The "/?" Key
   VK_LCL_SEMI_COMMA  = VK_OEM_1;     // The ";:" Key
   VK_LCL_MINUS       = VK_OEM_MINUS; // The "-_" Key
-  VK_LCL_OPEN_BRAKET = VK_OEM_4;     // The "[{" Key
-  VK_LCL_CLOSE_BRAKET= VK_OEM_6;     // The "]}" Key
+
+  VK_LCL_OPEN_BRAKET = VK_OEM_4 deprecated 'Use VK_LCL_OPEN_BRACKET instead';
+  VK_LCL_CLOSE_BRAKET= VK_OEM_6 deprecated 'Use VK_LCL_CLOSE_BRACKET instead';
+  VK_LCL_OPEN_BRACKET = VK_OEM_4;     // The "[{" Key
+  VK_LCL_CLOSE_BRACKET= VK_OEM_6;     // The "]}" Key
+
   VK_LCL_BACKSLASH   = VK_OEM_5;     // The "\|" Key
   VK_LCL_TILDE       = VK_OEM_3;     // The "`~" Key
   VK_LCL_QUOTE       = VK_OEM_7;     // The "'"" Key
@@ -1653,7 +1664,7 @@ const
 //==============================================
 
 type
-  COLORREF = Cardinal;
+  COLORREF = {$ifdef UseSystemUITypes}System.UITypes.TColorRef{$else}Cardinal{$endif};
   TColorRef = COLORREF;
 
 const

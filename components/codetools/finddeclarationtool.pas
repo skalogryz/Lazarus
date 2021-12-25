@@ -80,7 +80,7 @@ uses
   {$ENDIF}
   Classes, SysUtils, Laz_AVL_Tree,
   // LazUtils
-  LazFileUtils, LazUtilities,
+  LazFileUtils, LazStringUtils, LazUtilities,
   // Codetools
   CodeToolsStrConsts, CodeTree, CodeAtom, CustomCodeTool,
   SourceLog, KeywordFuncLists, BasicCodeTools, LinkScanner, CodeCache,
@@ -246,6 +246,10 @@ type
     xtWordBool,    // wordbool
     xtLongBool,    // longbool
     xtQWordBool,   // qwordbool
+    xtBoolean8,    // boolean8
+    xtBoolean16,    // boolean16
+    xtBoolean32,    // boolean32
+    xtBoolean64,    // boolean64
     xtString,      // string
     xtAnsiString,  // ansistring
     xtShortString, // shortstring
@@ -298,6 +302,10 @@ var
     'WordBool',
     'LongBool',
     'QWordBool',
+    'Boolean8',
+    'Boolean16',
+    'Boolean32',
+    'Boolean64',
     'String',
     'AnsiString',
     'ShortString',
@@ -337,7 +345,9 @@ const
   xtAllIntegerTypes = [xtInt64, xtQWord, xtConstOrdInteger, xtLongint,
                        xtLongWord, xtWord, xtCardinal, xtSmallInt, xtShortInt,
                        xtByte,xtNativeInt,xtNativeUInt,xtSizeInt];
-  xtAllBooleanTypes = [xtBoolean, xtByteBool, xtWordBool, xtLongBool,xtQWordBool];
+  xtAllBooleanTypes = [xtBoolean,
+                       xtByteBool, xtWordBool, xtLongBool,xtQWordBool,
+                       xtBoolean8,xtBoolean16,xtBoolean32,xtBoolean64];
   xtAllRealTypes = [xtReal, xtConstReal, xtSingle, xtDouble,
                     xtExtended, xtCExtended, xtCurrency, xtComp];
   xtAllStringTypes = [xtConstString, xtShortString, xtString, xtAnsiString];
@@ -1323,6 +1333,14 @@ begin
     Result:=xtLongBool
   else if CompareIdentifiers(Identifier,'QWORDBOOL')=0 then
     Result:=xtQWordBool
+  else if CompareIdentifiers(Identifier,'BOOLEAN8')=0 then
+    Result:=xtBoolean8
+  else if CompareIdentifiers(Identifier,'BOOLEAN16')=0 then
+    Result:=xtBoolean16
+  else if CompareIdentifiers(Identifier,'BOOLEAN32')=0 then
+    Result:=xtBoolean32
+  else if CompareIdentifiers(Identifier,'BOOLEAN64')=0 then
+    Result:=xtBoolean64
   else if CompareIdentifiers(Identifier,'CHAR')=0 then
     Result:=xtChar
   else if CompareIdentifiers(Identifier,'WIDECHAR')=0 then
@@ -4145,26 +4163,25 @@ var
                       fdfSearchForward in Flags,Params,SearchRangeFlags);
   end;
 
+  procedure RaiseNotFound;
+  var
+    Identifier: string;
+  begin
+    Identifier:=GetIdentifier(Params.Identifier);
+    if (Identifier='') and (Params.Identifier<>nil)
+    and (Params.Identifier[0]<>#0) then begin
+      Identifier:=Params.Identifier[0];
+      if Identifier='[' then begin
+        Params.IdentifierTool.RaiseException(20170421200103,ctsDefaultPropertyNotFound);
+      end;
+    end;
+    Params.IdentifierTool.RaiseExceptionFmt(20170421200105,ctsIdentifierNotFound,
+                                            [Identifier]);
+  end;
+
   function CheckResult(NewResult, CallOnIdentifierFound: boolean): boolean;
   // returns: true to stop search
   //          false if search should continue
-  
-    procedure RaiseNotFound;
-    var
-      Identifier: string;
-    begin
-      Identifier:=GetIdentifier(Params.Identifier);
-      if (Identifier='') and (Params.Identifier<>nil)
-      and (Params.Identifier[0]<>#0) then begin
-        Identifier:=Params.Identifier[0];
-        if Identifier='[' then begin
-          Params.IdentifierTool.RaiseException(20170421200103,ctsDefaultPropertyNotFound);
-        end;
-      end;
-      Params.IdentifierTool.RaiseExceptionFmt(20170421200105,ctsIdentifierNotFound,
-                                              [Identifier]);
-    end;
-
   begin
     Result:=true;
     FindIdentifierInContext:=NewResult and (not (fdfCollect in Flags));
@@ -4996,8 +5013,7 @@ begin
 
         ctnProcedure:
           begin
-            IdentifierFoundResult:=
-              FindIdentifierInProcContext(ContextNode,Params);
+            IdentifierFoundResult:=FindIdentifierInProcContext(ContextNode,Params);
             if IdentifierFoundResult in [ifrAbortSearch,ifrSuccess] then begin
               if CheckResult(IdentifierFoundResult=ifrSuccess,true) then begin
                 {$IFDEF ShowProcSearch}
@@ -9383,7 +9399,6 @@ var
       exit(true);
     end;
     Params.Load(OldInput,false);
-    Result:=false;
   end;
   
   procedure ResolveIdentifier;
@@ -9637,12 +9652,10 @@ var
           end;
 
           Params.Load(OldInput,true);
-          if IsEnd then
-            ExprType:=FindExpressionTypeOfPredefinedIdentifier(CurAtom.StartPos,
-                                                               Params,AliasType)
-          else
-            ExprType:=FindExpressionTypeOfPredefinedIdentifier(CurAtom.StartPos,
-                                                               Params);
+          if not IsEnd then
+            AliasType:=Nil;
+          ExprType:=FindExpressionTypeOfPredefinedIdentifier(CurAtom.StartPos,
+                                                             Params,AliasType)
           {$IFDEF CheckNodeTool}
           if ExprType.Desc=xtContext then
             ExprType.Context.Tool.CheckNodeTool(ExprType.Context.Node);
@@ -12808,10 +12821,8 @@ function TFindDeclarationTool.FindForInTypeAsString(TermPos: TAtomPosition;
       xtByte,
       xtWord,
       xtBoolean,
-      xtByteBool,
-      xtWordBool,
-      xtLongBool,
-      xtQWordBool,
+      xtByteBool,xtWordBool,xtLongBool,xtQWordBool,
+      xtBoolean8,xtBoolean16,xtBoolean32,xtBoolean64,
       xtNativeInt,
       xtNativeUInt:
         Result:=ExpressionTypeDescNames[SubExprType.Desc];
@@ -13610,6 +13621,7 @@ begin
         xtWordBool,
         xtLongBool,
         xtQWordBool,
+        xtBoolean8,xtBoolean16,xtBoolean32,xtBoolean64,
         xtString,
         xtAnsiString,
         xtShortString,
@@ -13646,7 +13658,8 @@ begin
     xtByteBool,
     xtWordBool,
     xtLongBool,
-    xtQWordBool:
+    xtQWordBool,
+    xtBoolean8,xtBoolean16,xtBoolean32,xtBoolean64:
       Result:=ExpressionTypeDescNames[xtBoolean];
 
     xtString,
@@ -14190,7 +14203,9 @@ end;
 
 procedure TFindDeclarationParams.AddOperandPart(aPart: string);
 begin
-  FExtractedOperand := FExtractedOperand + aPart;
+  // Prevent identifier being added many times. See issue #37384.
+  if not LazEndsStr(aPart, FExtractedOperand) then
+    FExtractedOperand:=FExtractedOperand+aPart;
 end;
 
 procedure TFindDeclarationParams.ChangeFoundProc(

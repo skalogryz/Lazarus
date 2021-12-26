@@ -240,7 +240,18 @@ type
     {$I cocoalclintfh.inc}
     procedure AddToCollect(obj: TObject);
   end;
-  
+
+type
+  // the handler is only applied to scrollWheel w/o high resolution
+  // highResolution is always treated as "mwMacOS"
+  TScrollWheelHandler = (
+    swhMacOS,  // accepting the macOS "line" information and coverting
+               // it to proper WHEEL_DELTA amount
+
+    swhDeaccel // attempting to de-accellerate mouse wheel information.
+               // this makes mouse act more like WinAPI
+  );
+
 var
   CocoaWidgetSet: TCocoaWidgetSet;
   CocoaBasePPI : Integer = 96; // for compatiblity with LCL 1.8 release. The macOS base is 72ppi
@@ -259,6 +270,9 @@ var
   // The flag is checked in Menus to avoid "double" Cmd+Q menu
   LoopHiJackEnded : Boolean = false;
   {$endif}
+
+  CocoaScrollWheelHandling     : TScrollWheelHandler = {$ifdef COCOAWINAPISCROLLWHEEL}swhDeaccel{$else}swhMacOS{$endif};
+  CocoaScrollWheelLinesInNotch : Integer = 3;
 
 function CocoaScrollBarSetScrollInfo(bar: TCocoaScrollBar; const ScrollInfo: TScrollInfo): Integer;
 function CocoaScrollBarGetScrollInfo(bar: TCocoaScrollBar; var ScrollInfo: TScrollInfo): Boolean;

@@ -1182,6 +1182,23 @@ begin
   if BlockCocoaMouseMove then Result := true;
 end;
 
+// only used for deacceleartion
+const
+  DeaccelBase = 5.0; // it's likely to be 4000 or so...
+  // this is a magic constant of de-accelleartion
+  // The "base" refers to the "maximum spped" of the wheels
+  // (which is usually reached within the first 5 nothces)
+  // but you should scroll the wheel fast.
+
+  // DeaccelBase is also subject to Scroll Speed.
+  // This is based on the practical observation.
+  // The actual Apple's scroll wheel accellation algorithm is unknown
+
+  // When doing de-accelleartion, we only want to make sure
+  // that reported number of "scroll" lines is not above the certain
+  // threshold. (the threshold is defined by the scroll speed)
+  // Otherwise any scroll even is turned into 120
+
 function TLCLCommonCallback.scrollWheel(Event: NSEvent): Boolean;
 var
   Msg: TLMMouseEvent;
@@ -1190,10 +1207,13 @@ var
   bndPt, clPt, srchPt: TPoint;
   dx,dy: double;
   isPrecise: Boolean;
-const
-  WheelDeltaToLCLY = 1200; // the basic (one wheel-click) is 0.1 on cocoa
-  WheelDeltaToLCLX = 1200; // the basic (one wheel-click) is 0.1 on cocoa
-  LCLStep = 120;
+  cnt : Int64;
+  p   : double;
+  dp  : double;
+  LCLStep : double;
+  useLines : Boolean;
+  ddx: double;
+  ddy: double;
 begin
   Result := False; // allow cocoa to handle message
 
@@ -1228,28 +1248,48 @@ begin
     dy := event.deltaY;
   end;
 
+  // see "deltaX" documentation.
+  // on macOS: -1 = right, +1 = left
+  // on LCL:   -1 = left,  +1 = right
+  dx := -dx;
+
+  useLines := isPrecise or (CocoaScrollWheelHandling = swhMacOS);
+  if (useLines) then
+  begin
+    LCLStep := 120 / CocoaScrollWheelLinesInNotch;
+  end else
+  begin
+    // (de-accelleration)
+    // CocoaScrollWheelHandling = swhDeaccel;
+    // the attempt is to recognize with "scrollingDeltaX/Y" are above
+    // the maximum for the current "Scroll Speed"
+    // Anything maximum (ddx,ddy) will be an addition to the standerd
+    // Wheel delta (of 120)
+    LCLStep := 120;
+    p := NSUserDefaults.standardUserDefaults.doubleForKey(NSSTR('com.apple.scrollwheel.scaling'));
+    p := Max(p, 0)+1;
+    dp :=DeaccelBase*p;
+    ddx := Max(abs(dx) - dp,0);
+    dx := sign(dx);
+    dx := dx + dy * Round(ddx/dp);
+    ddy := Max(abs(dy) - dp,0);
+    dy := sign(dy);
+    dy := dy + dy * Round(ddy/dp);
+  end;
+
   // Some info on event.deltaY can be found here:
   // https://developer.apple.com/library/mac/releasenotes/AppKit/RN-AppKitOlderNotes/
   // It says that deltaY=1 means 1 line, and in the LCL 1 line is 120
   if dy <> 0 then
   begin
     Msg.Msg := LM_MOUSEWHEEL;
-    if isPrecise then
-      Msg.WheelDelta := Round(dy * LCLStep)
-    else
-      Msg.WheelDelta := sign(dy) * LCLStep;
+    Msg.WheelDelta := Math.Max( Math.Min( Round(dy * LCLStep), MaxSmallint), -MaxSmallInt);
   end
   else
   if dx <> 0 then
   begin
     Msg.Msg := LM_MOUSEHWHEEL;
-    // see "deltaX" documentation.
-    // on macOS: -1 = right, +1 = left
-    // on LCL:   -1 = left,  +1 = right
-    if isPrecise then
-      Msg.WheelDelta := Round(-dx * LCLStep)
-    else
-      Msg.WheelDelta := sign(-dx) * LCLStep;
+    Msg.WheelDelta := Math.Max( Math.Min( Round(dx * LCLStep), MaxSmallint), -MaxSmallInt);;
   end
   else
     // Filter out empty events - See bug 28491

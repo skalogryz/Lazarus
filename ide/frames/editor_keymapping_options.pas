@@ -254,7 +254,7 @@ begin
       exp.Relations[i].DefaultShortcutA := CleanIDEShortCut;
       exp.Relations[i].DefaultShortcutB := CleanIDEShortCut;
     end;
-    exp.SaveToXMLConfig(xml, 'KeyMapping/');
+    exp.SaveToXMLConfig(xml, 'KeyMapping/', true);
   finally
     exp.Free;
     dlg.Free;
@@ -279,7 +279,7 @@ begin
     if not dlg.Execute then Exit;
     xml := TXMLConfig.Create(dlg.FileName);
     exp.DefineCommandCategories; // default Relations
-    exp.LoadFromXMLConfig(xml, 'KeyMapping/');
+    exp.LoadFromXMLConfig(xml, 'KeyMapping/', false);
     for i:=0 to exp.RelationCount-1 do begin
       src := exp.Relations[i];
       dst := FEditingKeyMap.FindByCommand(src.Command);

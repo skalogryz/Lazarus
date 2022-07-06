@@ -37,7 +37,8 @@ uses
   IDEOptEditorIntf, IDEImagesIntf, SrcEditorIntf, IDECommands,
   // IDE
   EditorOptions, LazarusIDEStrConsts, editor_general_options,
-  KeymapSchemeDlg, KeyMapping, KeyMapShortCutDlg, Laz2_XMLCfg;
+  KeymapSchemeDlg, KeyMapping, KeyMapShortCutDlg, Laz2_XMLCfg,
+  FileUtil;
 
 type
 
@@ -244,6 +245,9 @@ begin
   dlg := TSaveDialog.Create(Self);
   exp := TKeyCommandRelationList.Create;
   try
+    dlg.DefaultExt:='xml';
+    dlg.Filter := dlgFilterXML + '|*.xml|' + dlgFilterAll +'|'+GetAllFilesMask;
+    dlg.FilterIndex := 0;
     if not dlg.Execute then Exit;
     xml := TXMLConfig.CreateClean(dlg.FileName);
     exp.Assign(FEditingKeyMap);
@@ -276,6 +280,8 @@ begin
   dlg := TSaveDialog.Create(Self);
   exp := TKeyCommandRelationList.Create;
   try
+    dlg.Filter := dlgFilterXML + '|*.xml|' + dlgFilterAll +'|'+GetAllFilesMask;
+    dlg.FilterIndex := 0;
     if not dlg.Execute then Exit;
     xml := TXMLConfig.Create(dlg.FileName);
     exp.DefineCommandCategories; // default Relations
